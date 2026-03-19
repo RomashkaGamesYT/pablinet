@@ -96,7 +96,7 @@ export default function AppLayout() {
           <div className="mt-auto mb-4">
             <button
               onClick={handleSignOut}
-              className="flex items-center gap-4 px-4 py-3 rounded-xl text-muted-foreground hover:bg-muted hover:text-destructive transition-all duration-300 ease-out w-full"
+              className="flex items-center gap-4 px-4 py-3 rounded-xl text-muted-foreground hover:bg-muted hover:text-destructive transition-all duration-300 ease-out w-full cursor-pointer"
             >
               <LogOut size={20} />
               <span className="text-sm font-medium">Выйти</span>
