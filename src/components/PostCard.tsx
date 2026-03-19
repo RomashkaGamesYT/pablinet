@@ -127,7 +127,9 @@ export default function PostCard({ post, badges = [], context = "feed" }: PostCa
         )}
       </div>
 
-      <p className="text-sm text-foreground/80 leading-relaxed mb-3 whitespace-pre-wrap">{post.content}</p>
+      <div className="text-sm text-foreground/80 leading-relaxed mb-3 whitespace-pre-wrap">
+        {renderContentWithHashtags(post.content)}
+      </div>
 
       {post.image_url && (
         <div className="mb-3 -mx-1">
