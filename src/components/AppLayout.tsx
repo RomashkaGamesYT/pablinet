@@ -76,7 +76,6 @@ export default function AppLayout() {
 
   navItems.push(
     { to: "/profile", label: "Профиль", icon: <User size={20} />, mobileIcon: <User size={22} /> },
-    { to: "/settings", label: "Настройки", icon: <Settings size={20} />, mobileIcon: <Settings size={22} /> },
   );
 
   return (
