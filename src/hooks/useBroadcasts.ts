@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
 
-const ALLOWED_USERNAMES = ["net", "Cooling", "cooling"];
+const ALLOWED_USERNAMES = ["net", "cooling"];
 
 export function useCanBroadcast() {
   const { user } = useAuth();
