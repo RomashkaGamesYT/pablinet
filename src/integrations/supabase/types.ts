@@ -457,6 +457,10 @@ export type Database = {
         Args: { _user1: string; _user2: string }
         Returns: string
       }
+      get_conversation_partner: {
+        Args: { _conversation_id: string; _my_user_id: string }
+        Returns: string
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
