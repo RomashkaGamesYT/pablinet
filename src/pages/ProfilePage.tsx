@@ -32,6 +32,12 @@ export default function ProfilePage() {
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"posts" | "likes" | "settings">("posts");
   const [followListType, setFollowListType] = useState<"followers" | "following" | null>(null);
+  const [phoneInput, setPhoneInput] = useState("");
+  const [phoneSaved, setPhoneSaved] = useState(false);
+
+  useEffect(() => {
+    if (profile?.phone) setPhoneInput(profile.phone);
+  }, [profile?.phone]);
 
   const showEvents = settings?.show_events_tab ?? true;
   const showNotifications = settings?.show_notifications_tab ?? true;
