@@ -1,12 +1,13 @@
+import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile, useFollowStats, useUpdateProfile } from "@/hooks/useProfile";
 import { usePosts } from "@/hooks/usePosts";
 import { useUserBadges } from "@/hooks/useAdmin";
 import { useSettings, useUpdateSettings } from "@/hooks/useSettings";
-import { Calendar, Palette, Bell, Star, LogOut, Sun, Moon, Monitor, MessageCircle, Users, UserX } from "lucide-react";
+import { Calendar, Palette, Bell, Star, LogOut, Sun, Moon, Monitor, MessageCircle, Users, UserX, Phone, Check } from "lucide-react";
+import { toast } from "sonner";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "next-themes";
 import EmojiPicker from "@/components/EmojiPicker";
@@ -31,6 +32,12 @@ export default function ProfilePage() {
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"posts" | "likes" | "settings">("posts");
   const [followListType, setFollowListType] = useState<"followers" | "following" | null>(null);
+  const [phoneInput, setPhoneInput] = useState("");
+  const [phoneSaved, setPhoneSaved] = useState(false);
+
+  useEffect(() => {
+    if (profile?.phone) setPhoneInput(profile.phone);
+  }, [profile?.phone]);
 
   const showEvents = settings?.show_events_tab ?? true;
   const showNotifications = settings?.show_notifications_tab ?? true;
@@ -225,6 +232,38 @@ export default function ProfilePage() {
 
           {activeTab === "settings" ? (
             <div className="space-y-2">
+              {/* Phone number */}
+              <div className="p-4 rounded-2xl bg-card ring-1 ring-border">
+                <div className="flex items-center gap-4">
+                  <div className="text-muted-foreground"><Phone size={18} /></div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium text-primary mb-1">Номер телефона</div>
+                    <div className="text-xs text-muted-foreground mb-2">Для входа по телефону через Telegram</div>
+                    <div className="flex gap-2">
+                      <input
+                        type="tel"
+                        value={phoneInput}
+                        onChange={(e) => setPhoneInput(e.target.value)}
+                        placeholder="+7 999 123 45 67"
+                        className="flex-1 bg-muted ring-1 ring-input rounded-xl px-3 py-2 text-sm text-foreground outline-none focus:ring-primary/30 transition-shadow placeholder-muted-foreground"
+                      />
+                      <button
+                        onClick={async () => {
+                          await updateProfile.mutateAsync({ phone: phoneInput.trim() || null } as any);
+                          setPhoneSaved(true);
+                          toast.success("Номер телефона сохранён");
+                          setTimeout(() => setPhoneSaved(false), 2000);
+                        }}
+                        disabled={updateProfile.isPending}
+                        className="bg-primary text-primary-foreground px-4 py-2 rounded-xl text-xs font-medium hover:opacity-90 transition-all active:scale-95 disabled:opacity-50 cursor-pointer flex items-center gap-1.5"
+                      >
+                        {phoneSaved ? <><Check size={14} /> Готово</> : "Сохранить"}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               {/* Theme selector */}
               <div className="w-full flex items-center gap-4 p-4 rounded-2xl bg-card ring-1 ring-border text-left">
                 <div className="text-muted-foreground"><Palette size={18} /></div>
