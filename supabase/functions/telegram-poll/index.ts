@@ -79,11 +79,19 @@ Deno.serve(async (req) => {
       const text = message.text.trim();
       const telegramUsername = message.from?.username || null;
 
+      // Handle /start with verification token
+      if (text.startsWith('/start verify_')) {
+        const token = text.replace('/start verify_', '').trim();
+        await handleVerifyToken(supabase, chatId, token, LOVABLE_API_KEY, TELEGRAM_API_KEY);
+        totalProcessed++;
+        continue;
+      }
+
       if (text === '/start') {
-        // Welcome message
         await sendTelegramMessage(chatId, 
-          '👋 Привет! Я бот верификации блогеров для соцсети нэт.\n\n' +
-          'Чтобы подать заявку на бейдж 🔥 Flame, отправь свой username из соцсети нэт.\n\n' +
+          '👋 Привет! Я бот соцсети нэт.\n\n' +
+          '🔥 Чтобы подать заявку на бейдж Flame, отправь свой username.\n' +
+          '📱 Если ты входишь по номеру телефона — перейди по ссылке из приложения.\n\n' +
           'Например: @myusername',
           LOVABLE_API_KEY, TELEGRAM_API_KEY
         );
@@ -95,7 +103,6 @@ Deno.serve(async (req) => {
           continue;
         }
 
-        // Check if user exists
         const { data: profile } = await supabase
           .from('profiles')
           .select('user_id, username, display_name')
@@ -107,7 +114,6 @@ Deno.serve(async (req) => {
           continue;
         }
 
-        // Check if already has pending request
         const { data: existing } = await supabase
           .from('verification_requests')
           .select('id, status')
@@ -120,7 +126,6 @@ Deno.serve(async (req) => {
           continue;
         }
 
-        // Check if already has Flame badge
         const { data: flameBadge } = await supabase
           .from('badges')
           .select('id')
@@ -141,7 +146,6 @@ Deno.serve(async (req) => {
           }
         }
 
-        // Create verification request
         await supabase.from('verification_requests').insert({
           telegram_chat_id: chatId,
           telegram_username: telegramUsername,
@@ -176,6 +180,39 @@ Deno.serve(async (req) => {
 
   return new Response(JSON.stringify({ ok: true, processed: totalProcessed }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 });
+
+async function handleVerifyToken(
+  supabase: any, 
+  chatId: number, 
+  token: string, 
+  lovableKey: string, 
+  telegramKey: string
+) {
+  // Look up the token in phone_auth_codes
+  const { data: authCode, error } = await supabase
+    .from('phone_auth_codes')
+    .select('*')
+    .eq('token', token)
+    .eq('used', false)
+    .gte('expires_at', new Date().toISOString())
+    .maybeSingle();
+
+  if (error || !authCode) {
+    await sendTelegramMessage(chatId, '❌ Ссылка недействительна или истекла. Запросите новый код.', lovableKey, telegramKey);
+    return;
+  }
+
+  // Send the code to the user
+  const phone = authCode.phone;
+  const maskedPhone = phone.slice(0, 3) + '****' + phone.slice(-4);
+  
+  await sendTelegramMessage(chatId, 
+    `📱 Код верификации для номера ${maskedPhone}:\n\n` +
+    `<b>${authCode.code}</b>\n\n` +
+    '⏱ Код действителен 10 минут. Введите его на сайте.',
+    lovableKey, telegramKey
+  );
+}
 
 async function sendTelegramMessage(chatId: number, text: string, lovableKey: string, telegramKey: string) {
   await fetch(`${GATEWAY_URL}/sendMessage`, {
