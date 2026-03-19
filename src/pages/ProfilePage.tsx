@@ -7,6 +7,7 @@ import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 import { useState } from "react";
 import EmojiPicker from "@/components/EmojiPicker";
+import FollowListModal from "@/components/FollowListModal";
 import BadgeDisplay from "@/components/BadgeDisplay";
 import PostCard from "@/components/PostCard";
 
