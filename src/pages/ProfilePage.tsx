@@ -3,11 +3,12 @@ import { useProfile, useFollowStats, useUpdateProfile } from "@/hooks/useProfile
 import { usePosts } from "@/hooks/usePosts";
 import { useUserBadges } from "@/hooks/useAdmin";
 import { useSettings, useUpdateSettings } from "@/hooks/useSettings";
-import { Calendar, Palette, MessageCircle, Bell, Star, LogOut } from "lucide-react";
+import { Calendar, Palette, Bell, Star, LogOut, Sun, Moon, Monitor } from "lucide-react";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTheme } from "next-themes";
 import EmojiPicker from "@/components/EmojiPicker";
 import FollowListModal from "@/components/FollowListModal";
 import BadgeDisplay from "@/components/BadgeDisplay";
