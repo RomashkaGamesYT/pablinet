@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
 
-const ALLOWED_USERNAMES = ["net", "Cooling"];
+const ALLOWED_USERNAMES = ["net", "cooling"];
 
 export function useCanBroadcast() {
   const { user } = useAuth();
@@ -16,7 +16,7 @@ export function useCanBroadcast() {
         .select("username")
         .eq("user_id", user.id)
         .single();
-      return ALLOWED_USERNAMES.includes(data?.username || "");
+      return ALLOWED_USERNAMES.includes((data?.username || "").toLowerCase());
     },
     enabled: !!user,
   });

@@ -1,0 +1,1 @@
+ALTER TABLE public.verification_requests ADD COLUMN rejection_reason text;
