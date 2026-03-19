@@ -158,15 +158,15 @@ export default function AppLayout() {
 
       {/* Mobile Bottom Dock */}
       <nav className="fixed bottom-4 left-3 right-3 md:hidden z-50">
-        <div className="bg-card/80 backdrop-blur-[20px] backdrop-saturate-[1.8] rounded-[20px] shadow-[0_8px_40px_rgba(0,0,0,0.25)] ring-1 ring-border">
-          <div className="flex justify-around items-center h-[60px] px-1">
+        <div className="bg-card/80 backdrop-blur-[20px] backdrop-saturate-[1.8] rounded-full shadow-[0_8px_40px_rgba(0,0,0,0.25)] ring-1 ring-border">
+          <div className="flex justify-around items-center h-[56px] px-2">
             {navItems.map((item: any) => (
               <NavLink
                 key={item.to}
                 to={item.to}
                 end={item.to === "/"}
-                className="relative flex flex-col items-center justify-center gap-[2px] w-[56px] h-[50px] rounded-xl text-muted-foreground transition-all duration-300 cursor-pointer"
-                activeClassName="text-primary bg-muted/60 backdrop-blur-sm shadow-sm"
+                className="relative flex flex-col items-center justify-center gap-[2px] w-[50px] h-[44px] rounded-full text-muted-foreground transition-all duration-300 cursor-pointer"
+                activeClassName="text-primary bg-primary/15 shadow-[0_0_12px_hsl(var(--primary)/0.15)]"
               >
                 {item.special ? (
                   <>
