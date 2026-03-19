@@ -22,6 +22,28 @@ interface PostCardProps {
   context?: "feed" | "profile";
 }
 
+function renderContentWithHashtags(content: string) {
+  const parts = content.split(/(#[a-zA-Zа-яА-ЯёЁ0-9_]+)/g);
+  return parts.map((part, i) => {
+    if (/^#[a-zA-Zа-яА-ЯёЁ0-9_]+$/.test(part)) {
+      const isPedro = part === "#Педро88";
+      return (
+        <span
+          key={i}
+          className={
+            isPedro
+              ? "font-bold bg-gradient-to-r from-[hsl(340,82%,52%)] via-[hsl(280,80%,55%)] to-[hsl(200,90%,50%)] bg-clip-text text-transparent animate-pulse cursor-pointer"
+              : "text-net-cyan hover:underline cursor-pointer"
+          }
+        >
+          {part}
+        </span>
+      );
+    }
+    return part;
+  });
+}
+
 export default function PostCard({ post, badges = [], context = "feed" }: PostCardProps) {
   const { user } = useAuth();
   const navigate = useNavigate();
