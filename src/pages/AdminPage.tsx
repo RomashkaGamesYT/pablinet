@@ -113,10 +113,44 @@ export default function AdminPage() {
     toast.success("Ивент удалён");
   };
 
+  // Verification requests from Telegram
+  const { data: verificationRequests, isLoading: vrLoading } = useQuery({
+    queryKey: ["verification-requests"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("verification_requests")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const [processingVR, setProcessingVR] = useState<string | null>(null);
+
+  const handleVerifyAction = async (requestId: string, action: "approve" | "reject") => {
+    setProcessingVR(requestId);
+    try {
+      const { data, error } = await supabase.functions.invoke("verify-blogger", {
+        body: { requestId, action },
+      });
+      if (error) throw error;
+      toast.success(action === "approve" ? "Заявка одобрена, бейдж Flame выдан!" : "Заявка отклонена");
+      queryClient.invalidateQueries({ queryKey: ["verification-requests"] });
+      queryClient.invalidateQueries({ queryKey: ["user-badges"] });
+      queryClient.invalidateQueries({ queryKey: ["all-user-badges"] });
+    } catch (err: any) {
+      toast.error("Ошибка: " + err.message);
+    } finally {
+      setProcessingVR(null);
+    }
+  };
+
   const tabs = [
     { key: "badges" as const, label: "Бейджи", icon: <Award size={16} /> },
     { key: "assign" as const, label: "Назначить", icon: <Users size={16} /> },
     { key: "verify" as const, label: "Верификация", icon: <Shield size={16} /> },
+    { key: "tg-verify" as const, label: "TG Заявки", icon: <MessageCircle size={16} /> },
     { key: "events" as const, label: "Ивенты", icon: <Calendar size={16} /> },
   ];
 
