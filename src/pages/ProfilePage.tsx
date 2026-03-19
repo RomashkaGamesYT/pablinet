@@ -7,6 +7,7 @@ import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 import { useState } from "react";
 import EmojiPicker from "@/components/EmojiPicker";
+import FollowListModal from "@/components/FollowListModal";
 import BadgeDisplay from "@/components/BadgeDisplay";
 import PostCard from "@/components/PostCard";
 
@@ -23,6 +24,7 @@ export default function ProfilePage() {
   const [editEmoji, setEditEmoji] = useState("");
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"posts" | "likes">("posts");
+  const [followListType, setFollowListType] = useState<"followers" | "following" | null>(null);
 
   if (isLoading) {
     return <div className="text-muted-foreground text-sm text-center py-8">Загрузка...</div>;
@@ -147,14 +149,14 @@ export default function ProfilePage() {
 
             <div className="flex flex-col gap-3 mt-4">
               <div className="flex items-center gap-5 text-sm">
-                <div className="flex items-center gap-1.5 cursor-pointer group">
+                <button onClick={() => setFollowListType("followers")} className="flex items-center gap-1.5 cursor-pointer group">
                   <span className="text-primary font-semibold">{stats?.followers || 0}</span>
                   <span className="text-muted-foreground group-hover:text-foreground/70 transition-colors">подписчиков</span>
-                </div>
-                <div className="flex items-center gap-1.5 cursor-pointer group">
+                </button>
+                <button onClick={() => setFollowListType("following")} className="flex items-center gap-1.5 cursor-pointer group">
                   <span className="text-primary font-semibold">{stats?.following || 0}</span>
                   <span className="text-muted-foreground group-hover:text-foreground/70 transition-colors">подписок</span>
-                </div>
+                </button>
               </div>
               <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
                 <Calendar size={16} className="opacity-80" />
@@ -206,6 +208,9 @@ export default function ProfilePage() {
             )}
           </div>
         </>
+      )}
+      {followListType && user && (
+        <FollowListModal userId={user.id} type={followListType} onClose={() => setFollowListType(null)} />
       )}
     </div>
   );
