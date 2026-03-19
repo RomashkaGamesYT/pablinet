@@ -57,6 +57,13 @@ export default function AppLayout() {
     } as any);
   }
 
+  baseNavItems.push({
+    to: "/broadcasts",
+    label: "Эфир",
+    icon: <Radio size={20} />,
+    mobileIcon: <Radio size={22} />,
+  } as any);
+
   const navItems: any[] = [
     ...baseNavItems,
   ];
