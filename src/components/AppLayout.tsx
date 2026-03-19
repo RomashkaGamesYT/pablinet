@@ -119,7 +119,7 @@ export default function AppLayout() {
                 key={item.to}
                 to={item.to}
                 end={item.to === "/"}
-                className="flex items-center justify-center w-12 h-12 rounded-2xl text-muted-foreground transition-all duration-200"
+                className="flex items-center justify-center w-12 h-12 rounded-2xl text-muted-foreground transition-all duration-200 cursor-pointer"
                 activeClassName="text-primary"
               >
                 {item.special ? (
