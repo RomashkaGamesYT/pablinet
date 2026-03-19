@@ -15,6 +15,7 @@ import ProfilePage from "@/pages/ProfilePage";
 import UserProfilePage from "@/pages/UserProfilePage";
 import AdminPage from "@/pages/AdminPage";
 import MessagesPage from "@/pages/MessagesPage";
+import FlamePage from "@/pages/FlamePage";
 
 import AuthPage from "@/pages/Auth";
 import ResetPassword from "@/pages/ResetPassword";
@@ -64,6 +65,7 @@ const App = () => (
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/user/:userId" element={<UserProfilePage />} />
               <Route path="/messages" element={<MessagesPage />} />
+              <Route path="/flame" element={<FlamePage />} />
 
               <Route path="/admin" element={<AdminRoute><AdminPage /></AdminRoute>} />
             </Route>
