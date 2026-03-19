@@ -17,7 +17,7 @@ export default function AdminPage() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
-  const [activeTab, setActiveTab] = useState<"badges" | "assign" | "verify" | "events">("badges");
+  const [activeTab, setActiveTab] = useState<"badges" | "assign" | "verify" | "events" | "tg-verify">("badges");
   const [creating, setCreating] = useState(false);
   const [badgeName, setBadgeName] = useState("");
   const [badgeDesc, setBadgeDesc] = useState("");
