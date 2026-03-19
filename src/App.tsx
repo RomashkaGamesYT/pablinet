@@ -61,7 +61,7 @@ const App = () => (
               <Route path="/notifications" element={<NotificationsPage />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/user/:userId" element={<UserProfilePage />} />
-              <Route path="/messages" element={<MessagesPage />} />
+              
               
               <Route path="/admin" element={<AdminRoute><AdminPage /></AdminRoute>} />
             </Route>
