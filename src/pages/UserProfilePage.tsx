@@ -104,18 +104,26 @@ export default function UserProfilePage() {
             </div>
             <span className="text-sm text-muted-foreground font-medium">@{profile.username}</span>
           </div>
-          <button
-            onClick={handleFollowToggle}
-            disabled={follow.isPending || followLoading}
-            className={`px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 active:scale-95 shrink-0 cursor-pointer disabled:opacity-50 ${
-              isFollowing
-                ? "bg-muted text-foreground ring-1 ring-input hover:ring-destructive hover:text-destructive"
-                : "bg-primary text-primary-foreground hover:opacity-90 shadow-[0_2px_8px_rgba(255,255,255,0.15)] ring-1 ring-inset ring-black/5"
-            }`}
-          >
-            {isFollowing ? "Отписаться" : "Подписаться"}
-          </button>
-        </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              onClick={handleMessage}
+              disabled={startConversation.isPending}
+              className="w-9 h-9 rounded-full bg-muted ring-1 ring-input flex items-center justify-center text-muted-foreground hover:text-primary hover:ring-primary/20 transition-all cursor-pointer disabled:opacity-50"
+            >
+              <MessageCircle size={16} />
+            </button>
+            <button
+              onClick={handleFollowToggle}
+              disabled={follow.isPending || followLoading}
+              className={`px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 active:scale-95 cursor-pointer disabled:opacity-50 ${
+                isFollowing
+                  ? "bg-muted text-foreground ring-1 ring-input hover:ring-destructive hover:text-destructive"
+                  : "bg-primary text-primary-foreground hover:opacity-90 shadow-[0_2px_8px_rgba(255,255,255,0.15)] ring-1 ring-inset ring-black/5"
+              }`}
+            >
+              {isFollowing ? "Отписаться" : "Подписаться"}
+            </button>
+          </div>
 
         {profile.bio && (
           <p className="text-sm text-foreground/70 mt-3 leading-relaxed">{profile.bio}</p>
