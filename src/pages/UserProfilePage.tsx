@@ -115,14 +115,14 @@ export default function UserProfilePage() {
 
         <div className="flex flex-col gap-3 mt-4">
           <div className="flex items-center gap-5 text-sm">
-            <div className="flex items-center gap-1.5">
+            <button onClick={() => setFollowListType("followers")} className="flex items-center gap-1.5 cursor-pointer group">
               <span className="text-primary font-semibold">{stats?.followers || 0}</span>
-              <span className="text-muted-foreground">подписчиков</span>
-            </div>
-            <div className="flex items-center gap-1.5">
+              <span className="text-muted-foreground group-hover:text-foreground/70 transition-colors">подписчиков</span>
+            </button>
+            <button onClick={() => setFollowListType("following")} className="flex items-center gap-1.5 cursor-pointer group">
               <span className="text-primary font-semibold">{stats?.following || 0}</span>
-              <span className="text-muted-foreground">подписок</span>
-            </div>
+              <span className="text-muted-foreground group-hover:text-foreground/70 transition-colors">подписок</span>
+            </button>
           </div>
           <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
             <Calendar size={16} className="opacity-80" />
