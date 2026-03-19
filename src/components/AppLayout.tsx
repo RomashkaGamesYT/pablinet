@@ -187,6 +187,8 @@ export default function AppLayout() {
         </div>
         <div className="h-[env(safe-area-inset-bottom)]" />
       </nav>
+
+      <CookieBanner />
     </div>
   );
 }
