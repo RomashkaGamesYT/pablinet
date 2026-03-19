@@ -101,6 +101,7 @@ export type Database = {
       }
       events: {
         Row: {
+          active: boolean
           badge_text: string | null
           created_at: string
           created_by: string
@@ -110,6 +111,7 @@ export type Database = {
           title: string
         }
         Insert: {
+          active?: boolean
           badge_text?: string | null
           created_at?: string
           created_by: string
@@ -119,6 +121,7 @@ export type Database = {
           title: string
         }
         Update: {
+          active?: boolean
           badge_text?: string | null
           created_at?: string
           created_by?: string
