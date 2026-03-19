@@ -16,7 +16,7 @@ export function useCanBroadcast() {
         .select("username")
         .eq("user_id", user.id)
         .single();
-      return ALLOWED_USERNAMES.includes(data?.username || "");
+      return ALLOWED_USERNAMES.includes((data?.username || "").toLowerCase());
     },
     enabled: !!user,
   });
