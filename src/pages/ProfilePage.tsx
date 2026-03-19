@@ -14,19 +14,35 @@ import BadgeDisplay from "@/components/BadgeDisplay";
 import PostCard from "@/components/PostCard";
 
 export default function ProfilePage() {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const { data: profile, isLoading } = useProfile();
   const { data: stats } = useFollowStats();
   const { data: allPosts } = usePosts();
   const { data: userBadges } = useUserBadges(user?.id);
+  const { data: settings } = useSettings();
+  const updateSettings = useUpdateSettings();
   const updateProfile = useUpdateProfile();
+  const navigate = useNavigate();
   const [editing, setEditing] = useState(false);
   const [editName, setEditName] = useState("");
   const [editBio, setEditBio] = useState("");
   const [editEmoji, setEditEmoji] = useState("");
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<"posts" | "likes">("posts");
+  const [activeTab, setActiveTab] = useState<"posts" | "likes" | "settings">("posts");
   const [followListType, setFollowListType] = useState<"followers" | "following" | null>(null);
+
+  const dmEnabled = settings?.dm_enabled ?? true;
+  const showEvents = settings?.show_events_tab ?? true;
+  const showNotifications = settings?.show_notifications_tab ?? true;
+
+  const toggleSetting = (key: "dm_enabled" | "show_events_tab" | "show_notifications_tab", current: boolean) => {
+    updateSettings.mutate({ [key]: !current });
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/auth");
+  };
 
   if (isLoading) {
     return <div className="text-muted-foreground text-sm text-center py-8">Загрузка...</div>;
