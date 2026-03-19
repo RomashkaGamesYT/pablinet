@@ -27,7 +27,7 @@ export function useUpdateProfile() {
   const { user } = useAuth();
 
   return useMutation({
-    mutationFn: async (updates: { display_name?: string; username?: string; avatar_emoji?: string; bio?: string }) => {
+    mutationFn: async (updates: { display_name?: string; username?: string; avatar_emoji?: string; bio?: string; phone?: string }) => {
       if (!user) throw new Error("Not authenticated");
       const { data, error } = await supabase
         .from("profiles")
