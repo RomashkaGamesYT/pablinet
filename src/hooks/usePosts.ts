@@ -6,7 +6,6 @@ export function usePosts() {
   return useQuery({
     queryKey: ["posts"],
     queryFn: async () => {
-      // Fetch posts first
       const { data: posts, error } = await supabase
         .from("posts")
         .select("*, likes(id, user_id)")
@@ -18,8 +17,20 @@ export function usePosts() {
       const userIds = [...new Set(posts.map((p) => p.user_id))];
       const { data: profiles } = await supabase
         .from("profiles")
-        .select("user_id, display_name, username, avatar_emoji")
+        .select("user_id, display_name, username, avatar_emoji, verified")
         .in("user_id", userIds);
+
+      // Get comment counts
+      const postIds = posts.map((p) => p.id);
+      const { data: commentCounts } = await supabase
+        .from("comments")
+        .select("post_id")
+        .in("post_id", postIds);
+
+      const countMap = new Map<string, number>();
+      (commentCounts || []).forEach((c) => {
+        countMap.set(c.post_id, (countMap.get(c.post_id) || 0) + 1);
+      });
 
       const profileMap = new Map(
         (profiles || []).map((p) => [p.user_id, p])
@@ -28,6 +39,7 @@ export function usePosts() {
       return posts.map((post) => ({
         ...post,
         profile: profileMap.get(post.user_id) || null,
+        comment_count: countMap.get(post.id) || 0,
       }));
     },
   });
