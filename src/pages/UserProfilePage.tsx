@@ -7,8 +7,10 @@ import { useUserBadges } from "@/hooks/useAdmin";
 import { Calendar, ArrowLeft } from "lucide-react";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
+import { useState } from "react";
 import BadgeDisplay from "@/components/BadgeDisplay";
 import PostCard from "@/components/PostCard";
+import FollowListModal from "@/components/FollowListModal";
 
 export default function UserProfilePage() {
   const { userId } = useParams<{ userId: string }>();
