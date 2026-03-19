@@ -24,6 +24,7 @@ interface PostCardProps {
 
 export default function PostCard({ post, badges = [], context = "feed" }: PostCardProps) {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const toggleLike = useToggleLike();
   const deletePost = useDeletePost();
   const togglePin = useTogglePin();
