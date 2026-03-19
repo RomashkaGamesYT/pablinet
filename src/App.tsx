@@ -15,6 +15,7 @@ import ProfilePage from "@/pages/ProfilePage";
 import UserProfilePage from "@/pages/UserProfilePage";
 import AdminPage from "@/pages/AdminPage";
 import MessagesPage from "@/pages/MessagesPage";
+import FlamePage from "@/pages/FlamePage";
 
 import AuthPage from "@/pages/Auth";
 import ResetPassword from "@/pages/ResetPassword";
