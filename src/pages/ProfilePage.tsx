@@ -8,7 +8,6 @@ import { Calendar, Palette, Bell, Star, LogOut, Sun, Moon, Monitor, MessageCircl
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "next-themes";
 import EmojiPicker from "@/components/EmojiPicker";
