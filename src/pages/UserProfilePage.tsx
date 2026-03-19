@@ -107,6 +107,13 @@ export default function UserProfilePage() {
           </div>
           <div className="flex items-center gap-2 shrink-0">
             <button
+              onClick={handleMessage}
+              disabled={startConversation.isPending}
+              className="w-9 h-9 rounded-full bg-muted ring-1 ring-input flex items-center justify-center text-muted-foreground hover:text-primary hover:ring-primary/20 transition-all cursor-pointer disabled:opacity-50"
+            >
+              <MessageCircle size={16} />
+            </button>
+            <button
               onClick={handleFollowToggle}
               disabled={follow.isPending || followLoading}
               className={`px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 active:scale-95 cursor-pointer disabled:opacity-50 ${
