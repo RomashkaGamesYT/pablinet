@@ -9,6 +9,7 @@ import AppLayout from "@/components/AppLayout";
 import FeedPage from "@/pages/Feed";
 import SearchPage from "@/pages/SearchPage";
 import EventsPage from "@/pages/EventsPage";
+import BroadcastsPage from "@/pages/BroadcastsPage";
 import NotificationsPage from "@/pages/NotificationsPage";
 import ProfilePage from "@/pages/ProfilePage";
 import UserProfilePage from "@/pages/UserProfilePage";
