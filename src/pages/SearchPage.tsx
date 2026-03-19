@@ -36,7 +36,7 @@ export default function SearchPage() {
               <h3 className="text-xs font-medium text-muted-foreground mb-4 tracking-tight uppercase">Пользователи</h3>
               <div className="flex flex-col gap-2">
                 {data.users.map((u: any) => (
-                  <div key={u.id} className="flex items-center gap-3 p-3 rounded-2xl hover:bg-muted transition-colors cursor-pointer">
+                  <div key={u.id} onClick={() => navigate(`/user/${u.user_id}`)} className="flex items-center gap-3 p-3 rounded-2xl hover:bg-muted transition-colors cursor-pointer">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-net-cyan/20 to-net-emerald/20 flex items-center justify-center ring-1 ring-input">
                       <span className="text-sm">{u.avatar_emoji}</span>
                     </div>
