@@ -22,6 +22,7 @@ export default function UserProfilePage() {
   const { data: userBadges } = useUserBadges(userId);
   const { data: isFollowing, isLoading: followLoading } = useIsFollowing(userId);
   const follow = useFollow();
+  const [followListType, setFollowListType] = useState<"followers" | "following" | null>(null);
 
   const isOwnProfile = user?.id === userId;
 
