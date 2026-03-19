@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface BadgeDisplayProps {
   badges: Array<{
@@ -15,6 +16,7 @@ interface BadgeDisplayProps {
 
 export default function BadgeDisplay({ badges, size = "sm" }: BadgeDisplayProps) {
   const navigate = useNavigate();
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   if (!badges || badges.length === 0) return null;
 
@@ -27,27 +29,34 @@ export default function BadgeDisplay({ badges, size = "sm" }: BadgeDisplayProps)
         const badge = ub.badge;
         if (!badge) return null;
         return (
-          <HoverCard key={i} openDelay={200} closeDelay={300}>
-            <HoverCardTrigger asChild>
+          <Popover key={i} open={openIndex === i} onOpenChange={(open) => setOpenIndex(open ? i : null)}>
+            <PopoverTrigger asChild>
               <img
                 src={badge.icon_url}
                 alt={badge.name}
                 className={`${imgSize} rounded-sm object-contain cursor-pointer hover:scale-110 transition-transform`}
+                onMouseEnter={() => setOpenIndex(i)}
+                onMouseLeave={() => setOpenIndex(null)}
               />
-            </HoverCardTrigger>
-            <HoverCardContent className="bg-card ring-1 ring-border text-foreground text-xs px-3 py-2 rounded-xl max-w-[220px] w-auto">
+            </PopoverTrigger>
+            <PopoverContent
+              className="bg-card ring-1 ring-border text-foreground text-xs px-3 py-2 rounded-xl max-w-[220px] w-auto"
+              onMouseEnter={() => setOpenIndex(i)}
+              onMouseLeave={() => setOpenIndex(null)}
+              sideOffset={6}
+            >
               <p className="font-medium">{badge.name}</p>
               <p className="text-muted-foreground mt-0.5">{badge.description}</p>
               {isFlame(badge.name) && (
                 <button
-                  onClick={() => navigate("/flame")}
+                  onClick={() => { setOpenIndex(null); navigate("/flame"); }}
                   className="mt-2 text-[10px] font-medium text-primary hover:underline cursor-pointer"
                 >
                   Подробнее →
                 </button>
               )}
-            </HoverCardContent>
-          </HoverCard>
+            </PopoverContent>
+          </Popover>
         );
       })}
     </div>
