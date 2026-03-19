@@ -2,9 +2,11 @@ import { useState } from "react";
 import { usePosts, useCreatePost, useToggleLike } from "@/hooks/usePosts";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
+import { useAllUserBadges } from "@/hooks/useAdmin";
 import { Heart, MessageCircle, Share2, Image, Smile } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ru } from "date-fns/locale";
+import BadgeDisplay from "@/components/BadgeDisplay";
 
 export default function FeedPage() {
   const [newPost, setNewPost] = useState("");
@@ -13,11 +15,16 @@ export default function FeedPage() {
   const toggleLike = useToggleLike();
   const { user } = useAuth();
   const { data: profile } = useProfile();
+  const { data: allUserBadges } = useAllUserBadges();
 
   const handlePost = async () => {
     if (!newPost.trim()) return;
     await createPost.mutateAsync(newPost);
     setNewPost("");
+  };
+
+  const getUserBadges = (userId: string) => {
+    return allUserBadges?.filter((ub: any) => ub.user_id === userId) || [];
   };
 
   return (
@@ -28,15 +35,15 @@ export default function FeedPage() {
 
       {/* Create Post */}
       <div className="bg-card/80 backdrop-blur-md rounded-3xl p-4 ring-1 ring-border mb-6 shadow-sm">
-        <div className="flex gap-4">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-b from-muted to-card flex items-center justify-center shrink-0 ring-1 ring-input shadow-inner">
+        <div className="flex gap-3 sm:gap-4">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-b from-muted to-card flex items-center justify-center shrink-0 ring-1 ring-input shadow-inner">
             <span className="text-sm">{profile?.avatar_emoji || "🐊"}</span>
           </div>
           <textarea
             value={newPost}
             onChange={(e) => setNewPost(e.target.value)}
             placeholder="Что нового?"
-            className="w-full bg-transparent text-sm outline-none text-foreground placeholder-muted-foreground pt-2.5 resize-none h-10"
+            className="w-full bg-transparent text-sm outline-none text-foreground placeholder-muted-foreground pt-2 sm:pt-2.5 resize-none h-10"
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
@@ -45,7 +52,7 @@ export default function FeedPage() {
             }}
           />
         </div>
-        <div className="flex justify-between items-center mt-4 pt-4 border-t border-border">
+        <div className="flex justify-between items-center mt-3 pt-3 border-t border-border">
           <div className="flex gap-2 text-muted-foreground">
             <button className="hover:text-primary transition-colors p-1 flex items-center"><Image size={20} /></button>
             <button className="hover:text-primary transition-colors p-1 flex items-center"><Smile size={20} /></button>
@@ -61,7 +68,7 @@ export default function FeedPage() {
       </div>
 
       {/* Posts */}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-3 sm:gap-4">
         {isLoading ? (
           <div className="text-center text-muted-foreground text-sm py-8">Загрузка...</div>
         ) : posts?.length === 0 ? (
@@ -71,22 +78,26 @@ export default function FeedPage() {
             const isLiked = post.likes?.some((l: any) => l.user_id === user?.id);
             const likesCount = post.likes?.length || 0;
             const postProfile = post.profile;
+            const postBadges = getUserBadges(post.user_id);
 
             return (
-              <div key={post.id} className="bg-card/50 rounded-3xl p-5 ring-1 ring-border transition-colors hover:bg-card/80 cursor-pointer">
+              <div key={post.id} className="bg-card/50 rounded-3xl p-4 sm:p-5 ring-1 ring-border transition-colors hover:bg-card/80 cursor-pointer">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-net-cyan/20 to-net-emerald/20 flex items-center justify-center ring-1 ring-input">
+                  <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-tr from-net-cyan/20 to-net-emerald/20 flex items-center justify-center ring-1 ring-input shrink-0">
                     <span className="text-sm">{postProfile?.avatar_emoji || "🐊"}</span>
                   </div>
-                  <div>
-                    <div className="text-sm font-medium text-primary tracking-tight">{postProfile?.display_name || "Пользователь"}</div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="text-sm font-medium text-primary tracking-tight">{postProfile?.display_name || "Пользователь"}</span>
+                      {postBadges.length > 0 && <BadgeDisplay badges={postBadges as any} size="sm" />}
+                    </div>
                     <div className="text-xs text-muted-foreground">
                       {formatDistanceToNow(new Date(post.created_at), { addSuffix: true, locale: ru })}
                     </div>
                   </div>
                 </div>
-                <p className="text-sm text-foreground/80 leading-relaxed mb-4 whitespace-pre-wrap">{post.content}</p>
-                <div className="flex items-center gap-6 pt-4 border-t border-border">
+                <p className="text-sm text-foreground/80 leading-relaxed mb-3 whitespace-pre-wrap">{post.content}</p>
+                <div className="flex items-center gap-5 pt-3 border-t border-border">
                   <button
                     onClick={() => toggleLike.mutate(post.id)}
                     className={`flex items-center gap-2 transition-colors ${isLiked ? "text-destructive" : "text-muted-foreground hover:text-destructive"}`}
