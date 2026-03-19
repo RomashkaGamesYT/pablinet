@@ -163,7 +163,7 @@ export default function AppLayout() {
               >
                 {item.special ? (
                   <>
-                    <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-net-cyan to-net-emerald flex items-center justify-center shadow-[0_0_16px_rgba(34,211,238,0.45)] ring-1 ring-white/10">
+                    <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-net-cyan to-net-emerald flex items-center justify-center shadow-[0_0_16px_rgba(34,211,238,0.45)] ring-1 ring-border">
                       {item.mobileIcon}
                     </div>
                     <span className="text-[9px] font-semibold tracking-wide">{item.label}</span>
