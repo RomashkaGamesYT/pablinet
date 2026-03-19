@@ -10,7 +10,7 @@ export function useConversations() {
     queryFn: async () => {
       if (!user) return [];
 
-      // Get user's conversation IDs
+      // Get user's conversation IDs (RLS allows seeing own rows)
       const { data: participations, error: pError } = await supabase
         .from("conversation_participants")
         .select("conversation_id")
@@ -28,18 +28,19 @@ export function useConversations() {
         .order("updated_at", { ascending: false });
       if (cError) throw cError;
 
-      // Get all participants for these conversations
-      const { data: allParticipants } = await supabase
-        .from("conversation_participants")
-        .select("conversation_id, user_id")
-        .in("conversation_id", convIds);
+      // Get partner user_ids using security definer function
+      const partnerResults = await Promise.all(
+        convIds.map(async (convId) => {
+          const { data } = await supabase.rpc("get_conversation_partner" as any, {
+            _conversation_id: convId,
+            _my_user_id: user.id,
+          });
+          return { convId, partnerId: data as string | null };
+        })
+      );
 
-      // Get other user profiles
-      const otherUserIds = [...new Set(
-        (allParticipants || [])
-          .filter((p) => p.user_id !== user.id)
-          .map((p) => p.user_id)
-      )];
+      const partnerMap = new Map(partnerResults.map((r) => [r.convId, r.partnerId]));
+      const otherUserIds = [...new Set(partnerResults.map((r) => r.partnerId).filter(Boolean))] as string[];
 
       const { data: profiles } = await supabase
         .from("profiles")
@@ -48,7 +49,7 @@ export function useConversations() {
 
       const profileMap = new Map((profiles || []).map((p) => [p.user_id, p]));
 
-      // Get last message for each conversation
+      // Get last message + unread count for each conversation
       const results = await Promise.all(
         (conversations || []).map(async (conv) => {
           const { data: lastMsg } = await supabase
@@ -66,12 +67,11 @@ export function useConversations() {
             .eq("read", false)
             .neq("sender_id", user.id);
 
-          const otherUserId = (allParticipants || [])
-            .find((p) => p.conversation_id === conv.id && p.user_id !== user.id)?.user_id;
+          const partnerId = partnerMap.get(conv.id);
 
           return {
             ...conv,
-            otherUser: otherUserId ? profileMap.get(otherUserId) : null,
+            otherUser: partnerId ? profileMap.get(partnerId) : null,
             lastMessage: lastMsg,
             unreadCount: unreadCount || 0,
           };
@@ -132,23 +132,12 @@ export function useStartConversation() {
     mutationFn: async (targetUserId: string) => {
       if (!user) throw new Error("Not authenticated");
 
-      // Check if conversation already exists
-      const { data: myConvs } = await supabase
-        .from("conversation_participants")
-        .select("conversation_id")
-        .eq("user_id", user.id);
+      // Check if conversation already exists using security definer function
+      const { data: existingConvId } = await supabase
+        .rpc("find_conversation_between" as any, { _user1: user.id, _user2: targetUserId });
 
-      if (myConvs && myConvs.length > 0) {
-        const convIds = myConvs.map((c) => c.conversation_id);
-        const { data: existing } = await supabase
-          .from("conversation_participants")
-          .select("conversation_id")
-          .eq("user_id", targetUserId)
-          .in("conversation_id", convIds);
-
-        if (existing && existing.length > 0) {
-          return existing[0].conversation_id;
-        }
+      if (existingConvId) {
+        return existingConvId as string;
       }
 
       // Create new conversation
