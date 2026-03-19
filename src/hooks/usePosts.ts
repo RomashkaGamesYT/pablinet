@@ -91,3 +91,34 @@ export function useToggleLike() {
     },
   });
 }
+
+export function useDeletePost() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (postId: string) => {
+      const { error } = await supabase.from("posts").delete().eq("id", postId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+    },
+  });
+}
+
+export function useTogglePin() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ postId, field }: { postId: string; field: "pinned_in_feed" | "pinned_in_profile" }) => {
+      const { data: post } = await supabase.from("posts").select(field).eq("id", postId).single();
+      if (!post) throw new Error("Post not found");
+      const currentVal = (post as any)[field];
+      const { error } = await supabase.from("posts").update({ [field]: !currentVal } as any).eq("id", postId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+    },
+  });
+}
