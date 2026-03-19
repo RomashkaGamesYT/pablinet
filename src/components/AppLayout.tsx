@@ -83,7 +83,7 @@ export default function AppLayout() {
               <li>
                 <NavLink
                   to="/admin"
-                  className="flex items-center gap-4 px-4 py-3 rounded-xl text-muted-foreground hover:bg-muted hover:text-primary transition-all duration-300 ease-out group"
+                  className="flex items-center gap-4 px-4 py-3 rounded-xl text-muted-foreground hover:bg-muted hover:text-primary transition-all duration-300 ease-out group cursor-pointer"
                   activeClassName="bg-muted text-primary shadow-sm ring-1 ring-input"
                 >
                   <Shield size={20} />
