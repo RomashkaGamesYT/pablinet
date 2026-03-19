@@ -427,6 +427,24 @@ export type Database = {
         }
         Relationships: []
       }
+      telegram_bot_state: {
+        Row: {
+          id: number
+          update_offset: number
+          updated_at: string
+        }
+        Insert: {
+          id: number
+          update_offset?: number
+          updated_at?: string
+        }
+        Update: {
+          id?: number
+          update_offset?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_badges: {
         Row: {
           badge_id: string
@@ -504,6 +522,39 @@ export type Database = {
           show_notifications_tab?: boolean
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      verification_requests: {
+        Row: {
+          created_at: string
+          id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          site_username: string
+          status: string
+          telegram_chat_id: number
+          telegram_username: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          site_username: string
+          status?: string
+          telegram_chat_id: number
+          telegram_username?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          site_username?: string
+          status?: string
+          telegram_chat_id?: number
+          telegram_username?: string | null
         }
         Relationships: []
       }
