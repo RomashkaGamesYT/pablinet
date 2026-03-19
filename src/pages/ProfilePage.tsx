@@ -3,11 +3,12 @@ import { useProfile, useFollowStats, useUpdateProfile } from "@/hooks/useProfile
 import { usePosts } from "@/hooks/usePosts";
 import { useUserBadges } from "@/hooks/useAdmin";
 import { useSettings, useUpdateSettings } from "@/hooks/useSettings";
-import { Calendar, Palette, MessageCircle, Bell, Star, LogOut } from "lucide-react";
+import { Calendar, Palette, Bell, Star, LogOut, Sun, Moon, Monitor } from "lucide-react";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTheme } from "next-themes";
 import EmojiPicker from "@/components/EmojiPicker";
 import FollowListModal from "@/components/FollowListModal";
 import BadgeDisplay from "@/components/BadgeDisplay";
@@ -31,11 +32,11 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState<"posts" | "likes" | "settings">("posts");
   const [followListType, setFollowListType] = useState<"followers" | "following" | null>(null);
 
-  const dmEnabled = settings?.dm_enabled ?? true;
   const showEvents = settings?.show_events_tab ?? true;
   const showNotifications = settings?.show_notifications_tab ?? true;
+  const { theme, setTheme } = useTheme();
 
-  const toggleSetting = (key: "dm_enabled" | "show_events_tab" | "show_notifications_tab", current: boolean) => {
+  const toggleSetting = (key: "show_events_tab" | "show_notifications_tab", current: boolean) => {
     updateSettings.mutate({ [key]: !current });
   };
 
@@ -222,14 +223,35 @@ export default function ProfilePage() {
 
           {activeTab === "settings" ? (
             <div className="space-y-2">
-              <SettingToggle
-                icon={<MessageCircle size={18} />}
-                label="Личные сообщения"
-                description="Разрешить другим писать вам в ЛС"
-                checked={dmEnabled}
-                onChange={() => toggleSetting("dm_enabled", dmEnabled)}
-                disabled={updateSettings.isPending}
-              />
+              {/* Theme selector */}
+              <div className="w-full flex items-center gap-4 p-4 rounded-2xl bg-card ring-1 ring-border text-left">
+                <div className="text-muted-foreground"><Palette size={18} /></div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-medium text-primary">Тема</div>
+                  <div className="text-xs text-muted-foreground">Оформление приложения</div>
+                </div>
+                <div className="flex gap-1 bg-muted rounded-xl p-1 ring-1 ring-input">
+                  {([
+                    { value: "dark", icon: <Moon size={14} />, label: "Тёмная" },
+                    { value: "light", icon: <Sun size={14} />, label: "Светлая" },
+                    { value: "system", icon: <Monitor size={14} />, label: "Авто" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.value}
+                      onClick={() => setTheme(opt.value)}
+                      className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+                        theme === opt.value
+                          ? "bg-card text-primary ring-1 ring-border shadow-sm"
+                          : "text-muted-foreground hover:text-foreground/70"
+                      }`}
+                    >
+                      {opt.icon}
+                      <span className="hidden sm:inline">{opt.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <SettingToggle
                 icon={<Star size={18} />}
                 label="Вкладка Ивенты"
