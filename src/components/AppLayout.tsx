@@ -60,6 +60,13 @@ export default function AppLayout() {
     ...baseNavItems,
   ];
 
+  navItems.push({
+    to: "/messages",
+    label: "ЛС",
+    icon: <MessageCircle size={20} />,
+    mobileIcon: <MessageCircle size={22} />,
+    badge: unreadCount,
+  });
 
   if (showNotificationsTab) {
     navItems.push({ to: "/notifications", label: "Уведомления", icon: <Bell size={20} />, mobileIcon: <Bell size={22} /> });
