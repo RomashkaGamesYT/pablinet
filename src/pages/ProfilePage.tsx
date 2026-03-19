@@ -3,7 +3,7 @@ import { useProfile, useFollowStats, useUpdateProfile } from "@/hooks/useProfile
 import { usePosts } from "@/hooks/usePosts";
 import { useUserBadges } from "@/hooks/useAdmin";
 import { useSettings, useUpdateSettings } from "@/hooks/useSettings";
-import { Calendar, Palette, Bell, Star, LogOut, Sun, Moon, Monitor } from "lucide-react";
+import { Calendar, Palette, Bell, Star, LogOut, Sun, Moon, Monitor, MessageCircle, Users, UserX } from "lucide-react";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 import { useState } from "react";
