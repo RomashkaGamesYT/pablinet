@@ -7,7 +7,7 @@ import { useEvents } from "@/hooks/useEvents";
 import { useUnreadCount } from "@/hooks/useMessages";
 import { useSettings } from "@/hooks/useSettings";
 import { Outlet, useNavigate } from "react-router-dom";
-import { Search, Bell, User, LogOut, Star, Shield, MessageCircle } from "lucide-react";
+import { Search, Bell, User, LogOut, Star, Shield, MessageCircle, Radio } from "lucide-react";
 
 export default function AppLayout() {
   const { signOut } = useAuth();
@@ -56,6 +56,13 @@ export default function AppLayout() {
       mobileIcon: <Star size={16} className="text-primary" />,
     } as any);
   }
+
+  baseNavItems.push({
+    to: "/broadcasts",
+    label: "Эфир",
+    icon: <Radio size={20} />,
+    mobileIcon: <Radio size={22} />,
+  } as any);
 
   const navItems: any[] = [
     ...baseNavItems,
