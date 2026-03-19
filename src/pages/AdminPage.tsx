@@ -354,7 +354,7 @@ export default function AdminPage() {
           ) : (
             <div className="space-y-2">
               {verificationRequests.map((vr: any) => (
-                <div key={vr.id} className="bg-card/50 rounded-2xl p-4 ring-1 ring-border">
+                <div key={vr.id} className="bg-card/50 rounded-2xl p-4 ring-1 ring-border space-y-3">
                   <div className="flex items-center justify-between gap-3">
                     <div className="min-w-0">
                       <p className="text-sm font-medium text-primary">@{vr.site_username}</p>
@@ -377,7 +377,7 @@ export default function AdminPage() {
                             <Check size={16} />
                           </button>
                           <button
-                            onClick={() => handleVerifyAction(vr.id, "reject")}
+                            onClick={() => setRejectingId(rejectingId === vr.id ? null : vr.id)}
                             disabled={processingVR === vr.id}
                             className="p-2 rounded-full bg-destructive/10 text-destructive hover:bg-destructive/20 transition-all cursor-pointer disabled:opacity-50"
                             title="Отклонить"
@@ -386,14 +386,37 @@ export default function AdminPage() {
                           </button>
                         </>
                       ) : (
-                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                          vr.status === "approved" ? "bg-net-emerald/20 text-net-emerald" : "bg-destructive/20 text-destructive"
-                        }`}>
-                          {vr.status === "approved" ? "Одобрено ✓" : "Отклонено"}
-                        </span>
+                        <div className="text-right">
+                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                            vr.status === "approved" ? "bg-net-emerald/20 text-net-emerald" : "bg-destructive/20 text-destructive"
+                          }`}>
+                            {vr.status === "approved" ? "Одобрено ✓" : "Отклонено"}
+                          </span>
+                          {vr.rejection_reason && (
+                            <p className="text-xs text-muted-foreground mt-1.5">Причина: {vr.rejection_reason}</p>
+                          )}
+                        </div>
                       )}
                     </div>
                   </div>
+                  {rejectingId === vr.id && (
+                    <div className="flex gap-2 pt-1">
+                      <input
+                        value={rejectionReason}
+                        onChange={(e) => setRejectionReason(e.target.value)}
+                        placeholder="Причина отклонения (необязательно)..."
+                        className="flex-1 bg-muted rounded-xl px-4 py-2 text-sm text-foreground placeholder:text-muted-foreground ring-1 ring-input focus:outline-none focus:ring-primary/50"
+                        onKeyDown={(e) => e.key === "Enter" && handleVerifyAction(vr.id, "reject", rejectionReason)}
+                      />
+                      <button
+                        onClick={() => handleVerifyAction(vr.id, "reject", rejectionReason)}
+                        disabled={processingVR === vr.id}
+                        className="px-4 py-2 rounded-xl bg-destructive text-destructive-foreground text-xs font-medium hover:opacity-90 transition-opacity disabled:opacity-50 cursor-pointer"
+                      >
+                        Отклонить
+                      </button>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
