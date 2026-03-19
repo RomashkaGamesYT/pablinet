@@ -223,14 +223,35 @@ export default function ProfilePage() {
 
           {activeTab === "settings" ? (
             <div className="space-y-2">
-              <SettingToggle
-                icon={<MessageCircle size={18} />}
-                label="Личные сообщения"
-                description="Разрешить другим писать вам в ЛС"
-                checked={dmEnabled}
-                onChange={() => toggleSetting("dm_enabled", dmEnabled)}
-                disabled={updateSettings.isPending}
-              />
+              {/* Theme selector */}
+              <div className="w-full flex items-center gap-4 p-4 rounded-2xl bg-card ring-1 ring-border text-left">
+                <div className="text-muted-foreground"><Palette size={18} /></div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-medium text-primary">Тема</div>
+                  <div className="text-xs text-muted-foreground">Оформление приложения</div>
+                </div>
+                <div className="flex gap-1 bg-muted rounded-xl p-1 ring-1 ring-input">
+                  {([
+                    { value: "dark", icon: <Moon size={14} />, label: "Тёмная" },
+                    { value: "light", icon: <Sun size={14} />, label: "Светлая" },
+                    { value: "system", icon: <Monitor size={14} />, label: "Авто" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.value}
+                      onClick={() => setTheme(opt.value)}
+                      className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+                        theme === opt.value
+                          ? "bg-card text-primary ring-1 ring-border shadow-sm"
+                          : "text-muted-foreground hover:text-foreground/70"
+                      }`}
+                    >
+                      {opt.icon}
+                      <span className="hidden sm:inline">{opt.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <SettingToggle
                 icon={<Star size={18} />}
                 label="Вкладка Ивенты"
