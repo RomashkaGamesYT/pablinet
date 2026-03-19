@@ -32,11 +32,11 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState<"posts" | "likes" | "settings">("posts");
   const [followListType, setFollowListType] = useState<"followers" | "following" | null>(null);
 
-  const dmEnabled = settings?.dm_enabled ?? true;
   const showEvents = settings?.show_events_tab ?? true;
   const showNotifications = settings?.show_notifications_tab ?? true;
+  const { theme, setTheme } = useTheme();
 
-  const toggleSetting = (key: "dm_enabled" | "show_events_tab" | "show_notifications_tab", current: boolean) => {
+  const toggleSetting = (key: "show_events_tab" | "show_notifications_tab", current: boolean) => {
     updateSettings.mutate({ [key]: !current });
   };
 
