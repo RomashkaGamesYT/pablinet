@@ -18,6 +18,9 @@ export default function AppLayout() {
   const navigate = useNavigate();
 
   const hasActiveEvents = events?.some((e: any) => e.active);
+  const showEventsTab = hasActiveEvents && (userSettings?.show_events_tab ?? true);
+  const showNotificationsTab = userSettings?.show_notifications_tab ?? true;
+  const showDmTab = userSettings?.dm_enabled ?? true;
 
   const handleSignOut = async () => {
     await signOut();
