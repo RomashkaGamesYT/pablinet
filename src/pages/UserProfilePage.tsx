@@ -53,6 +53,12 @@ export default function UserProfilePage() {
     follow.mutate({ targetUserId: userId, isFollowing: !!isFollowing });
   };
 
+  const handleMessage = async () => {
+    if (!userId) return;
+    const convId = await startConversation.mutateAsync(userId);
+    navigate("/messages");
+  };
+
   return (
     <div className="animate-fade-in">
       {/* Back button */}
