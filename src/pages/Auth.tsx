@@ -7,7 +7,7 @@ type AuthMethod = "email" | "phone";
 type PhoneStep = "phone" | "code";
 
 // Replace with your actual bot username
-const TG_BOT_USERNAME = "net_veritification_bot";
+const TG_BOT_USERNAME = "flame_veritification_bot";
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
