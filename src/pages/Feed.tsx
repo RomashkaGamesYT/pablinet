@@ -1,10 +1,28 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { usePosts, useCreatePost } from "@/hooks/usePosts";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
 import { useAllUserBadges } from "@/hooks/useAdmin";
 import { Image, Smile, X } from "lucide-react";
 import PostCard from "@/components/PostCard";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
+
+function useFollowingIds() {
+  const { user } = useAuth();
+  return useQuery({
+    queryKey: ["following-ids", user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      const { data } = await supabase
+        .from("follows")
+        .select("following_id")
+        .eq("follower_id", user.id);
+      return (data || []).map((f) => f.following_id);
+    },
+    enabled: !!user,
+  });
+}
 
 export default function FeedPage() {
   const [newPost, setNewPost] = useState("");
@@ -16,6 +34,9 @@ export default function FeedPage() {
   const { user } = useAuth();
   const { data: profile } = useProfile();
   const { data: allUserBadges } = useAllUserBadges();
+  const { data: followingIds } = useFollowingIds();
+
+  const cookieConsent = typeof window !== "undefined" ? localStorage.getItem("cookie-consent") : null;
 
   const handlePost = async () => {
     if (!newPost.trim() && !imageFile) return;
@@ -42,9 +63,18 @@ export default function FeedPage() {
     return allUserBadges?.filter((ub: any) => ub.user_id === userId) || [];
   };
 
+  // Sort: pinned first, then if cookies accepted → following users' posts first
   const sortedPosts = [...(posts || [])].sort((a: any, b: any) => {
     if (a.pinned_in_feed && !b.pinned_in_feed) return -1;
     if (!a.pinned_in_feed && b.pinned_in_feed) return 1;
+
+    if (cookieConsent === "accepted" && followingIds && followingIds.length > 0) {
+      const aFollowed = followingIds.includes(a.user_id);
+      const bFollowed = followingIds.includes(b.user_id);
+      if (aFollowed && !bFollowed) return -1;
+      if (!aFollowed && bFollowed) return 1;
+    }
+
     return 0;
   });
 

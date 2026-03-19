@@ -422,6 +422,7 @@ export type Database = {
         Row: {
           created_at: string
           dm_enabled: boolean
+          dm_privacy: string
           id: string
           show_events_tab: boolean
           show_notifications_tab: boolean
@@ -431,6 +432,7 @@ export type Database = {
         Insert: {
           created_at?: string
           dm_enabled?: boolean
+          dm_privacy?: string
           id?: string
           show_events_tab?: boolean
           show_notifications_tab?: boolean
@@ -440,6 +442,7 @@ export type Database = {
         Update: {
           created_at?: string
           dm_enabled?: boolean
+          dm_privacy?: string
           id?: string
           show_events_tab?: boolean
           show_notifications_tab?: boolean

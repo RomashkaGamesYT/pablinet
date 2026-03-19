@@ -1,4 +1,5 @@
 import { NavLink } from "@/components/NavLink";
+import CookieBanner from "@/components/CookieBanner";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
 import { useIsAdmin } from "@/hooks/useAdmin";
@@ -186,6 +187,8 @@ export default function AppLayout() {
         </div>
         <div className="h-[env(safe-area-inset-bottom)]" />
       </nav>
+
+      <CookieBanner />
     </div>
   );
 }

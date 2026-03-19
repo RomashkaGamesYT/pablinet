@@ -3,7 +3,7 @@ import { useProfile, useFollowStats, useUpdateProfile } from "@/hooks/useProfile
 import { usePosts } from "@/hooks/usePosts";
 import { useUserBadges } from "@/hooks/useAdmin";
 import { useSettings, useUpdateSettings } from "@/hooks/useSettings";
-import { Calendar, Palette, Bell, Star, LogOut, Sun, Moon, Monitor } from "lucide-react";
+import { Calendar, Palette, Bell, Star, LogOut, Sun, Moon, Monitor, MessageCircle, Users, UserX } from "lucide-react";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 import { useState } from "react";
@@ -34,6 +34,7 @@ export default function ProfilePage() {
 
   const showEvents = settings?.show_events_tab ?? true;
   const showNotifications = settings?.show_notifications_tab ?? true;
+  const dmPrivacy = (settings as any)?.dm_privacy ?? "everyone";
   const { theme, setTheme } = useTheme();
 
   const toggleSetting = (key: "show_events_tab" | "show_notifications_tab", current: boolean) => {
@@ -242,6 +243,35 @@ export default function ProfilePage() {
                       onClick={() => setTheme(opt.value)}
                       className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
                         theme === opt.value
+                          ? "bg-card text-primary ring-1 ring-border shadow-sm"
+                          : "text-muted-foreground hover:text-foreground/70"
+                      }`}
+                    >
+                      {opt.icon}
+                      <span className="hidden sm:inline">{opt.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* DM Privacy */}
+              <div className="w-full flex items-center gap-4 p-4 rounded-2xl bg-card ring-1 ring-border text-left">
+                <div className="text-muted-foreground"><MessageCircle size={18} /></div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-medium text-primary">Кто может писать</div>
+                  <div className="text-xs text-muted-foreground">Ограничить входящие ЛС</div>
+                </div>
+                <div className="flex gap-1 bg-muted rounded-xl p-1 ring-1 ring-input">
+                  {([
+                    { value: "everyone", icon: <Users size={14} />, label: "Все" },
+                    { value: "followers", icon: <UserX size={14} />, label: "Подписчики" },
+                    { value: "nobody", icon: <UserX size={14} />, label: "Никто" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.value}
+                      onClick={() => updateSettings.mutate({ dm_privacy: opt.value } as any)}
+                      className={`flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+                        dmPrivacy === opt.value
                           ? "bg-card text-primary ring-1 ring-border shadow-sm"
                           : "text-muted-foreground hover:text-foreground/70"
                       }`}
