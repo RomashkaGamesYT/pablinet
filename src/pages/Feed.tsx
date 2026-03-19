@@ -37,6 +37,12 @@ export default function FeedPage() {
             onChange={(e) => setNewPost(e.target.value)}
             placeholder="Что нового?"
             className="w-full bg-transparent text-sm outline-none text-foreground placeholder-muted-foreground pt-2.5 resize-none h-10"
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                handlePost();
+              }
+            }}
           />
         </div>
         <div className="flex justify-between items-center mt-4 pt-4 border-t border-border">
@@ -61,10 +67,10 @@ export default function FeedPage() {
         ) : posts?.length === 0 ? (
           <div className="text-center text-muted-foreground text-sm py-8">Пока нет постов. Будьте первым!</div>
         ) : (
-          posts?.map((post) => {
+          posts?.map((post: any) => {
             const isLiked = post.likes?.some((l: any) => l.user_id === user?.id);
             const likesCount = post.likes?.length || 0;
-            const postProfile = post.profiles as any;
+            const postProfile = post.profile;
 
             return (
               <div key={post.id} className="bg-card/50 rounded-3xl p-5 ring-1 ring-border transition-colors hover:bg-card/80 cursor-pointer">
@@ -73,7 +79,7 @@ export default function FeedPage() {
                     <span className="text-sm">{postProfile?.avatar_emoji || "🐊"}</span>
                   </div>
                   <div>
-                    <div className="text-sm font-medium text-primary tracking-tight">{postProfile?.display_name}</div>
+                    <div className="text-sm font-medium text-primary tracking-tight">{postProfile?.display_name || "Пользователь"}</div>
                     <div className="text-xs text-muted-foreground">
                       {formatDistanceToNow(new Date(post.created_at), { addSuffix: true, locale: ru })}
                     </div>
