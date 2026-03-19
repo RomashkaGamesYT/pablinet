@@ -43,7 +43,7 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({ error: 'Forbidden' }), { status: 403, headers: corsHeaders });
   }
 
-  const { requestId, action } = await req.json();
+  const { requestId, action, rejectionReason } = await req.json();
   if (!requestId || !['approve', 'reject'].includes(action)) {
     return new Response(JSON.stringify({ error: 'Invalid request' }), { status: 400, headers: corsHeaders });
   }
