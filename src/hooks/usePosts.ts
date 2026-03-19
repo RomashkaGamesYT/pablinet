@@ -6,16 +6,29 @@ export function usePosts() {
   return useQuery({
     queryKey: ["posts"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // Fetch posts first
+      const { data: posts, error } = await supabase
         .from("posts")
-        .select(`
-          *,
-          profiles:user_id (display_name, username, avatar_emoji),
-          likes (id, user_id)
-        `)
+        .select("*, likes(id, user_id)")
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return data;
+      if (!posts || posts.length === 0) return [];
+
+      // Get unique user_ids and fetch their profiles
+      const userIds = [...new Set(posts.map((p) => p.user_id))];
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("user_id, display_name, username, avatar_emoji")
+        .in("user_id", userIds);
+
+      const profileMap = new Map(
+        (profiles || []).map((p) => [p.user_id, p])
+      );
+
+      return posts.map((post) => ({
+        ...post,
+        profile: profileMap.get(post.user_id) || null,
+      }));
     },
   });
 }
@@ -48,7 +61,7 @@ export function useToggleLike() {
   return useMutation({
     mutationFn: async (postId: string) => {
       if (!user) throw new Error("Not authenticated");
-      
+
       const { data: existing } = await supabase
         .from("likes")
         .select("id")
@@ -61,7 +74,6 @@ export function useToggleLike() {
         return { liked: false };
       } else {
         await supabase.from("likes").insert({ post_id: postId, user_id: user.id });
-        // Create notification for post author
         const { data: post } = await supabase.from("posts").select("user_id").eq("id", postId).single();
         if (post && post.user_id !== user.id) {
           await supabase.from("notifications").insert({

@@ -9,16 +9,26 @@ export function useNotifications() {
     queryKey: ["notifications", user?.id],
     queryFn: async () => {
       if (!user) return [];
-      const { data, error } = await supabase
+      const { data: notifications, error } = await supabase
         .from("notifications")
-        .select(`
-          *,
-          actor:actor_id (display_name, username, avatar_emoji)
-        `)
+        .select("*")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return data;
+      if (!notifications || notifications.length === 0) return [];
+
+      const actorIds = [...new Set(notifications.map((n) => n.actor_id))];
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("user_id, display_name, username, avatar_emoji")
+        .in("user_id", actorIds);
+
+      const profileMap = new Map((profiles || []).map((p) => [p.user_id, p]));
+
+      return notifications.map((n) => ({
+        ...n,
+        actor: profileMap.get(n.actor_id) || null,
+      }));
     },
     enabled: !!user,
   });
