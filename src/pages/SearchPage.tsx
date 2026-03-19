@@ -7,6 +7,7 @@ const popularTags = ["#frontend", "#дизайн", "#uiux", "#хакатон2024
 
 export default function SearchPage() {
   const [query, setQuery] = useState("");
+  const navigate = useNavigate();
   const { data, isLoading } = useSearch(query);
 
   return (
