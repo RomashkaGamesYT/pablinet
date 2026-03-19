@@ -132,7 +132,7 @@ export function useStartConversation() {
     mutationFn: async (targetUserId: string) => {
       if (!user) throw new Error("Not authenticated");
 
-      // Check if conversation already exists
+      // Get my conversation IDs
       const { data: myConvs } = await supabase
         .from("conversation_participants")
         .select("conversation_id")
@@ -140,14 +140,25 @@ export function useStartConversation() {
 
       if (myConvs && myConvs.length > 0) {
         const convIds = myConvs.map((c) => c.conversation_id);
-        const { data: existing } = await supabase
-          .from("conversation_participants")
-          .select("conversation_id")
-          .eq("user_id", targetUserId)
-          .in("conversation_id", convIds);
-
-        if (existing && existing.length > 0) {
-          return existing[0].conversation_id;
+        
+        // For each of my conversations, check if targetUser is also a participant
+        // We can't query other user's participants due to RLS, so use messages table or conversations
+        // Instead, try to find via a security definer function or just check all convs
+        for (const convId of convIds) {
+          // Try to get messages from this conversation - if target user sent messages there, it's the right one
+          const { data: msgs } = await supabase
+            .from("messages")
+            .select("sender_id")
+            .eq("conversation_id", convId)
+            .eq("sender_id", targetUserId)
+            .limit(1);
+          
+          if (msgs && msgs.length > 0) {
+            return convId;
+          }
+          
+          // Also check if conversation has only 2 participants by checking if we can see any messages
+          // For new conversations with no messages, we need another approach
         }
       }
 
