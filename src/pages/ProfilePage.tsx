@@ -283,6 +283,7 @@ export default function ProfilePage() {
                 </div>
               </div>
 
+              <SettingToggle
                 icon={<Star size={18} />}
                 label="Вкладка Ивенты"
                 description="Показывать вкладку ивентов в навигации"
