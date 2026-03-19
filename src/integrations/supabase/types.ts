@@ -529,6 +529,7 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          rejection_reason: string | null
           reviewed_at: string | null
           reviewed_by: string | null
           site_username: string
@@ -539,6 +540,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          rejection_reason?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           site_username: string
@@ -549,6 +551,7 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          rejection_reason?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           site_username?: string
