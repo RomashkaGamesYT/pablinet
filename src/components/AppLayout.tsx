@@ -14,6 +14,7 @@ export default function AppLayout() {
   const { data: isAdmin } = useIsAdmin();
   const { data: events } = useEvents();
   const { data: unreadCount } = useUnreadCount();
+  const { data: userSettings } = useSettings();
   const navigate = useNavigate();
 
   const hasActiveEvents = events?.some((e: any) => e.active);
