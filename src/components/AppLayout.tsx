@@ -4,8 +4,9 @@ import { useProfile } from "@/hooks/useProfile";
 import { useIsAdmin } from "@/hooks/useAdmin";
 import { useEvents } from "@/hooks/useEvents";
 import { useUnreadCount } from "@/hooks/useMessages";
+import { useSettings } from "@/hooks/useSettings";
 import { Outlet, useNavigate } from "react-router-dom";
-import { Search, Bell, User, LogOut, Star, Shield, MessageCircle } from "lucide-react";
+import { Search, Bell, User, LogOut, Star, Shield, MessageCircle, Settings } from "lucide-react";
 
 export default function AppLayout() {
   const { signOut } = useAuth();
@@ -13,9 +14,13 @@ export default function AppLayout() {
   const { data: isAdmin } = useIsAdmin();
   const { data: events } = useEvents();
   const { data: unreadCount } = useUnreadCount();
+  const { data: userSettings } = useSettings();
   const navigate = useNavigate();
 
   const hasActiveEvents = events?.some((e: any) => e.active);
+  const showEventsTab = hasActiveEvents && (userSettings?.show_events_tab ?? true);
+  const showNotificationsTab = userSettings?.show_notifications_tab ?? true;
+  const showDmTab = userSettings?.dm_enabled ?? true;
 
   const handleSignOut = async () => {
     await signOut();
@@ -41,7 +46,7 @@ export default function AppLayout() {
   ];
 
   // Conditionally add events tab
-  if (hasActiveEvents) {
+  if (showEventsTab) {
     baseNavItems.push({
       to: "/events",
       label: "Ивент",
@@ -51,18 +56,28 @@ export default function AppLayout() {
     } as any);
   }
 
-  const navItems = [
+  const navItems: any[] = [
     ...baseNavItems,
-    {
+  ];
+
+  if (showDmTab) {
+    navItems.push({
       to: "/messages",
       label: "ЛС",
       icon: <MessageCircle size={20} />,
       mobileIcon: <MessageCircle size={22} />,
       badge: unreadCount,
-    },
-    { to: "/notifications", label: "Уведомления", icon: <Bell size={20} />, mobileIcon: <Bell size={22} /> },
+    });
+  }
+
+  if (showNotificationsTab) {
+    navItems.push({ to: "/notifications", label: "Уведомления", icon: <Bell size={20} />, mobileIcon: <Bell size={22} /> });
+  }
+
+  navItems.push(
     { to: "/profile", label: "Профиль", icon: <User size={20} />, mobileIcon: <User size={22} /> },
-  ];
+    { to: "/settings", label: "Настройки", icon: <Settings size={20} />, mobileIcon: <Settings size={22} /> },
+  );
 
   return (
     <div className="min-h-screen bg-background text-foreground flex justify-center selection:bg-muted selection:text-primary">
