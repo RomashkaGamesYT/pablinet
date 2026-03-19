@@ -50,11 +50,23 @@ export function useCreatePost() {
   const { user } = useAuth();
 
   return useMutation({
-    mutationFn: async (content: string) => {
+    mutationFn: async ({ content, imageFile }: { content: string; imageFile?: File | null }) => {
       if (!user) throw new Error("Not authenticated");
+
+      let image_url: string | null = null;
+
+      if (imageFile) {
+        const ext = imageFile.name.split(".").pop();
+        const filePath = `${user.id}/${Date.now()}.${ext}`;
+        const { error: uploadError } = await supabase.storage.from("post-images").upload(filePath, imageFile);
+        if (uploadError) throw uploadError;
+        const { data: { publicUrl } } = supabase.storage.from("post-images").getPublicUrl(filePath);
+        image_url = publicUrl;
+      }
+
       const { data, error } = await supabase
         .from("posts")
-        .insert({ content, user_id: user.id })
+        .insert({ content, user_id: user.id, image_url })
         .select()
         .single();
       if (error) throw error;

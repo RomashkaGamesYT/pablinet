@@ -1,13 +1,16 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { usePosts, useCreatePost } from "@/hooks/usePosts";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
 import { useAllUserBadges } from "@/hooks/useAdmin";
-import { Image, Smile } from "lucide-react";
+import { Image, Smile, X } from "lucide-react";
 import PostCard from "@/components/PostCard";
 
 export default function FeedPage() {
   const [newPost, setNewPost] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { data: posts, isLoading } = usePosts();
   const createPost = useCreatePost();
   const { user } = useAuth();
@@ -15,16 +18,30 @@ export default function FeedPage() {
   const { data: allUserBadges } = useAllUserBadges();
 
   const handlePost = async () => {
-    if (!newPost.trim()) return;
-    await createPost.mutateAsync(newPost);
+    if (!newPost.trim() && !imageFile) return;
+    await createPost.mutateAsync({ content: newPost || "", imageFile });
     setNewPost("");
+    setImageFile(null);
+    setImagePreview(null);
+  };
+
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
+  };
+
+  const removeImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const getUserBadges = (userId: string) => {
     return allUserBadges?.filter((ub: any) => ub.user_id === userId) || [];
   };
 
-  // Sort: pinned_in_feed first
   const sortedPosts = [...(posts || [])].sort((a: any, b: any) => {
     if (a.pinned_in_feed && !b.pinned_in_feed) return -1;
     if (!a.pinned_in_feed && b.pinned_in_feed) return 1;
@@ -56,17 +73,42 @@ export default function FeedPage() {
             }}
           />
         </div>
+
+        {imagePreview && (
+          <div className="relative mt-3 ml-12">
+            <img src={imagePreview} alt="preview" className="max-h-48 rounded-2xl object-cover ring-1 ring-border" />
+            <button
+              onClick={removeImage}
+              className="absolute top-2 right-2 bg-black/60 backdrop-blur-sm text-foreground rounded-full p-1 hover:bg-black/80 transition-colors cursor-pointer"
+            >
+              <X size={14} />
+            </button>
+          </div>
+        )}
+
         <div className="flex justify-between items-center mt-3 pt-3 border-t border-border">
           <div className="flex gap-2 text-muted-foreground">
-            <button className="hover:text-primary transition-colors p-1 flex items-center cursor-pointer"><Image size={20} /></button>
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="hover:text-primary transition-colors p-1 flex items-center cursor-pointer"
+            >
+              <Image size={20} />
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleImageSelect}
+            />
             <button className="hover:text-primary transition-colors p-1 flex items-center cursor-pointer"><Smile size={20} /></button>
           </div>
           <button
             onClick={handlePost}
-            disabled={!newPost.trim() || createPost.isPending}
+            disabled={(!newPost.trim() && !imageFile) || createPost.isPending}
             className="bg-primary text-primary-foreground px-4 py-1.5 rounded-full text-xs font-medium hover:opacity-90 transition-all shadow-sm active:scale-95 disabled:opacity-50 cursor-pointer"
           >
-            Опубликовать
+            {createPost.isPending ? "..." : "Опубликовать"}
           </button>
         </div>
       </div>
