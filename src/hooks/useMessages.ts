@@ -10,7 +10,7 @@ export function useConversations() {
     queryFn: async () => {
       if (!user) return [];
 
-      // Get user's conversation IDs
+      // Get user's conversation IDs (RLS allows seeing own rows)
       const { data: participations, error: pError } = await supabase
         .from("conversation_participants")
         .select("conversation_id")
@@ -28,18 +28,19 @@ export function useConversations() {
         .order("updated_at", { ascending: false });
       if (cError) throw cError;
 
-      // Get all participants for these conversations
-      const { data: allParticipants } = await supabase
-        .from("conversation_participants")
-        .select("conversation_id, user_id")
-        .in("conversation_id", convIds);
+      // Get partner user_ids using security definer function
+      const partnerResults = await Promise.all(
+        convIds.map(async (convId) => {
+          const { data } = await supabase.rpc("get_conversation_partner" as any, {
+            _conversation_id: convId,
+            _my_user_id: user.id,
+          });
+          return { convId, partnerId: data as string | null };
+        })
+      );
 
-      // Get other user profiles
-      const otherUserIds = [...new Set(
-        (allParticipants || [])
-          .filter((p) => p.user_id !== user.id)
-          .map((p) => p.user_id)
-      )];
+      const partnerMap = new Map(partnerResults.map((r) => [r.convId, r.partnerId]));
+      const otherUserIds = [...new Set(partnerResults.map((r) => r.partnerId).filter(Boolean))] as string[];
 
       const { data: profiles } = await supabase
         .from("profiles")
@@ -48,7 +49,7 @@ export function useConversations() {
 
       const profileMap = new Map((profiles || []).map((p) => [p.user_id, p]));
 
-      // Get last message for each conversation
+      // Get last message + unread count for each conversation
       const results = await Promise.all(
         (conversations || []).map(async (conv) => {
           const { data: lastMsg } = await supabase
@@ -66,12 +67,11 @@ export function useConversations() {
             .eq("read", false)
             .neq("sender_id", user.id);
 
-          const otherUserId = (allParticipants || [])
-            .find((p) => p.conversation_id === conv.id && p.user_id !== user.id)?.user_id;
+          const partnerId = partnerMap.get(conv.id);
 
           return {
             ...conv,
-            otherUser: otherUserId ? profileMap.get(otherUserId) : null,
+            otherUser: partnerId ? profileMap.get(partnerId) : null,
             lastMessage: lastMsg,
             unreadCount: unreadCount || 0,
           };
