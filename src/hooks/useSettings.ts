@@ -6,6 +6,7 @@ export interface UserSettings {
   id: string;
   user_id: string;
   dm_enabled: boolean;
+  dm_privacy: string;
   show_events_tab: boolean;
   show_notifications_tab: boolean;
 }
