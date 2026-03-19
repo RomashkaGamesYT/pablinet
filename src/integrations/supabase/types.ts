@@ -38,6 +38,38 @@ export type Database = {
         }
         Relationships: []
       }
+      comments: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       event_registrations: {
         Row: {
           created_at: string
@@ -191,6 +223,8 @@ export type Database = {
           created_at: string
           id: string
           image_url: string | null
+          pinned_in_feed: boolean
+          pinned_in_profile: boolean
           updated_at: string
           user_id: string
         }
@@ -199,6 +233,8 @@ export type Database = {
           created_at?: string
           id?: string
           image_url?: string | null
+          pinned_in_feed?: boolean
+          pinned_in_profile?: boolean
           updated_at?: string
           user_id: string
         }
@@ -207,6 +243,8 @@ export type Database = {
           created_at?: string
           id?: string
           image_url?: string | null
+          pinned_in_feed?: boolean
+          pinned_in_profile?: boolean
           updated_at?: string
           user_id?: string
         }
@@ -222,6 +260,7 @@ export type Database = {
           updated_at: string
           user_id: string
           username: string
+          verified: boolean
         }
         Insert: {
           avatar_emoji?: string
@@ -232,6 +271,7 @@ export type Database = {
           updated_at?: string
           user_id: string
           username: string
+          verified?: boolean
         }
         Update: {
           avatar_emoji?: string
@@ -242,6 +282,7 @@ export type Database = {
           updated_at?: string
           user_id?: string
           username?: string
+          verified?: boolean
         }
         Relationships: []
       }
@@ -307,7 +348,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
-      notification_type: "like" | "follow" | "mention"
+      notification_type: "like" | "follow" | "mention" | "comment"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -436,7 +477,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
-      notification_type: ["like", "follow", "mention"],
+      notification_type: ["like", "follow", "mention", "comment"],
     },
   },
 } as const
