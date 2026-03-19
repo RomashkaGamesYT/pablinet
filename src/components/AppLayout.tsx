@@ -149,9 +149,6 @@ export default function AppLayout() {
         </main>
       </div>
 
-      <CookieBanner />
-      </div>
-
       {/* Mobile Bottom Dock */}
       <nav className="fixed bottom-4 left-3 right-3 md:hidden z-50">
         <div className="bg-[#1a1a1c]/80 backdrop-blur-[20px] backdrop-saturate-[1.8] rounded-[20px] shadow-[0_8px_40px_rgba(0,0,0,0.55),0_0_0_0.5px_rgba(255,255,255,0.06)_inset]">
