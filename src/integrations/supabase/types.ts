@@ -418,6 +418,36 @@ export type Database = {
         }
         Relationships: []
       }
+      user_settings: {
+        Row: {
+          created_at: string
+          dm_enabled: boolean
+          id: string
+          show_events_tab: boolean
+          show_notifications_tab: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          dm_enabled?: boolean
+          id?: string
+          show_events_tab?: boolean
+          show_notifications_tab?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          dm_enabled?: boolean
+          id?: string
+          show_events_tab?: boolean
+          show_notifications_tab?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -428,6 +458,10 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      is_conversation_member: {
+        Args: { _conversation_id: string; _user_id: string }
         Returns: boolean
       }
     }
