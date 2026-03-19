@@ -124,6 +124,7 @@ export default function UserProfilePage() {
               {isFollowing ? "Отписаться" : "Подписаться"}
             </button>
           </div>
+        </div>
 
         {profile.bio && (
           <p className="text-sm text-foreground/70 mt-3 leading-relaxed">{profile.bio}</p>
