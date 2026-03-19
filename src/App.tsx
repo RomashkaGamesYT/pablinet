@@ -11,6 +11,7 @@ import SearchPage from "@/pages/SearchPage";
 import EventsPage from "@/pages/EventsPage";
 import NotificationsPage from "@/pages/NotificationsPage";
 import ProfilePage from "@/pages/ProfilePage";
+import UserProfilePage from "@/pages/UserProfilePage";
 import AdminPage from "@/pages/AdminPage";
 import AuthPage from "@/pages/Auth";
 import ResetPassword from "@/pages/ResetPassword";
@@ -57,6 +58,7 @@ const App = () => (
               <Route path="/events" element={<EventsPage />} />
               <Route path="/notifications" element={<NotificationsPage />} />
               <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/user/:userId" element={<UserProfilePage />} />
               <Route path="/admin" element={<AdminRoute><AdminPage /></AdminRoute>} />
             </Route>
             <Route path="*" element={<NotFound />} />
