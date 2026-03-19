@@ -127,18 +127,22 @@ export default function AdminPage() {
   });
 
   const [processingVR, setProcessingVR] = useState<string | null>(null);
+  const [rejectingId, setRejectingId] = useState<string | null>(null);
+  const [rejectionReason, setRejectionReason] = useState("");
 
-  const handleVerifyAction = async (requestId: string, action: "approve" | "reject") => {
+  const handleVerifyAction = async (requestId: string, action: "approve" | "reject", reason?: string) => {
     setProcessingVR(requestId);
     try {
       const { data, error } = await supabase.functions.invoke("verify-blogger", {
-        body: { requestId, action },
+        body: { requestId, action, rejectionReason: reason || undefined },
       });
       if (error) throw error;
       toast.success(action === "approve" ? "Заявка одобрена, бейдж Flame выдан!" : "Заявка отклонена");
       queryClient.invalidateQueries({ queryKey: ["verification-requests"] });
       queryClient.invalidateQueries({ queryKey: ["user-badges"] });
       queryClient.invalidateQueries({ queryKey: ["all-user-badges"] });
+      setRejectingId(null);
+      setRejectionReason("");
     } catch (err: any) {
       toast.error("Ошибка: " + err.message);
     } finally {
