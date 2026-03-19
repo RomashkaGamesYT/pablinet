@@ -46,7 +46,7 @@ export default function AppLayout() {
   ];
 
   // Conditionally add events tab
-  if (hasActiveEvents) {
+  if (showEventsTab) {
     baseNavItems.push({
       to: "/events",
       label: "Ивент",
@@ -56,18 +56,28 @@ export default function AppLayout() {
     } as any);
   }
 
-  const navItems = [
+  const navItems: any[] = [
     ...baseNavItems,
-    {
+  ];
+
+  if (showDmTab) {
+    navItems.push({
       to: "/messages",
       label: "ЛС",
       icon: <MessageCircle size={20} />,
       mobileIcon: <MessageCircle size={22} />,
       badge: unreadCount,
-    },
-    { to: "/notifications", label: "Уведомления", icon: <Bell size={20} />, mobileIcon: <Bell size={22} /> },
+    });
+  }
+
+  if (showNotificationsTab) {
+    navItems.push({ to: "/notifications", label: "Уведомления", icon: <Bell size={20} />, mobileIcon: <Bell size={22} /> });
+  }
+
+  navItems.push(
     { to: "/profile", label: "Профиль", icon: <User size={20} />, mobileIcon: <User size={22} /> },
-  ];
+    { to: "/settings", label: "Настройки", icon: <Settings size={20} />, mobileIcon: <Settings size={22} /> },
+  );
 
   return (
     <div className="min-h-screen bg-background text-foreground flex justify-center selection:bg-muted selection:text-primary">
