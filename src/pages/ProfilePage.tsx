@@ -209,6 +209,9 @@ export default function ProfilePage() {
           </div>
         </>
       )}
+      {followListType && user && (
+        <FollowListModal userId={user.id} type={followListType} onClose={() => setFollowListType(null)} />
+      )}
     </div>
   );
 }
