@@ -18,8 +18,8 @@ export default function EventsPage() {
       <div className="flex flex-col gap-4">
         {isLoading ? (
           <p className="text-muted-foreground text-sm text-center py-8">Загрузка...</p>
-        ) : events?.length === 0 ? (
-          <p className="text-muted-foreground text-sm text-center py-8">Пока нет ивентов</p>
+        ) : events?.filter((e: any) => e.active).length === 0 ? (
+          <p className="text-muted-foreground text-sm text-center py-8">Пока нет активных ивентов</p>
         ) : (
           events?.map((event) => {
             const isRegistered = event.event_registrations?.some((r: any) => r.user_id === user?.id);
