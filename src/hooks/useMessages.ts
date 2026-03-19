@@ -140,24 +140,23 @@ export function useStartConversation() {
         return existingConvId as string;
       }
 
-      // Create new conversation
-      const { data: conv, error: convError } = await supabase
+      // Create new conversation - generate ID client-side to avoid RLS select issue
+      const convId = crypto.randomUUID();
+      const { error: convError } = await supabase
         .from("conversations")
-        .insert({})
-        .select()
-        .single();
+        .insert({ id: convId });
       if (convError) throw convError;
 
       // Add both participants
       const { error: pError } = await supabase
         .from("conversation_participants")
         .insert([
-          { conversation_id: conv.id, user_id: user.id },
-          { conversation_id: conv.id, user_id: targetUserId },
+          { conversation_id: convId, user_id: user.id },
+          { conversation_id: convId, user_id: targetUserId },
         ]);
       if (pError) throw pError;
 
-      return conv.id;
+      return convId;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["conversations"] });
