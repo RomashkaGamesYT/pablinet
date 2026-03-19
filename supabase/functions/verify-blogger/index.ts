@@ -108,12 +108,18 @@ Deno.serve(async (req) => {
     // Reject
     await supabase
       .from('verification_requests')
-      .update({ status: 'rejected', reviewed_at: new Date().toISOString(), reviewed_by: user.id })
+      .update({ 
+        status: 'rejected', 
+        reviewed_at: new Date().toISOString(), 
+        reviewed_by: user.id,
+        rejection_reason: rejectionReason || null,
+      })
       .eq('id', requestId);
 
+    const reasonText = rejectionReason ? `\n\nПричина: ${rejectionReason}` : '';
     await sendTelegramMessage(
       request.telegram_chat_id,
-      '❌ К сожалению, твоя заявка на бейдж Flame отклонена.',
+      `❌ К сожалению, твоя заявка на бейдж Flame отклонена.${reasonText}`,
       LOVABLE_API_KEY, TELEGRAM_API_KEY
     );
   }
