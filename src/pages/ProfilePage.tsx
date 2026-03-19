@@ -2,29 +2,47 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useProfile, useFollowStats, useUpdateProfile } from "@/hooks/useProfile";
 import { usePosts } from "@/hooks/usePosts";
 import { useUserBadges } from "@/hooks/useAdmin";
-import { Calendar, Palette } from "lucide-react";
+import { useSettings, useUpdateSettings } from "@/hooks/useSettings";
+import { Calendar, Palette, MessageCircle, Bell, Star, LogOut } from "lucide-react";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import EmojiPicker from "@/components/EmojiPicker";
 import FollowListModal from "@/components/FollowListModal";
 import BadgeDisplay from "@/components/BadgeDisplay";
 import PostCard from "@/components/PostCard";
 
 export default function ProfilePage() {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const { data: profile, isLoading } = useProfile();
   const { data: stats } = useFollowStats();
   const { data: allPosts } = usePosts();
   const { data: userBadges } = useUserBadges(user?.id);
+  const { data: settings } = useSettings();
+  const updateSettings = useUpdateSettings();
   const updateProfile = useUpdateProfile();
+  const navigate = useNavigate();
   const [editing, setEditing] = useState(false);
   const [editName, setEditName] = useState("");
   const [editBio, setEditBio] = useState("");
   const [editEmoji, setEditEmoji] = useState("");
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<"posts" | "likes">("posts");
+  const [activeTab, setActiveTab] = useState<"posts" | "likes" | "settings">("posts");
   const [followListType, setFollowListType] = useState<"followers" | "following" | null>(null);
+
+  const dmEnabled = settings?.dm_enabled ?? true;
+  const showEvents = settings?.show_events_tab ?? true;
+  const showNotifications = settings?.show_notifications_tab ?? true;
+
+  const toggleSetting = (key: "dm_enabled" | "show_events_tab" | "show_notifications_tab", current: boolean) => {
+    updateSettings.mutate({ [key]: !current });
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/auth");
+  };
 
   if (isLoading) {
     return <div className="text-muted-foreground text-sm text-center py-8">Загрузка...</div>;
@@ -191,27 +209,107 @@ export default function ProfilePage() {
               Нравится
               {activeTab === "likes" && <div className="absolute bottom-0 left-1/4 right-1/4 h-0.5 bg-primary rounded-full" />}
             </button>
+            <button
+              onClick={() => setActiveTab("settings")}
+              className={`flex-1 py-3 text-sm font-medium text-center transition-colors relative cursor-pointer ${
+                activeTab === "settings" ? "text-primary" : "text-muted-foreground hover:text-foreground/70"
+              }`}
+            >
+              Настройки
+              {activeTab === "settings" && <div className="absolute bottom-0 left-1/4 right-1/4 h-0.5 bg-primary rounded-full" />}
+            </button>
           </div>
 
-          <div className="flex flex-col gap-4">
-            {displayPosts.length === 0 ? (
-              <div className="text-center py-12">
-                <div className="text-3xl mb-3">{activeTab === "posts" ? "📝" : "❤️"}</div>
-                <p className="text-muted-foreground text-sm">
-                  {activeTab === "posts" ? "Пока нет записей" : "Нет понравившихся записей"}
-                </p>
-              </div>
-            ) : (
-              displayPosts.map((post: any) => (
-                <PostCard key={post.id} post={post} context="profile" />
-              ))
-            )}
-          </div>
+          {activeTab === "settings" ? (
+            <div className="space-y-2">
+              <SettingToggle
+                icon={<MessageCircle size={18} />}
+                label="Личные сообщения"
+                description="Разрешить другим писать вам в ЛС"
+                checked={dmEnabled}
+                onChange={() => toggleSetting("dm_enabled", dmEnabled)}
+                disabled={updateSettings.isPending}
+              />
+              <SettingToggle
+                icon={<Star size={18} />}
+                label="Вкладка Ивенты"
+                description="Показывать вкладку ивентов в навигации"
+                checked={showEvents}
+                onChange={() => toggleSetting("show_events_tab", showEvents)}
+                disabled={updateSettings.isPending}
+              />
+              <SettingToggle
+                icon={<Bell size={18} />}
+                label="Вкладка Уведомления"
+                description="Показывать вкладку уведомлений в навигации"
+                checked={showNotifications}
+                onChange={() => toggleSetting("show_notifications_tab", showNotifications)}
+                disabled={updateSettings.isPending}
+              />
+              <button
+                onClick={handleSignOut}
+                className="w-full flex items-center gap-4 p-4 rounded-2xl bg-card ring-1 ring-border hover:bg-destructive/10 transition-all cursor-pointer text-left group mt-4"
+              >
+                <div className="text-muted-foreground group-hover:text-destructive transition-colors"><LogOut size={18} /></div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-medium text-primary group-hover:text-destructive transition-colors">Выйти</div>
+                  <div className="text-xs text-muted-foreground">Выйти из аккаунта</div>
+                </div>
+              </button>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-4">
+              {displayPosts.length === 0 ? (
+                <div className="text-center py-12">
+                  <div className="text-3xl mb-3">{activeTab === "posts" ? "📝" : "❤️"}</div>
+                  <p className="text-muted-foreground text-sm">
+                    {activeTab === "posts" ? "Пока нет записей" : "Нет понравившихся записей"}
+                  </p>
+                </div>
+              ) : (
+                displayPosts.map((post: any) => (
+                  <PostCard key={post.id} post={post} context="profile" />
+                ))
+              )}
+            </div>
+          )}
         </>
       )}
       {followListType && user && (
         <FollowListModal userId={user.id} type={followListType} onClose={() => setFollowListType(null)} />
       )}
     </div>
+  );
+}
+
+function SettingToggle({
+  icon, label, description, checked, onChange, disabled,
+}: {
+  icon: React.ReactNode; label: string; description: string;
+  checked: boolean; onChange: () => void; disabled?: boolean;
+}) {
+  return (
+    <button
+      onClick={onChange}
+      disabled={disabled}
+      className="w-full flex items-center gap-4 p-4 rounded-2xl bg-card ring-1 ring-border hover:bg-muted/40 transition-all cursor-pointer disabled:opacity-50 text-left"
+    >
+      <div className="text-muted-foreground">{icon}</div>
+      <div className="flex-1 min-w-0">
+        <div className="text-sm font-medium text-primary">{label}</div>
+        <div className="text-xs text-muted-foreground">{description}</div>
+      </div>
+      <div
+        className={`w-11 h-6 rounded-full transition-colors duration-200 relative shrink-0 ${
+          checked ? "bg-net-cyan" : "bg-muted ring-1 ring-input"
+        }`}
+      >
+        <div
+          className={`absolute top-0.5 w-5 h-5 rounded-full bg-primary shadow-sm transition-transform duration-200 ${
+            checked ? "translate-x-5" : "translate-x-0.5"
+          }`}
+        />
+      </div>
+    </button>
   );
 }

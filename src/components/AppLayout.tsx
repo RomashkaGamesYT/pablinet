@@ -6,7 +6,7 @@ import { useEvents } from "@/hooks/useEvents";
 import { useUnreadCount } from "@/hooks/useMessages";
 import { useSettings } from "@/hooks/useSettings";
 import { Outlet, useNavigate } from "react-router-dom";
-import { Search, Bell, User, LogOut, Star, Shield, MessageCircle, Settings } from "lucide-react";
+import { Search, Bell, User, LogOut, Star, Shield, MessageCircle } from "lucide-react";
 
 export default function AppLayout() {
   const { signOut } = useAuth();
@@ -76,7 +76,6 @@ export default function AppLayout() {
 
   navItems.push(
     { to: "/profile", label: "Профиль", icon: <User size={20} />, mobileIcon: <User size={22} /> },
-    { to: "/settings", label: "Настройки", icon: <Settings size={20} />, mobileIcon: <Settings size={22} /> },
   );
 
   return (
@@ -155,7 +154,7 @@ export default function AppLayout() {
       <nav className="fixed bottom-4 left-3 right-3 md:hidden z-50">
         <div className="bg-[#1a1a1c]/80 backdrop-blur-[20px] backdrop-saturate-[1.8] rounded-[20px] shadow-[0_8px_40px_rgba(0,0,0,0.55),0_0_0_0.5px_rgba(255,255,255,0.06)_inset]">
           <div className="flex justify-around items-center h-[60px] px-1">
-            {navItems.filter((item: any) => item.to !== "/settings").map((item: any) => (
+            {navItems.map((item: any) => (
               <NavLink
                 key={item.to}
                 to={item.to}
