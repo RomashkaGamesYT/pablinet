@@ -129,6 +129,17 @@ export default function PostCard({ post, badges = [], context = "feed" }: PostCa
 
       <p className="text-sm text-foreground/80 leading-relaxed mb-3 whitespace-pre-wrap">{post.content}</p>
 
+      {post.image_url && (
+        <div className="mb-3 -mx-1">
+          <img
+            src={post.image_url}
+            alt="Изображение поста"
+            className="w-full rounded-2xl object-cover max-h-96 ring-1 ring-border"
+            loading="lazy"
+          />
+        </div>
+      )}
+
       <div className="flex items-center gap-5 pt-3 border-t border-border">
         <button
           onClick={() => toggleLike.mutate(post.id)}

@@ -1,18 +1,23 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useBadges, useAllProfiles, useAllUserBadges } from "@/hooks/useAdmin";
+import { useEvents } from "@/hooks/useEvents";
 import { useQueryClient } from "@tanstack/react-query";
-import { Plus, Trash2, Upload, Award, Users, ArrowLeft, X, Shield, CheckCircle } from "lucide-react";
+import { Plus, Trash2, Upload, Award, Users, ArrowLeft, X, Shield, CheckCircle, Calendar, Play, Pause } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { format } from "date-fns";
+import { ru } from "date-fns/locale";
+import { toast } from "sonner";
 
 export default function AdminPage() {
   const { data: badges, isLoading: badgesLoading } = useBadges();
   const { data: profiles } = useAllProfiles();
   const { data: allUserBadges } = useAllUserBadges();
+  const { data: events } = useEvents();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
-  const [activeTab, setActiveTab] = useState<"badges" | "assign" | "verify">("badges");
+  const [activeTab, setActiveTab] = useState<"badges" | "assign" | "verify" | "events">("badges");
   const [creating, setCreating] = useState(false);
   const [badgeName, setBadgeName] = useState("");
   const [badgeDesc, setBadgeDesc] = useState("");
@@ -20,6 +25,13 @@ export default function AdminPage() {
   const [uploading, setUploading] = useState(false);
   const [assignBadgeId, setAssignBadgeId] = useState("");
   const [assignUserId, setAssignUserId] = useState("");
+
+  // Event creation state
+  const [creatingEvent, setCreatingEvent] = useState(false);
+  const [eventTitle, setEventTitle] = useState("");
+  const [eventDesc, setEventDesc] = useState("");
+  const [eventDate, setEventDate] = useState("");
+  const [eventBadgeText, setEventBadgeText] = useState("");
 
   const handleCreateBadge = async () => {
     if (!badgeName || !badgeDesc || !gifFile) return;
@@ -66,10 +78,46 @@ export default function AdminPage() {
     queryClient.invalidateQueries({ queryKey: ["profile"] });
   };
 
+  const handleCreateEvent = async () => {
+    if (!eventTitle || !eventDate) return;
+    setUploading(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+      const { error } = await supabase.from("events").insert({
+        title: eventTitle,
+        description: eventDesc || null,
+        event_date: eventDate,
+        badge_text: eventBadgeText || "Регистрация открыта",
+        created_by: user.id,
+        active: false,
+      } as any);
+      if (error) throw error;
+      setEventTitle(""); setEventDesc(""); setEventDate(""); setEventBadgeText(""); setCreatingEvent(false);
+      queryClient.invalidateQueries({ queryKey: ["events"] });
+      toast.success("Ивент создан");
+    } catch (err: any) { alert("Ошибка: " + err.message); } finally { setUploading(false); }
+  };
+
+  const handleToggleEventActive = async (eventId: string, currentActive: boolean) => {
+    await supabase.from("events").update({ active: !currentActive } as any).eq("id", eventId);
+    queryClient.invalidateQueries({ queryKey: ["events"] });
+    toast.success(currentActive ? "Ивент остановлен" : "Ивент запущен!");
+  };
+
+  const handleDeleteEvent = async (id: string) => {
+    if (!confirm("Удалить ивент?")) return;
+    await supabase.from("event_registrations").delete().eq("event_id", id);
+    await supabase.from("events").delete().eq("id", id);
+    queryClient.invalidateQueries({ queryKey: ["events"] });
+    toast.success("Ивент удалён");
+  };
+
   const tabs = [
     { key: "badges" as const, label: "Бейджи", icon: <Award size={16} /> },
     { key: "assign" as const, label: "Назначить", icon: <Users size={16} /> },
     { key: "verify" as const, label: "Верификация", icon: <Shield size={16} /> },
+    { key: "events" as const, label: "Ивенты", icon: <Calendar size={16} /> },
   ];
 
   return (
@@ -190,6 +238,71 @@ export default function AdminPage() {
               </button>
             </div>
           ))}
+        </div>
+      )}
+
+      {activeTab === "events" && (
+        <div className="space-y-4">
+          {!creatingEvent ? (
+            <button onClick={() => setCreatingEvent(true)} className="w-full bg-card/80 rounded-2xl p-4 ring-1 ring-border text-sm text-muted-foreground hover:text-primary hover:ring-primary/20 transition-all flex items-center justify-center gap-2 cursor-pointer">
+              <Plus size={18} /> Создать ивент
+            </button>
+          ) : (
+            <div className="bg-card rounded-2xl p-5 ring-1 ring-border space-y-3">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-medium text-primary">Новый ивент</h3>
+                <button onClick={() => setCreatingEvent(false)} className="text-muted-foreground hover:text-primary cursor-pointer"><X size={16} /></button>
+              </div>
+              <input value={eventTitle} onChange={(e) => setEventTitle(e.target.value)} placeholder="Название ивента" className="w-full bg-muted ring-1 ring-input rounded-xl px-4 py-2.5 text-sm text-foreground outline-none focus:ring-primary/30 placeholder-muted-foreground" />
+              <textarea value={eventDesc} onChange={(e) => setEventDesc(e.target.value)} placeholder="Описание" className="w-full bg-muted ring-1 ring-input rounded-xl px-4 py-2.5 text-sm text-foreground outline-none focus:ring-primary/30 placeholder-muted-foreground resize-none h-20" />
+              <input type="datetime-local" value={eventDate} onChange={(e) => setEventDate(e.target.value)} className="w-full bg-muted ring-1 ring-input rounded-xl px-4 py-2.5 text-sm text-foreground outline-none focus:ring-primary/30" />
+              <input value={eventBadgeText} onChange={(e) => setEventBadgeText(e.target.value)} placeholder="Текст бейджа (по умолчанию: Регистрация открыта)" className="w-full bg-muted ring-1 ring-input rounded-xl px-4 py-2.5 text-sm text-foreground outline-none focus:ring-primary/30 placeholder-muted-foreground" />
+              <button onClick={handleCreateEvent} disabled={!eventTitle || !eventDate || uploading} className="bg-primary text-primary-foreground px-5 py-2 rounded-full text-sm font-medium hover:opacity-90 transition-all active:scale-95 disabled:opacity-50 cursor-pointer">
+                {uploading ? "Создание..." : "Создать"}
+              </button>
+            </div>
+          )}
+
+          <div className="space-y-2">
+            <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-tight px-1">Все ивенты</h3>
+            {events?.length === 0 ? (
+              <p className="text-muted-foreground text-sm text-center py-4">Нет ивентов</p>
+            ) : (
+              events?.map((event: any) => (
+                <div key={event.id} className={`bg-card/50 rounded-2xl p-4 ring-1 ${event.active ? "ring-net-emerald/30" : "ring-border"} space-y-2`}>
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <div className={`w-2 h-2 rounded-full shrink-0 ${event.active ? "bg-net-emerald shadow-[0_0_6px_rgba(16,185,129,0.5)]" : "bg-muted-foreground/40"}`} />
+                      <h4 className="text-sm font-medium text-primary truncate">{event.title}</h4>
+                    </div>
+                    <div className="flex items-center gap-1 shrink-0">
+                      <button
+                        onClick={() => handleToggleEventActive(event.id, event.active)}
+                        className={`p-2 rounded-full transition-all cursor-pointer ${event.active ? "text-net-emerald hover:bg-net-emerald/10" : "text-muted-foreground hover:text-primary hover:bg-muted"}`}
+                        title={event.active ? "Остановить" : "Запустить"}
+                      >
+                        {event.active ? <Pause size={16} /> : <Play size={16} />}
+                      </button>
+                      <button
+                        onClick={() => handleDeleteEvent(event.id)}
+                        className="p-2 rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all cursor-pointer"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </div>
+                  {event.description && <p className="text-xs text-muted-foreground line-clamp-2">{event.description}</p>}
+                  <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                    <span className="flex items-center gap-1"><Calendar size={12} /> {format(new Date(event.event_date), "d MMM yyyy, HH:mm", { locale: ru })}</span>
+                    <span>{event.event_registrations?.length || 0} участн.</span>
+                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${event.active ? "bg-net-emerald/20 text-net-emerald" : "bg-muted text-muted-foreground"}`}>
+                      {event.active ? "Активен" : "Не запущен"}
+                    </span>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
         </div>
       )}
     </div>
