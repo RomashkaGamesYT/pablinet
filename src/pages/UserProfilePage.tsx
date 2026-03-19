@@ -4,7 +4,8 @@ import { useProfile, useFollowStats } from "@/hooks/useProfile";
 import { useFollow, useIsFollowing } from "@/hooks/useFollow";
 import { usePosts } from "@/hooks/usePosts";
 import { useUserBadges } from "@/hooks/useAdmin";
-import { Calendar, ArrowLeft } from "lucide-react";
+import { Calendar, ArrowLeft, MessageCircle } from "lucide-react";
+import { useStartConversation } from "@/hooks/useMessages";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 import { useState } from "react";
@@ -22,6 +23,7 @@ export default function UserProfilePage() {
   const { data: userBadges } = useUserBadges(userId);
   const { data: isFollowing, isLoading: followLoading } = useIsFollowing(userId);
   const follow = useFollow();
+  const startConversation = useStartConversation();
   const [followListType, setFollowListType] = useState<"followers" | "following" | null>(null);
 
   const isOwnProfile = user?.id === userId;
@@ -49,6 +51,12 @@ export default function UserProfilePage() {
   const handleFollowToggle = () => {
     if (!userId) return;
     follow.mutate({ targetUserId: userId, isFollowing: !!isFollowing });
+  };
+
+  const handleMessage = async () => {
+    if (!userId) return;
+    const convId = await startConversation.mutateAsync(userId);
+    navigate("/messages");
   };
 
   return (
@@ -96,17 +104,26 @@ export default function UserProfilePage() {
             </div>
             <span className="text-sm text-muted-foreground font-medium">@{profile.username}</span>
           </div>
-          <button
-            onClick={handleFollowToggle}
-            disabled={follow.isPending || followLoading}
-            className={`px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 active:scale-95 shrink-0 cursor-pointer disabled:opacity-50 ${
-              isFollowing
-                ? "bg-muted text-foreground ring-1 ring-input hover:ring-destructive hover:text-destructive"
-                : "bg-primary text-primary-foreground hover:opacity-90 shadow-[0_2px_8px_rgba(255,255,255,0.15)] ring-1 ring-inset ring-black/5"
-            }`}
-          >
-            {isFollowing ? "Отписаться" : "Подписаться"}
-          </button>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              onClick={handleMessage}
+              disabled={startConversation.isPending}
+              className="w-9 h-9 rounded-full bg-muted ring-1 ring-input flex items-center justify-center text-muted-foreground hover:text-primary hover:ring-primary/20 transition-all cursor-pointer disabled:opacity-50"
+            >
+              <MessageCircle size={16} />
+            </button>
+            <button
+              onClick={handleFollowToggle}
+              disabled={follow.isPending || followLoading}
+              className={`px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 active:scale-95 cursor-pointer disabled:opacity-50 ${
+                isFollowing
+                  ? "bg-muted text-foreground ring-1 ring-input hover:ring-destructive hover:text-destructive"
+                  : "bg-primary text-primary-foreground hover:opacity-90 shadow-[0_2px_8px_rgba(255,255,255,0.15)] ring-1 ring-inset ring-black/5"
+              }`}
+            >
+              {isFollowing ? "Отписаться" : "Подписаться"}
+            </button>
+          </div>
         </div>
 
         {profile.bio && (
