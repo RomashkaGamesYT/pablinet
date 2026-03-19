@@ -453,6 +453,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      find_conversation_between: {
+        Args: { _user1: string; _user2: string }
+        Returns: string
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
