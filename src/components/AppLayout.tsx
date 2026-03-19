@@ -152,35 +152,35 @@ export default function AppLayout() {
       </div>
 
       {/* Mobile Bottom Dock */}
-      <nav className="fixed bottom-4 left-4 right-4 md:hidden z-50">
-        <div className="bg-[#1c1c1e]/90 backdrop-blur-2xl rounded-[22px] shadow-[0_8px_32px_rgba(0,0,0,0.5)] ring-1 ring-white/[0.08]">
-          <div className="flex justify-around items-center h-[62px] px-1">
+      <nav className="fixed bottom-4 left-3 right-3 md:hidden z-50">
+        <div className="bg-[#1a1a1c]/80 backdrop-blur-[20px] backdrop-saturate-[1.8] rounded-[20px] shadow-[0_8px_40px_rgba(0,0,0,0.55),0_0_0_0.5px_rgba(255,255,255,0.06)_inset]">
+          <div className="flex justify-around items-center h-[60px] px-1">
             {navItems.filter((item: any) => item.to !== "/settings").map((item: any) => (
               <NavLink
                 key={item.to}
                 to={item.to}
                 end={item.to === "/"}
-                className="relative flex flex-col items-center justify-center gap-0.5 w-14 h-14 rounded-2xl text-muted-foreground/60 transition-all duration-200 cursor-pointer"
-                activeClassName="text-primary"
+                className="relative flex flex-col items-center justify-center gap-[2px] w-[56px] h-[50px] rounded-xl text-white/30 transition-all duration-300 cursor-pointer"
+                activeClassName="text-white bg-white/[0.08] backdrop-blur-sm shadow-[0_0_12px_rgba(255,255,255,0.04)_inset]"
               >
                 {item.special ? (
                   <>
-                    <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-net-cyan to-net-emerald flex items-center justify-center shadow-[0_0_14px_rgba(34,211,238,0.5)]">
+                    <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-net-cyan to-net-emerald flex items-center justify-center shadow-[0_0_16px_rgba(34,211,238,0.45)] ring-1 ring-white/10">
                       {item.mobileIcon}
                     </div>
-                    <span className="text-[10px] font-medium mt-0.5">{item.label}</span>
+                    <span className="text-[9px] font-semibold tracking-wide">{item.label}</span>
                   </>
                 ) : (
                   <>
                     <div className="relative">
                       {item.mobileIcon}
                       {item.badge > 0 && (
-                        <span className="absolute -top-1.5 -right-2.5 w-4 h-4 rounded-full bg-net-cyan text-[9px] font-bold text-background flex items-center justify-center">
+                        <span className="absolute -top-1 -right-2 min-w-[14px] h-[14px] rounded-full bg-net-cyan text-[8px] font-bold text-background flex items-center justify-center px-0.5 shadow-[0_0_6px_rgba(34,211,238,0.5)]">
                           {item.badge > 9 ? "9+" : item.badge}
                         </span>
                       )}
                     </div>
-                    <span className="text-[10px] font-medium">{item.label}</span>
+                    <span className="text-[9px] font-semibold tracking-wide">{item.label}</span>
                   </>
                 )}
               </NavLink>
