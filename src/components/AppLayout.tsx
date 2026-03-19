@@ -6,7 +6,7 @@ import { useEvents } from "@/hooks/useEvents";
 import { useUnreadCount } from "@/hooks/useMessages";
 import { useSettings } from "@/hooks/useSettings";
 import { Outlet, useNavigate } from "react-router-dom";
-import { Search, Bell, User, LogOut, Star, Shield, MessageCircle, Settings } from "lucide-react";
+import { Search, Bell, User, LogOut, Star, Shield, MessageCircle } from "lucide-react";
 
 export default function AppLayout() {
   const { signOut } = useAuth();
