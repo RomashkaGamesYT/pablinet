@@ -13,7 +13,7 @@ export default function AppLayout() {
   const { data: profile } = useProfile();
   const { data: isAdmin } = useIsAdmin();
   const { data: events } = useEvents();
-  
+  const { data: unreadCount } = useUnreadCount();
   const { data: userSettings } = useSettings();
   const navigate = useNavigate();
 
