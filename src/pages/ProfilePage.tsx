@@ -254,7 +254,35 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              <SettingToggle
+              {/* DM Privacy */}
+              <div className="w-full flex items-center gap-4 p-4 rounded-2xl bg-card ring-1 ring-border text-left">
+                <div className="text-muted-foreground"><MessageCircle size={18} /></div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-medium text-primary">Кто может писать</div>
+                  <div className="text-xs text-muted-foreground">Ограничить входящие ЛС</div>
+                </div>
+                <div className="flex gap-1 bg-muted rounded-xl p-1 ring-1 ring-input">
+                  {([
+                    { value: "everyone", icon: <Users size={14} />, label: "Все" },
+                    { value: "followers", icon: <UserX size={14} />, label: "Подписчики" },
+                    { value: "nobody", icon: <UserX size={14} />, label: "Никто" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.value}
+                      onClick={() => updateSettings.mutate({ dm_privacy: opt.value } as any)}
+                      className={`flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+                        dmPrivacy === opt.value
+                          ? "bg-card text-primary ring-1 ring-border shadow-sm"
+                          : "text-muted-foreground hover:text-foreground/70"
+                      }`}
+                    >
+                      {opt.icon}
+                      <span className="hidden sm:inline">{opt.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
                 icon={<Star size={18} />}
                 label="Вкладка Ивенты"
                 description="Показывать вкладку ивентов в навигации"
