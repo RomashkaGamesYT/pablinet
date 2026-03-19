@@ -151,37 +151,43 @@ export default function AppLayout() {
         </main>
       </div>
 
-      {/* Mobile Bottom Nav */}
-      <nav className="fixed bottom-0 left-0 right-0 md:hidden z-50">
-        <div className="bg-background/95 backdrop-blur-xl border-t border-border/50">
-          <div className="flex justify-around items-center h-14 px-2 max-w-md mx-auto">
-            {navItems.map((item: any) => (
+      {/* Mobile Bottom Dock */}
+      <nav className="fixed bottom-4 left-4 right-4 md:hidden z-50">
+        <div className="bg-[#1c1c1e]/90 backdrop-blur-2xl rounded-[22px] shadow-[0_8px_32px_rgba(0,0,0,0.5)] ring-1 ring-white/[0.08]">
+          <div className="flex justify-around items-center h-[62px] px-1">
+            {navItems.filter((item: any) => item.to !== "/settings").map((item: any) => (
               <NavLink
                 key={item.to}
                 to={item.to}
                 end={item.to === "/"}
-                className="relative flex items-center justify-center w-12 h-12 rounded-2xl text-muted-foreground transition-all duration-200 cursor-pointer"
+                className="relative flex flex-col items-center justify-center gap-0.5 w-14 h-14 rounded-2xl text-muted-foreground/60 transition-all duration-200 cursor-pointer"
                 activeClassName="text-primary"
               >
                 {item.special ? (
-                  <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-net-cyan to-net-emerald flex items-center justify-center shadow-[0_0_12px_rgba(34,211,238,0.4)]">
-                    {item.mobileIcon}
-                  </div>
+                  <>
+                    <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-net-cyan to-net-emerald flex items-center justify-center shadow-[0_0_14px_rgba(34,211,238,0.5)]">
+                      {item.mobileIcon}
+                    </div>
+                    <span className="text-[10px] font-medium mt-0.5">{item.label}</span>
+                  </>
                 ) : (
                   <>
-                    {item.mobileIcon}
-                    {item.badge > 0 && (
-                      <span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-net-cyan text-[9px] font-bold text-background flex items-center justify-center">
-                        {item.badge > 9 ? "9+" : item.badge}
-                      </span>
-                    )}
+                    <div className="relative">
+                      {item.mobileIcon}
+                      {item.badge > 0 && (
+                        <span className="absolute -top-1.5 -right-2.5 w-4 h-4 rounded-full bg-net-cyan text-[9px] font-bold text-background flex items-center justify-center">
+                          {item.badge > 9 ? "9+" : item.badge}
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-[10px] font-medium">{item.label}</span>
                   </>
                 )}
               </NavLink>
             ))}
           </div>
-          <div className="h-[env(safe-area-inset-bottom)]" />
         </div>
+        <div className="h-[env(safe-area-inset-bottom)]" />
       </nav>
     </div>
   );
