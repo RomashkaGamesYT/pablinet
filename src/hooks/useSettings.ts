@@ -35,7 +35,7 @@ export function useUpdateSettings() {
   const { user } = useAuth();
 
   return useMutation({
-    mutationFn: async (settings: Partial<Pick<UserSettings, "dm_enabled" | "show_events_tab" | "show_notifications_tab">>) => {
+    mutationFn: async (settings: Partial<Pick<UserSettings, "dm_enabled" | "dm_privacy" | "show_events_tab" | "show_notifications_tab">>) => {
       if (!user) throw new Error("Not authenticated");
 
       // Upsert settings
