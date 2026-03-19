@@ -2,8 +2,8 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useBadges, useAllProfiles, useAllUserBadges } from "@/hooks/useAdmin";
 import { useEvents } from "@/hooks/useEvents";
-import { useQueryClient } from "@tanstack/react-query";
-import { Plus, Trash2, Upload, Award, Users, ArrowLeft, X, Shield, CheckCircle, Calendar, Play, Pause } from "lucide-react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Plus, Trash2, Upload, Award, Users, ArrowLeft, X, Shield, CheckCircle, Calendar, Play, Pause, MessageCircle, Check, XCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
@@ -17,7 +17,7 @@ export default function AdminPage() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
-  const [activeTab, setActiveTab] = useState<"badges" | "assign" | "verify" | "events">("badges");
+  const [activeTab, setActiveTab] = useState<"badges" | "assign" | "verify" | "events" | "tg-verify">("badges");
   const [creating, setCreating] = useState(false);
   const [badgeName, setBadgeName] = useState("");
   const [badgeDesc, setBadgeDesc] = useState("");
@@ -113,10 +113,44 @@ export default function AdminPage() {
     toast.success("Ивент удалён");
   };
 
+  // Verification requests from Telegram
+  const { data: verificationRequests, isLoading: vrLoading } = useQuery({
+    queryKey: ["verification-requests"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("verification_requests")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const [processingVR, setProcessingVR] = useState<string | null>(null);
+
+  const handleVerifyAction = async (requestId: string, action: "approve" | "reject") => {
+    setProcessingVR(requestId);
+    try {
+      const { data, error } = await supabase.functions.invoke("verify-blogger", {
+        body: { requestId, action },
+      });
+      if (error) throw error;
+      toast.success(action === "approve" ? "Заявка одобрена, бейдж Flame выдан!" : "Заявка отклонена");
+      queryClient.invalidateQueries({ queryKey: ["verification-requests"] });
+      queryClient.invalidateQueries({ queryKey: ["user-badges"] });
+      queryClient.invalidateQueries({ queryKey: ["all-user-badges"] });
+    } catch (err: any) {
+      toast.error("Ошибка: " + err.message);
+    } finally {
+      setProcessingVR(null);
+    }
+  };
+
   const tabs = [
     { key: "badges" as const, label: "Бейджи", icon: <Award size={16} /> },
     { key: "assign" as const, label: "Назначить", icon: <Users size={16} /> },
     { key: "verify" as const, label: "Верификация", icon: <Shield size={16} /> },
+    { key: "tg-verify" as const, label: "TG Заявки", icon: <MessageCircle size={16} /> },
     { key: "events" as const, label: "Ивенты", icon: <Calendar size={16} /> },
   ];
 
@@ -303,6 +337,63 @@ export default function AdminPage() {
               ))
             )}
           </div>
+        </div>
+      )}
+
+      {activeTab === "tg-verify" && (
+        <div className="space-y-4">
+          <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-tight px-1 mb-3">Заявки на бейдж Flame из Telegram</h3>
+          {vrLoading ? (
+            <p className="text-muted-foreground text-sm text-center py-4">Загрузка...</p>
+          ) : !verificationRequests?.length ? (
+            <p className="text-muted-foreground text-sm text-center py-8">Нет заявок</p>
+          ) : (
+            <div className="space-y-2">
+              {verificationRequests.map((vr: any) => (
+                <div key={vr.id} className="bg-card/50 rounded-2xl p-4 ring-1 ring-border">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-primary">@{vr.site_username}</p>
+                      <p className="text-xs text-muted-foreground">
+                        TG: {vr.telegram_username ? `@${vr.telegram_username}` : `ID ${vr.telegram_chat_id}`}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {format(new Date(vr.created_at), "d MMM yyyy, HH:mm", { locale: ru })}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      {vr.status === "pending" ? (
+                        <>
+                          <button
+                            onClick={() => handleVerifyAction(vr.id, "approve")}
+                            disabled={processingVR === vr.id}
+                            className="p-2 rounded-full bg-net-emerald/10 text-net-emerald hover:bg-net-emerald/20 transition-all cursor-pointer disabled:opacity-50"
+                            title="Одобрить"
+                          >
+                            <Check size={16} />
+                          </button>
+                          <button
+                            onClick={() => handleVerifyAction(vr.id, "reject")}
+                            disabled={processingVR === vr.id}
+                            className="p-2 rounded-full bg-destructive/10 text-destructive hover:bg-destructive/20 transition-all cursor-pointer disabled:opacity-50"
+                            title="Отклонить"
+                          >
+                            <XCircle size={16} />
+                          </button>
+                        </>
+                      ) : (
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                          vr.status === "approved" ? "bg-net-emerald/20 text-net-emerald" : "bg-destructive/20 text-destructive"
+                        }`}>
+                          {vr.status === "approved" ? "Одобрено ✓" : "Отклонено"}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>
