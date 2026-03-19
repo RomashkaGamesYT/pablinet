@@ -6,10 +6,25 @@ export function usePosts() {
   return useQuery({
     queryKey: ["posts"],
     queryFn: async () => {
+      // First get total count
+      const { count } = await supabase
+        .from("posts")
+        .select("*", { count: "exact", head: true });
+
+      const total = count || 0;
+      const limit = 20;
+
+      // If more than 20 posts, pick a random offset to show different posts on refresh
+      let offset = 0;
+      if (total > limit) {
+        offset = Math.floor(Math.random() * (total - limit));
+      }
+
       const { data: posts, error } = await supabase
         .from("posts")
         .select("*, likes(id, user_id)")
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .range(offset, offset + limit - 1);
       if (error) throw error;
       if (!posts || posts.length === 0) return [];
 
