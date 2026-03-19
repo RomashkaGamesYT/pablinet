@@ -3,7 +3,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
 import { useIsAdmin } from "@/hooks/useAdmin";
 import { useEvents } from "@/hooks/useEvents";
-import { useUnreadCount } from "@/hooks/useMessages";
+
 import { useSettings } from "@/hooks/useSettings";
 import { Outlet, useNavigate } from "react-router-dom";
 import { Search, Bell, User, LogOut, Star, Shield, MessageCircle } from "lucide-react";
