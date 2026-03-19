@@ -149,14 +149,14 @@ export default function ProfilePage() {
 
             <div className="flex flex-col gap-3 mt-4">
               <div className="flex items-center gap-5 text-sm">
-                <div className="flex items-center gap-1.5 cursor-pointer group">
+                <button onClick={() => setFollowListType("followers")} className="flex items-center gap-1.5 cursor-pointer group">
                   <span className="text-primary font-semibold">{stats?.followers || 0}</span>
                   <span className="text-muted-foreground group-hover:text-foreground/70 transition-colors">подписчиков</span>
-                </div>
-                <div className="flex items-center gap-1.5 cursor-pointer group">
+                </button>
+                <button onClick={() => setFollowListType("following")} className="flex items-center gap-1.5 cursor-pointer group">
                   <span className="text-primary font-semibold">{stats?.following || 0}</span>
                   <span className="text-muted-foreground group-hover:text-foreground/70 transition-colors">подписок</span>
-                </div>
+                </button>
               </div>
               <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
                 <Calendar size={16} className="opacity-80" />
