@@ -24,6 +24,7 @@ export default function ProfilePage() {
   const [editEmoji, setEditEmoji] = useState("");
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"posts" | "likes">("posts");
+  const [followListType, setFollowListType] = useState<"followers" | "following" | null>(null);
 
   if (isLoading) {
     return <div className="text-muted-foreground text-sm text-center py-8">Загрузка...</div>;
