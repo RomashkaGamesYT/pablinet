@@ -3,17 +3,17 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
 import { useIsAdmin } from "@/hooks/useAdmin";
 import { useEvents } from "@/hooks/useEvents";
-
+import { useUnreadCount } from "@/hooks/useMessages";
 import { useSettings } from "@/hooks/useSettings";
 import { Outlet, useNavigate } from "react-router-dom";
-import { Search, Bell, User, LogOut, Star, Shield } from "lucide-react";
+import { Search, Bell, User, LogOut, Star, Shield, MessageCircle } from "lucide-react";
 
 export default function AppLayout() {
   const { signOut } = useAuth();
   const { data: profile } = useProfile();
   const { data: isAdmin } = useIsAdmin();
   const { data: events } = useEvents();
-  
+  const { data: unreadCount } = useUnreadCount();
   const { data: userSettings } = useSettings();
   const navigate = useNavigate();
 
@@ -60,6 +60,13 @@ export default function AppLayout() {
     ...baseNavItems,
   ];
 
+  navItems.push({
+    to: "/messages",
+    label: "ЛС",
+    icon: <MessageCircle size={20} />,
+    mobileIcon: <MessageCircle size={22} />,
+    badge: unreadCount,
+  });
 
   if (showNotificationsTab) {
     navItems.push({ to: "/notifications", label: "Уведомления", icon: <Bell size={20} />, mobileIcon: <Bell size={22} /> });

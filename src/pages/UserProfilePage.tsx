@@ -4,7 +4,8 @@ import { useProfile, useFollowStats } from "@/hooks/useProfile";
 import { useFollow, useIsFollowing } from "@/hooks/useFollow";
 import { usePosts } from "@/hooks/usePosts";
 import { useUserBadges } from "@/hooks/useAdmin";
-import { Calendar, ArrowLeft } from "lucide-react";
+import { Calendar, ArrowLeft, MessageCircle } from "lucide-react";
+import { useStartConversation } from "@/hooks/useMessages";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 import { useState } from "react";
@@ -22,6 +23,7 @@ export default function UserProfilePage() {
   const { data: userBadges } = useUserBadges(userId);
   const { data: isFollowing, isLoading: followLoading } = useIsFollowing(userId);
   const follow = useFollow();
+  const startConversation = useStartConversation();
   const [followListType, setFollowListType] = useState<"followers" | "following" | null>(null);
 
   const isOwnProfile = user?.id === userId;
@@ -51,6 +53,11 @@ export default function UserProfilePage() {
     follow.mutate({ targetUserId: userId, isFollowing: !!isFollowing });
   };
 
+  const handleMessage = async () => {
+    if (!userId) return;
+    await startConversation.mutateAsync(userId);
+    navigate("/messages");
+  };
 
   return (
     <div className="animate-fade-in">
@@ -99,6 +106,13 @@ export default function UserProfilePage() {
             <span className="text-sm text-muted-foreground font-medium">@{profile.username}</span>
           </div>
           <div className="flex items-center gap-2 shrink-0">
+            <button
+              onClick={handleMessage}
+              disabled={startConversation.isPending}
+              className="w-9 h-9 rounded-full bg-muted ring-1 ring-input flex items-center justify-center text-muted-foreground hover:text-primary hover:ring-primary/20 transition-all cursor-pointer disabled:opacity-50"
+            >
+              <MessageCircle size={16} />
+            </button>
             <button
               onClick={handleFollowToggle}
               disabled={follow.isPending || followLoading}
