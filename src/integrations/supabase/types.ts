@@ -358,6 +358,36 @@ export type Database = {
           },
         ]
       }
+      phone_auth_codes: {
+        Row: {
+          code: string
+          created_at: string
+          expires_at: string
+          id: string
+          phone: string
+          token: string
+          used: boolean
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          phone: string
+          token: string
+          used?: boolean
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          phone?: string
+          token?: string
+          used?: boolean
+        }
+        Relationships: []
+      }
       posts: {
         Row: {
           content: string
