@@ -34,6 +34,7 @@ export default function ProfilePage() {
 
   const showEvents = settings?.show_events_tab ?? true;
   const showNotifications = settings?.show_notifications_tab ?? true;
+  const dmPrivacy = (settings as any)?.dm_privacy ?? "everyone";
   const { theme, setTheme } = useTheme();
 
   const toggleSetting = (key: "show_events_tab" | "show_notifications_tab", current: boolean) => {
