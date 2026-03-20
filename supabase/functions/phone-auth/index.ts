@@ -136,6 +136,37 @@ Deno.serve(async (req) => {
       });
     }
 
+    if (action === 'verify_settings_code') {
+      if (!phone || !code) {
+        return jsonResponse({ error: 'Введите номер и код' }, 400);
+      }
+
+      const normalizedPhone = phone.replace(/\D/g, '');
+
+      const { data: authCode, error: findErr } = await supabase
+        .from('phone_auth_codes')
+        .select('*')
+        .eq('phone', normalizedPhone)
+        .eq('code', code)
+        .eq('used', false)
+        .gte('expires_at', new Date().toISOString())
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (findErr || !authCode) {
+        return jsonResponse({ error: 'Неверный или просроченный код' }, 400);
+      }
+
+      // Mark code as used
+      await supabase
+        .from('phone_auth_codes')
+        .update({ used: true })
+        .eq('id', authCode.id);
+
+      return jsonResponse({ verified: true });
+    }
+
     return jsonResponse({ error: 'Неизвестное действие' }, 400);
   } catch (err) {
     console.error('Phone auth error:', err);
