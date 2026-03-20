@@ -44,18 +44,6 @@ export default function PhoneVerification({ currentPhone }: { currentPhone?: str
     setError("");
     setLoading(true);
     try {
-      // Verify the code via edge function
-      const normalizedPhone = phone.trim().replace(/\D/g, "");
-      const { data, error: fnErr } = await supabase
-        .from("phone_auth_codes" as any)
-        .select("*")
-        .eq("phone", normalizedPhone)
-        .eq("code", code)
-        .eq("used", false)
-        .maybeSingle();
-
-      // We can't query phone_auth_codes from client (RLS blocks it).
-      // Instead, use a dedicated verify action in the edge function.
       const res = await supabase.functions.invoke("phone-auth", {
         body: { action: "verify_settings_code", phone: phone.trim(), code },
       });
