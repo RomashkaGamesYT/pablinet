@@ -78,45 +78,69 @@ Deno.serve(async (req) => {
         .update({ used: true })
         .eq('id', authCode.id);
 
-      // Find or create user with phone-based email
+      // Find linked site account by confirmed phone in profile first
+      const { data: profilesWithPhones, error: profileLookupErr } = await supabase
+        .from('profiles')
+        .select('user_id, phone')
+        .not('phone', 'is', null);
+
+      if (profileLookupErr) {
+        console.error('Profile lookup error:', profileLookupErr);
+        return jsonResponse({ error: 'Ошибка поиска аккаунта' }, 500);
+      }
+
+      const linkedProfile = profilesWithPhones?.find((profile: any) =>
+        String(profile.phone ?? '').replace(/\D/g, '') === normalizedPhone
+      );
+
       const phoneEmail = `${normalizedPhone}@phone.net.local`;
+      let targetEmail: string | null = null;
+      let isNewUser = false;
 
-      // Check if user exists
-      const { data: { users } } = await supabase.auth.admin.listUsers();
-      const existingUser = users?.find((u: any) => u.email === phoneEmail);
+      if (linkedProfile?.user_id) {
+        const { data: linkedUserData, error: linkedUserErr } = await supabase.auth.admin.getUserById(linkedProfile.user_id);
 
-      let userId: string;
+        if (linkedUserErr || !linkedUserData?.user?.email) {
+          console.error('Linked user lookup error:', linkedUserErr);
+          return jsonResponse({ error: 'Аккаунт для этого номера не найден' }, 404);
+        }
 
-      if (existingUser) {
-        userId = existingUser.id;
+        targetEmail = linkedUserData.user.email;
       } else {
-        // Create new user - need displayName and username for registration
-        if (!displayName || !username) {
-          return jsonResponse({ error: 'Для регистрации укажите имя и юзернейм', needsRegistration: true }, 400);
+        const { data: { users } } = await supabase.auth.admin.listUsers();
+        const existingUser = users?.find((u: any) => u.email === phoneEmail);
+
+        if (existingUser) {
+          targetEmail = phoneEmail;
+        } else {
+          if (!displayName || !username) {
+            return jsonResponse({ error: 'Для регистрации укажите имя и юзернейм', needsRegistration: true }, 400);
+          }
+
+          const { data: newUser, error: createErr } = await supabase.auth.admin.createUser({
+            email: phoneEmail,
+            email_confirm: true,
+            user_metadata: {
+              display_name: displayName,
+              username: username,
+              phone: normalizedPhone,
+            },
+          });
+
+          if (createErr) {
+            console.error('Create user error:', createErr);
+            return jsonResponse({ error: 'Ошибка создания аккаунта' }, 500);
+          }
+
+          targetEmail = newUser.user.email ?? phoneEmail;
+          isNewUser = true;
         }
-
-        const { data: newUser, error: createErr } = await supabase.auth.admin.createUser({
-          email: phoneEmail,
-          email_confirm: true,
-          user_metadata: {
-            display_name: displayName,
-            username: username,
-            phone: normalizedPhone,
-          },
-        });
-
-        if (createErr) {
-          console.error('Create user error:', createErr);
-          return jsonResponse({ error: 'Ошибка создания аккаунта' }, 500);
-        }
-
-        userId = newUser.user.id;
       }
 
       // Generate magic link for sign-in
       const { data: linkData, error: linkErr } = await supabase.auth.admin.generateLink({
         type: 'magiclink',
-        email: phoneEmail,
+        email: targetEmail,
       });
 
       if (linkErr || !linkData) {
@@ -131,8 +155,8 @@ Deno.serve(async (req) => {
 
       return jsonResponse({ 
         hashed_token: hashedToken, 
-        email: phoneEmail,
-        isNewUser: !existingUser 
+        email: targetEmail,
+        isNewUser
       });
     }
 
