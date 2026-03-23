@@ -105,7 +105,11 @@ export default function ProfilePage() {
           <div className="relative group/avatar cursor-pointer" onClick={editing ? undefined : startEdit}>
             <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-b from-muted to-card rounded-full flex items-center justify-center ring-4 ring-background shadow-xl relative z-10 overflow-hidden transition-transform duration-300 group-hover/avatar:scale-105">
               <div className="ring-inset ring-input ring-1 rounded-full absolute inset-0" />
-              <span className="text-2xl sm:text-3xl drop-shadow-md relative z-10">{profile?.avatar_emoji || "🐊"}</span>
+              {(profile as any)?.logo_url ? (
+                <img src={(profile as any).logo_url} alt="Logo" className="w-full h-full object-cover rounded-full relative z-10" />
+              ) : (
+                <span className="text-2xl sm:text-3xl drop-shadow-md relative z-10">{profile?.avatar_emoji || "🐊"}</span>
+              )}
             </div>
             <div className="absolute bottom-0.5 right-0.5 sm:bottom-1 sm:right-1 w-3.5 h-3.5 sm:w-4 sm:h-4 bg-net-emerald rounded-full border-[3px] border-background shadow-[0_0_8px_rgba(16,185,129,0.4)] z-20" />
           </div>
