@@ -70,9 +70,13 @@ export default function UserProfilePage() {
       {/* Banner & Avatar */}
       <div className="relative w-full mb-14">
         <div className="relative bg-gradient-to-br from-muted to-card h-40 sm:h-56 rounded-3xl w-full ring-1 ring-border overflow-hidden">
-          <div className="absolute inset-0 opacity-[0.04] mix-blend-overlay pointer-events-none" style={{
-            backgroundImage: "url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.8%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E')"
-          }} />
+          {(profile as any)?.banner_url ? (
+            <img src={(profile as any).banner_url} alt="Banner" className="absolute inset-0 w-full h-full object-cover" />
+          ) : (
+            <div className="absolute inset-0 opacity-[0.04] mix-blend-overlay pointer-events-none" style={{
+              backgroundImage: "url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.8%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E')"
+            }} />
+          )}
           <div className="absolute inset-0 bg-gradient-to-t from-background/40 to-transparent" />
         </div>
 
@@ -80,7 +84,11 @@ export default function UserProfilePage() {
           <div className="relative">
             <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-b from-muted to-card rounded-full flex items-center justify-center ring-4 ring-background shadow-xl relative z-10 overflow-hidden">
               <div className="ring-inset ring-input ring-1 rounded-full absolute inset-0" />
-              <span className="text-2xl sm:text-3xl drop-shadow-md relative z-10">{profile.avatar_emoji || "🐊"}</span>
+              {(profile as any)?.logo_url ? (
+                <img src={(profile as any).logo_url} alt="Logo" className="w-full h-full object-cover rounded-full relative z-10" />
+              ) : (
+                <span className="text-2xl sm:text-3xl drop-shadow-md relative z-10">{profile.avatar_emoji || "🐊"}</span>
+              )}
             </div>
             <div className="absolute bottom-0.5 right-0.5 sm:bottom-1 sm:right-1 w-3.5 h-3.5 sm:w-4 sm:h-4 bg-net-emerald rounded-full border-[3px] border-background shadow-[0_0_8px_rgba(16,185,129,0.4)] z-20" />
           </div>

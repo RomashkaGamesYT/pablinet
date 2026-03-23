@@ -2,10 +2,11 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile, useFollowStats, useUpdateProfile } from "@/hooks/useProfile";
 import { usePosts } from "@/hooks/usePosts";
-import { useUserBadges } from "@/hooks/useAdmin";
+import { useUserBadges, useIsAdmin } from "@/hooks/useAdmin";
 import { useSettings, useUpdateSettings } from "@/hooks/useSettings";
 import { Calendar, Palette, Bell, Star, LogOut, Sun, Moon, Monitor, MessageCircle, Users, UserX } from "lucide-react";
 import PhoneVerification from "@/components/PhoneVerification";
+import AdminProfileCustomization from "@/components/AdminProfileCustomization";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
@@ -23,6 +24,7 @@ export default function ProfilePage() {
   const { data: allPosts } = usePosts();
   const { data: userBadges } = useUserBadges(user?.id);
   const { data: settings } = useSettings();
+  const { data: isAdmin } = useIsAdmin();
   const updateSettings = useUpdateSettings();
   const updateProfile = useUpdateProfile();
   const navigate = useNavigate();
@@ -86,9 +88,13 @@ export default function ProfilePage() {
       {/* Banner & Avatar */}
       <div className="relative w-full mb-14">
         <div className="relative bg-gradient-to-br from-muted to-card h-40 sm:h-56 rounded-3xl w-full ring-1 ring-border overflow-hidden group">
-          <div className="absolute inset-0 opacity-[0.04] mix-blend-overlay pointer-events-none" style={{
-            backgroundImage: "url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.8%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E')"
-          }} />
+          {(profile as any)?.banner_url ? (
+            <img src={(profile as any).banner_url} alt="Banner" className="absolute inset-0 w-full h-full object-cover" />
+          ) : (
+            <div className="absolute inset-0 opacity-[0.04] mix-blend-overlay pointer-events-none" style={{
+              backgroundImage: "url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.8%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E')"
+            }} />
+          )}
           <div className="absolute inset-0 bg-gradient-to-t from-background/40 to-transparent" />
           <button className="absolute bottom-4 right-4 bg-background/40 hover:bg-background/60 backdrop-blur-md p-2.5 rounded-full text-foreground/70 hover:text-primary transition-all duration-300 ring-1 ring-input opacity-0 group-hover:opacity-100 hover:scale-105 shadow-md cursor-pointer">
             <Palette size={18} />
@@ -99,7 +105,11 @@ export default function ProfilePage() {
           <div className="relative group/avatar cursor-pointer" onClick={editing ? undefined : startEdit}>
             <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-b from-muted to-card rounded-full flex items-center justify-center ring-4 ring-background shadow-xl relative z-10 overflow-hidden transition-transform duration-300 group-hover/avatar:scale-105">
               <div className="ring-inset ring-input ring-1 rounded-full absolute inset-0" />
-              <span className="text-2xl sm:text-3xl drop-shadow-md relative z-10">{profile?.avatar_emoji || "🐊"}</span>
+              {(profile as any)?.logo_url ? (
+                <img src={(profile as any).logo_url} alt="Logo" className="w-full h-full object-cover rounded-full relative z-10" />
+              ) : (
+                <span className="text-2xl sm:text-3xl drop-shadow-md relative z-10">{profile?.avatar_emoji || "🐊"}</span>
+              )}
             </div>
             <div className="absolute bottom-0.5 right-0.5 sm:bottom-1 sm:right-1 w-3.5 h-3.5 sm:w-4 sm:h-4 bg-net-emerald rounded-full border-[3px] border-background shadow-[0_0_8px_rgba(16,185,129,0.4)] z-20" />
           </div>
@@ -229,6 +239,13 @@ export default function ProfilePage() {
           {activeTab === "settings" ? (
             <div className="space-y-2">
                <PhoneVerification currentPhone={profile?.phone} />
+
+              {isAdmin && (
+                <AdminProfileCustomization
+                  bannerUrl={(profile as any)?.banner_url}
+                  logoUrl={(profile as any)?.logo_url}
+                />
+              )}
 
               {/* Theme selector */}
               <div className="w-full flex items-center gap-4 p-4 rounded-2xl bg-card ring-1 ring-border text-left">

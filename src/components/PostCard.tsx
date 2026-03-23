@@ -59,6 +59,9 @@ export default function PostCard({ post, badges = [], context = "feed" }: PostCa
   const isOwner = user?.id === post.user_id;
   const isPinnedFeed = post.pinned_in_feed;
   const isPinnedProfile = post.pinned_in_profile;
+  
+  // Check if post author is an admin (has logo_url or banner_url as indicator)
+  const isAuthorAdmin = postProfile?.logo_url || postProfile?.banner_url;
 
   const handleShare = async () => {
     const url = `${window.location.origin}/post/${post.id}`;
@@ -87,7 +90,11 @@ export default function PostCard({ post, badges = [], context = "feed" }: PostCa
   };
 
   return (
-    <div className={`bg-card/50 rounded-3xl p-4 sm:p-5 ring-1 ring-border transition-colors hover:bg-card/80 ${(isPinnedFeed || isPinnedProfile) ? "ring-primary/20" : ""}`}>
+    <div className={`rounded-3xl p-4 sm:p-5 ring-1 transition-colors ${
+      isAuthorAdmin 
+        ? "bg-gradient-to-br from-net-cyan/[0.06] to-net-emerald/[0.04] ring-net-cyan/20 hover:ring-net-cyan/30" 
+        : `bg-card/50 ring-border hover:bg-card/80 ${(isPinnedFeed || isPinnedProfile) ? "ring-primary/20" : ""}`
+    }`}>
       {(isPinnedFeed || isPinnedProfile) && (
         <div className="flex items-center gap-1.5 text-xs text-primary/60 mb-2 pl-12">
           <Pin size={12} /> Закреплено
@@ -95,10 +102,18 @@ export default function PostCard({ post, badges = [], context = "feed" }: PostCa
       )}
       <div className="flex items-start gap-3 mb-3">
         <div
-          className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-tr from-net-cyan/20 to-net-emerald/20 flex items-center justify-center ring-1 ring-input shrink-0 cursor-pointer"
+          className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center ring-1 shrink-0 cursor-pointer overflow-hidden ${
+            isAuthorAdmin 
+              ? "bg-gradient-to-tr from-net-cyan/30 to-net-emerald/30 ring-net-cyan/30 shadow-[0_0_12px_rgba(34,211,238,0.2)]" 
+              : "bg-gradient-to-tr from-net-cyan/20 to-net-emerald/20 ring-input"
+          }`}
           onClick={() => navigate(`/user/${post.user_id}`)}
         >
-          <span className="text-sm">{postProfile?.avatar_emoji || "🐊"}</span>
+          {postProfile?.logo_url ? (
+            <img src={postProfile.logo_url} alt="" className="w-full h-full object-cover rounded-full" />
+          ) : (
+            <span className="text-sm">{postProfile?.avatar_emoji || "🐊"}</span>
+          )}
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5 flex-wrap">

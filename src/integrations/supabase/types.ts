@@ -424,11 +424,14 @@ export type Database = {
       profiles: {
         Row: {
           avatar_emoji: string
+          banner_url: string | null
           bio: string | null
           created_at: string
           display_name: string
           id: string
+          logo_url: string | null
           phone: string | null
+          profile_theme: Json | null
           updated_at: string
           user_id: string
           username: string
@@ -436,11 +439,14 @@ export type Database = {
         }
         Insert: {
           avatar_emoji?: string
+          banner_url?: string | null
           bio?: string | null
           created_at?: string
           display_name?: string
           id?: string
+          logo_url?: string | null
           phone?: string | null
+          profile_theme?: Json | null
           updated_at?: string
           user_id: string
           username: string
@@ -448,11 +454,14 @@ export type Database = {
         }
         Update: {
           avatar_emoji?: string
+          banner_url?: string | null
           bio?: string | null
           created_at?: string
           display_name?: string
           id?: string
+          logo_url?: string | null
           phone?: string | null
+          profile_theme?: Json | null
           updated_at?: string
           user_id?: string
           username?: string
