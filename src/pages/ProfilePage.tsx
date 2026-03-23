@@ -240,6 +240,13 @@ export default function ProfilePage() {
             <div className="space-y-2">
                <PhoneVerification currentPhone={profile?.phone} />
 
+              {isAdmin && (
+                <AdminProfileCustomization
+                  bannerUrl={(profile as any)?.banner_url}
+                  logoUrl={(profile as any)?.logo_url}
+                />
+              )}
+
               {/* Theme selector */}
               <div className="w-full flex items-center gap-4 p-4 rounded-2xl bg-card ring-1 ring-border text-left">
                 <div className="text-muted-foreground"><Palette size={18} /></div>
