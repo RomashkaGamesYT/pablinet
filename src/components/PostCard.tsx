@@ -103,7 +103,11 @@ export default function PostCard({ post, badges = [], context = "feed" }: PostCa
   };
 
   return (
-    <div className={`bg-card/50 rounded-3xl p-4 sm:p-5 ring-1 ring-border transition-colors hover:bg-card/80 ${(isPinnedFeed || isPinnedProfile) ? "ring-primary/20" : ""}`}>
+    <div className={`rounded-3xl p-4 sm:p-5 ring-1 transition-colors ${
+      isAuthorAdmin 
+        ? "bg-gradient-to-br from-net-cyan/[0.06] to-net-emerald/[0.04] ring-net-cyan/20 hover:ring-net-cyan/30" 
+        : `bg-card/50 ring-border hover:bg-card/80 ${(isPinnedFeed || isPinnedProfile) ? "ring-primary/20" : ""}`
+    }`}>
       {(isPinnedFeed || isPinnedProfile) && (
         <div className="flex items-center gap-1.5 text-xs text-primary/60 mb-2 pl-12">
           <Pin size={12} /> Закреплено
