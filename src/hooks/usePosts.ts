@@ -32,7 +32,7 @@ export function usePosts() {
       const userIds = [...new Set(posts.map((p) => p.user_id))];
       const { data: profiles } = await supabase
         .from("profiles")
-        .select("user_id, display_name, username, avatar_emoji, verified")
+        .select("user_id, display_name, username, avatar_emoji, verified, logo_url, banner_url")
         .in("user_id", userIds);
 
       // Get comment counts
