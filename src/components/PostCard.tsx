@@ -59,6 +59,22 @@ export default function PostCard({ post, badges = [], context = "feed" }: PostCa
   const isOwner = user?.id === post.user_id;
   const isPinnedFeed = post.pinned_in_feed;
   const isPinnedProfile = post.pinned_in_profile;
+  
+  // Check if post author is an admin (has logo_url or banner_url as indicator)
+  const isAuthorAdmin = postProfile?.logo_url || postProfile?.banner_url;
+  const navigate = useNavigate();
+  const toggleLike = useToggleLike();
+  const deletePost = useDeletePost();
+  const togglePin = useTogglePin();
+  const { data: isAdmin } = useIsAdmin();
+  const [showComments, setShowComments] = useState(false);
+
+  const isLiked = post.likes?.some((l: any) => l.user_id === user?.id);
+  const likesCount = post.likes?.length || 0;
+  const postProfile = post.profile;
+  const isOwner = user?.id === post.user_id;
+  const isPinnedFeed = post.pinned_in_feed;
+  const isPinnedProfile = post.pinned_in_profile;
 
   const handleShare = async () => {
     const url = `${window.location.origin}/post/${post.id}`;
