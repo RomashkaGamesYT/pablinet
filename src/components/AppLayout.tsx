@@ -158,7 +158,7 @@ export default function AppLayout() {
 
       {/* Mobile Bottom Dock */}
       <nav className="fixed bottom-4 left-3 right-3 md:hidden z-50">
-        <div className="bg-card/80 backdrop-blur-[20px] backdrop-saturate-[1.8] rounded-full shadow-[0_8px_40px_rgba(0,0,0,0.25)] ring-1 ring-border">
+        <div className="bg-background/40 backdrop-blur-[24px] backdrop-saturate-[1.8] rounded-full shadow-[0_8px_40px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.06)] ring-1 ring-white/[0.08]">
           <div className="flex justify-around items-center h-[56px] px-2">
             {navItems.map((item: any) => (
               <NavLink
