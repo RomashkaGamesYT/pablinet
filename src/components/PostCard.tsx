@@ -115,10 +115,18 @@ export default function PostCard({ post, badges = [], context = "feed" }: PostCa
       )}
       <div className="flex items-start gap-3 mb-3">
         <div
-          className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-tr from-net-cyan/20 to-net-emerald/20 flex items-center justify-center ring-1 ring-input shrink-0 cursor-pointer"
+          className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center ring-1 shrink-0 cursor-pointer overflow-hidden ${
+            isAuthorAdmin 
+              ? "bg-gradient-to-tr from-net-cyan/30 to-net-emerald/30 ring-net-cyan/30 shadow-[0_0_12px_rgba(34,211,238,0.2)]" 
+              : "bg-gradient-to-tr from-net-cyan/20 to-net-emerald/20 ring-input"
+          }`}
           onClick={() => navigate(`/user/${post.user_id}`)}
         >
-          <span className="text-sm">{postProfile?.avatar_emoji || "🐊"}</span>
+          {postProfile?.logo_url ? (
+            <img src={postProfile.logo_url} alt="" className="w-full h-full object-cover rounded-full" />
+          ) : (
+            <span className="text-sm">{postProfile?.avatar_emoji || "🐊"}</span>
+          )}
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5 flex-wrap">
