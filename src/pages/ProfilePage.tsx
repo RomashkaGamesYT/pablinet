@@ -24,6 +24,7 @@ export default function ProfilePage() {
   const { data: allPosts } = usePosts();
   const { data: userBadges } = useUserBadges(user?.id);
   const { data: settings } = useSettings();
+  const { data: isAdmin } = useIsAdmin();
   const updateSettings = useUpdateSettings();
   const updateProfile = useUpdateProfile();
   const navigate = useNavigate();
