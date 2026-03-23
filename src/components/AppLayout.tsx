@@ -21,7 +21,7 @@ export default function AppLayout() {
   const hasActiveEvents = events?.some((e: any) => e.active);
   const showEventsTab = hasActiveEvents && (userSettings?.show_events_tab ?? true);
   const showNotificationsTab = userSettings?.show_notifications_tab ?? true;
-  
+
 
   const handleSignOut = async () => {
     await signOut();
@@ -29,22 +29,22 @@ export default function AppLayout() {
   };
 
   const baseNavItems = [
-    {
-      to: "/",
-      label: "Лента",
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
+  {
+    to: "/",
+    label: "Лента",
+    icon:
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path fill="currentColor" fillRule="evenodd" d="M20.689 10.968a2.806 2.806 0 0 0-2.244-1.108H5.555c-.887 0-1.705.404-2.244 1.107a2.808 2.808 0 0 0-.485 2.455l1.65 6.112a2.83 2.83 0 0 0 2.729 2.09h9.589a2.832 2.832 0 0 0 2.729-2.09l1.65-6.111a2.804 2.804 0 0 0-.484-2.455ZM8.436 3.875h7.125a.75.75 0 0 0 0-1.5H8.436a.75.75 0 0 0 0 1.5ZM5.682 7.253h12.634a.75.75 0 0 0 0-1.5H5.682a.75.75 0 0 0 0 1.5Z" clipRule="evenodd" />
+        </svg>,
+
+    mobileIcon:
+    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none">
           <path fill="currentColor" fillRule="evenodd" d="M20.689 10.968a2.806 2.806 0 0 0-2.244-1.108H5.555c-.887 0-1.705.404-2.244 1.107a2.808 2.808 0 0 0-.485 2.455l1.65 6.112a2.83 2.83 0 0 0 2.729 2.09h9.589a2.832 2.832 0 0 0 2.729-2.09l1.65-6.111a2.804 2.804 0 0 0-.484-2.455ZM8.436 3.875h7.125a.75.75 0 0 0 0-1.5H8.436a.75.75 0 0 0 0 1.5ZM5.682 7.253h12.634a.75.75 0 0 0 0-1.5H5.682a.75.75 0 0 0 0 1.5Z" clipRule="evenodd" />
         </svg>
-      ),
-      mobileIcon: (
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none">
-          <path fill="currentColor" fillRule="evenodd" d="M20.689 10.968a2.806 2.806 0 0 0-2.244-1.108H5.555c-.887 0-1.705.404-2.244 1.107a2.808 2.808 0 0 0-.485 2.455l1.65 6.112a2.83 2.83 0 0 0 2.729 2.09h9.589a2.832 2.832 0 0 0 2.729-2.09l1.65-6.111a2.804 2.804 0 0 0-.484-2.455ZM8.436 3.875h7.125a.75.75 0 0 0 0-1.5H8.436a.75.75 0 0 0 0 1.5ZM5.682 7.253h12.634a.75.75 0 0 0 0-1.5H5.682a.75.75 0 0 0 0 1.5Z" clipRule="evenodd" />
-        </svg>
-      ),
-    },
-    { to: "/search", label: "Поиск", icon: <Search size={20} />, mobileIcon: <Search size={22} /> },
-  ];
+
+  },
+  { to: "/search", label: "Поиск", icon: <Search size={20} />, mobileIcon: <Search size={22} /> }];
+
 
   // Conditionally add events tab
   if (showEventsTab) {
@@ -53,7 +53,7 @@ export default function AppLayout() {
       label: "Ивент",
       special: true,
       icon: <Star size={14} className="text-primary" />,
-      mobileIcon: <Star size={16} className="text-primary" />,
+      mobileIcon: <Star size={16} className="text-primary" />
     } as any);
   }
 
@@ -61,19 +61,19 @@ export default function AppLayout() {
     to: "/broadcasts",
     label: "Эфир",
     icon: <Radio size={20} />,
-    mobileIcon: <Radio size={22} />,
+    mobileIcon: <Radio size={22} />
   } as any);
 
   const navItems: any[] = [
-    ...baseNavItems,
-  ];
+  ...baseNavItems];
+
 
   navItems.push({
     to: "/messages",
     label: "ЛС",
     icon: <MessageCircle size={20} />,
     mobileIcon: <MessageCircle size={22} />,
-    badge: unreadCount,
+    badge: unreadCount
   });
 
   if (showNotificationsTab) {
@@ -81,7 +81,7 @@ export default function AppLayout() {
   }
 
   navItems.push(
-    { to: "/profile", label: "Профиль", icon: <User size={20} />, mobileIcon: <User size={22} /> },
+    { to: "/profile", label: "Профиль", icon: <User size={20} />, mobileIcon: <User size={22} /> }
   );
 
   return (
@@ -91,59 +91,59 @@ export default function AppLayout() {
         <nav className="hidden md:flex flex-col w-[220px] shrink-0 sticky top-8 h-[calc(100vh-4rem)]">
           <div className="flex items-center gap-3 px-4 mb-10">
             <span className="flex items-center text-2xl font-semibold text-primary tracking-tight font-montserrat">нэт</span>
-            <span className="text-xs text-muted-foreground font-medium bg-muted px-2 py-1 rounded-md ring-1 ring-input">v1.1 beta</span>
+            <span className="text-xs text-muted-foreground font-medium bg-muted px-2 py-1 rounded-md ring-1 ring-input">v1.2 beta</span>
           </div>
 
           <ul className="flex flex-col gap-1">
-            {navItems.map((item: any) => (
-              <li key={item.to}>
+            {navItems.map((item: any) =>
+            <li key={item.to}>
                 <NavLink
-                  to={item.to}
-                  end={item.to === "/"}
-                  className="flex items-center gap-4 px-4 py-3 rounded-xl text-muted-foreground hover:bg-muted hover:text-primary transition-all duration-300 ease-out group cursor-pointer"
-                  activeClassName="bg-muted text-primary shadow-sm ring-1 ring-input"
-                >
-                  {item.special ? (
-                    <div className="relative flex items-center justify-center">
+                to={item.to}
+                end={item.to === "/"}
+                className="flex items-center gap-4 px-4 py-3 rounded-xl text-muted-foreground hover:bg-muted hover:text-primary transition-all duration-300 ease-out group cursor-pointer"
+                activeClassName="bg-muted text-primary shadow-sm ring-1 ring-input">
+                
+                  {item.special ?
+                <div className="relative flex items-center justify-center">
                       <div className="absolute inset-0 bg-net-cyan/30 blur-md rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                       <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-net-cyan to-net-emerald flex items-center justify-center relative z-10 shadow-[0_0_12px_rgba(34,211,238,0.4)] ring-1 ring-input group-hover:scale-105 transition-transform duration-300">
                         {item.icon}
                       </div>
-                    </div>
-                  ) : (
-                    <div className="relative flex items-center justify-center transition-colors duration-300">
+                    </div> :
+
+                <div className="relative flex items-center justify-center transition-colors duration-300">
                       {item.icon}
-                      {item.badge > 0 && (
-                        <span className="absolute -top-1.5 -right-2 w-4 h-4 rounded-full bg-net-cyan text-[9px] font-bold text-background flex items-center justify-center">
+                      {item.badge > 0 &&
+                  <span className="absolute -top-1.5 -right-2 w-4 h-4 rounded-full bg-net-cyan text-[9px] font-bold text-background flex items-center justify-center">
                           {item.badge > 9 ? "9+" : item.badge}
                         </span>
-                      )}
+                  }
                     </div>
-                  )}
+                }
                   <span className="text-sm font-medium">{item.label}</span>
                 </NavLink>
               </li>
-            ))}
+            )}
 
-            {isAdmin && (
-              <li>
+            {isAdmin &&
+            <li>
                 <NavLink
-                  to="/admin"
-                  className="flex items-center gap-4 px-4 py-3 rounded-xl text-muted-foreground hover:bg-muted hover:text-primary transition-all duration-300 ease-out group cursor-pointer"
-                  activeClassName="bg-muted text-primary shadow-sm ring-1 ring-input"
-                >
+                to="/admin"
+                className="flex items-center gap-4 px-4 py-3 rounded-xl text-muted-foreground hover:bg-muted hover:text-primary transition-all duration-300 ease-out group cursor-pointer"
+                activeClassName="bg-muted text-primary shadow-sm ring-1 ring-input">
+                
                   <Shield size={20} />
                   <span className="text-sm font-medium">Админка</span>
                 </NavLink>
               </li>
-            )}
+            }
           </ul>
 
           <div className="mt-auto mb-4">
             <button
               onClick={handleSignOut}
-              className="flex items-center gap-4 px-4 py-3 rounded-xl text-muted-foreground hover:bg-muted hover:text-destructive transition-all duration-300 ease-out w-full cursor-pointer"
-            >
+              className="flex items-center gap-4 px-4 py-3 rounded-xl text-muted-foreground hover:bg-muted hover:text-destructive transition-all duration-300 ease-out w-full cursor-pointer">
+              
               <LogOut size={20} />
               <span className="text-sm font-medium">Выйти</span>
             </button>
@@ -160,42 +160,42 @@ export default function AppLayout() {
       <nav className="fixed bottom-4 left-3 right-3 md:hidden z-50">
         <div className="bg-background/40 backdrop-blur-[24px] backdrop-saturate-[1.8] rounded-full shadow-[0_8px_40px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.06)] ring-1 ring-white/[0.08]">
           <div className="flex justify-around items-center h-[56px] px-2">
-            {navItems.map((item: any) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                end={item.to === "/"}
-                className="relative flex flex-col items-center justify-center gap-[2px] w-[50px] h-[44px] rounded-full text-muted-foreground transition-all duration-300 cursor-pointer"
-                activeClassName="text-primary bg-primary/15 shadow-[0_0_12px_hsl(var(--primary)/0.15)]"
-              >
-                {item.special ? (
-                  <>
+            {navItems.map((item: any) =>
+            <NavLink
+              key={item.to}
+              to={item.to}
+              end={item.to === "/"}
+              className="relative flex flex-col items-center justify-center gap-[2px] w-[50px] h-[44px] rounded-full text-muted-foreground transition-all duration-300 cursor-pointer"
+              activeClassName="text-primary bg-primary/15 shadow-[0_0_12px_hsl(var(--primary)/0.15)]">
+              
+                {item.special ?
+              <>
                     <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-net-cyan to-net-emerald flex items-center justify-center shadow-[0_0_16px_rgba(34,211,238,0.45)] ring-1 ring-border">
                       {item.mobileIcon}
                     </div>
                     <span className="text-[9px] font-semibold tracking-wide">{item.label}</span>
-                  </>
-                ) : (
-                  <>
+                  </> :
+
+              <>
                     <div className="relative">
                       {item.mobileIcon}
-                      {item.badge > 0 && (
-                        <span className="absolute -top-1 -right-2 min-w-[14px] h-[14px] rounded-full bg-net-cyan text-[8px] font-bold text-background flex items-center justify-center px-0.5 shadow-[0_0_6px_rgba(34,211,238,0.5)]">
+                      {item.badge > 0 &&
+                  <span className="absolute -top-1 -right-2 min-w-[14px] h-[14px] rounded-full bg-net-cyan text-[8px] font-bold text-background flex items-center justify-center px-0.5 shadow-[0_0_6px_rgba(34,211,238,0.5)]">
                           {item.badge > 9 ? "9+" : item.badge}
                         </span>
-                      )}
+                  }
                     </div>
                     <span className="text-[9px] font-semibold tracking-wide">{item.label}</span>
                   </>
-                )}
+              }
               </NavLink>
-            ))}
+            )}
           </div>
         </div>
         <div className="h-[env(safe-area-inset-bottom)]" />
       </nav>
 
       <CookieBanner />
-    </div>
-  );
+    </div>);
+
 }
