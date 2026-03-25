@@ -10,6 +10,7 @@ import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 import { useState } from "react";
 import BadgeDisplay from "@/components/BadgeDisplay";
+import VerifiedBadge from "@/components/VerifiedBadge";
 import PostCard from "@/components/PostCard";
 import FollowListModal from "@/components/FollowListModal";
 
