@@ -120,7 +120,7 @@ export default function ProfilePage() {
       {/* Profile Info */}
       <div className="px-2 mb-6">
         {editing ? (
-          <div className="space-y-3 bg-card rounded-3xl p-4 sm:p-5 ring-1 ring-border">
+          <div className="space-y-3 bg-card rounded-xl p-4 sm:p-5 ring-1 ring-border">
             <div className="flex items-start gap-3">
               <EmojiPicker
                 value={editEmoji}

@@ -48,10 +48,10 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
         net: {
-          bg: "#0e0e0f",
-          card: "#141415",
-          cyan: "#22d3ee",
-          emerald: "#10b981",
+          bg: "#151518",
+          card: "#222224",
+          cyan: "#0080FF",
+          emerald: "#00ba7c",
         },
       },
       borderRadius: {
