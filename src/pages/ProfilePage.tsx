@@ -15,6 +15,7 @@ import { useTheme } from "next-themes";
 import EmojiPicker from "@/components/EmojiPicker";
 import FollowListModal from "@/components/FollowListModal";
 import BadgeDisplay from "@/components/BadgeDisplay";
+import VerifiedBadge from "@/components/VerifiedBadge";
 import PostCard from "@/components/PostCard";
 
 export default function ProfilePage() {
