@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
-import { Phone, Mail } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 type AuthMethod = "email" | "phone";
 type PhoneStep = "phone" | "code";
@@ -25,8 +25,8 @@ export default function AuthPage() {
   const [resetSent, setResetSent] = useState(false);
   const navigate = useNavigate();
 
-  const inputClass = "w-full bg-white/[0.06] ring-1 ring-white/[0.08] rounded-2xl px-4 py-3.5 text-sm text-foreground outline-none focus:ring-primary/30 focus:bg-white/[0.08] transition-all placeholder-muted-foreground backdrop-blur-sm";
-  const btnClass = "w-full bg-primary text-primary-foreground py-3.5 rounded-full text-sm font-semibold hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-50 cursor-pointer shadow-[0_4px_20px_rgba(255,255,255,0.1)]";
+  const inputClass = "w-full bg-muted/60 rounded-xl px-4 py-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground/60";
+  const btnClass = "w-full bg-primary text-primary-foreground py-3 rounded-xl text-sm font-semibold hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-50 cursor-pointer";
 
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -134,33 +134,31 @@ export default function AuthPage() {
 
   const tgDeepLink = `https://t.me/${TG_BOT_USERNAME}?start=verify_${phoneToken}`;
 
-  const cardClass = "bg-white/[0.04] backdrop-blur-xl rounded-3xl p-6 sm:p-8 ring-1 ring-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.3)]";
-
   if (showReset) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center px-4">
-        <div className="w-full max-w-sm">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-primary font-montserrat tracking-tight">нэт</h1>
-            <p className="text-muted-foreground text-sm mt-2">Сброс пароля</p>
+        <div className="w-full max-w-sm space-y-6">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-primary font-montserrat">нэт</h1>
           </div>
           {resetSent ? (
-            <div className={`${cardClass} text-center`}>
-              <div className="text-2xl mb-3">📧</div>
-              <p className="text-sm text-foreground">Письмо для сброса отправлено на {email}</p>
-              <button onClick={() => { setShowReset(false); setResetSent(false); }} className="mt-4 text-sm text-muted-foreground hover:text-primary transition-colors cursor-pointer">
-                Вернуться к входу
+            <div className="text-center space-y-3">
+              <div className="text-4xl">📧</div>
+              <p className="text-sm text-foreground/80">Письмо отправлено на {email}</p>
+              <button onClick={() => { setShowReset(false); setResetSent(false); }} className="text-sm text-muted-foreground hover:text-primary transition-colors cursor-pointer">
+                ← Назад ко входу
               </button>
             </div>
           ) : (
-            <form onSubmit={handleResetPassword} className={`${cardClass} space-y-4`}>
+            <form onSubmit={handleResetPassword} className="space-y-3">
+              <p className="text-sm text-muted-foreground text-center">Введите email для сброса пароля</p>
               <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" required className={inputClass} />
               {error && <p className="text-destructive text-xs">{error}</p>}
               <button type="submit" disabled={loading} className={btnClass}>
-                {loading ? "Отправка..." : "Отправить ссылку"}
+                {loading ? "..." : "Отправить"}
               </button>
-              <button type="button" onClick={() => setShowReset(false)} className="w-full text-sm text-muted-foreground hover:text-primary transition-colors cursor-pointer">
-                Назад
+              <button type="button" onClick={() => setShowReset(false)} className="w-full text-sm text-muted-foreground hover:text-primary transition-colors cursor-pointer text-center">
+                ← Назад
               </button>
             </form>
           )}
@@ -170,54 +168,58 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-4 py-8">
-      <div className="w-full max-w-sm">
-        <div className="text-center mb-8">
+    <div className="min-h-screen bg-background flex items-center justify-center px-4">
+      <div className="w-full max-w-sm space-y-6">
+        {/* Logo */}
+        <div className="text-center space-y-1">
           <h1 className="text-3xl font-bold text-primary font-montserrat tracking-tight">нэт</h1>
-          <p className="text-muted-foreground text-sm mt-2">{isLogin ? "Войти в аккаунт" : "Создать аккаунт"}</p>
+          <p className="text-muted-foreground text-sm">
+            {isLogin ? "С возвращением 👋" : "Присоединяйся ✨"}
+          </p>
         </div>
 
-        {/* Method toggle */}
-        <div className="flex gap-2 mb-5">
+        {/* Method tabs */}
+        <div className="flex bg-muted/40 rounded-xl p-1 gap-1">
           <button
             onClick={() => { setAuthMethod("email"); setError(""); }}
-            className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl text-sm font-medium transition-all cursor-pointer ${
+            className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all cursor-pointer ${
               authMethod === "email"
-                ? "bg-primary text-primary-foreground shadow-[0_4px_16px_rgba(255,255,255,0.1)]"
-                : "bg-white/[0.04] text-muted-foreground ring-1 ring-white/[0.08] hover:text-primary backdrop-blur-sm"
+                ? "bg-card text-primary shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            <Mail size={16} /> Email
+            📧 Email
           </button>
           <button
             onClick={() => { setAuthMethod("phone"); setError(""); setPhoneStep("phone"); }}
-            className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl text-sm font-medium transition-all cursor-pointer ${
+            className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all cursor-pointer ${
               authMethod === "phone"
-                ? "bg-primary text-primary-foreground shadow-[0_4px_16px_rgba(255,255,255,0.1)]"
-                : "bg-white/[0.04] text-muted-foreground ring-1 ring-white/[0.08] hover:text-primary backdrop-blur-sm"
+                ? "bg-card text-primary shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            <Phone size={16} /> Телефон
+            📱 Телефон
           </button>
         </div>
 
+        {/* Forms */}
         {authMethod === "email" ? (
-          <form onSubmit={handleEmailSubmit} className={`${cardClass} space-y-4`}>
+          <form onSubmit={handleEmailSubmit} className="space-y-3">
             {!isLogin && (
               <>
-                <input type="text" value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="Имя" required className={inputClass} />
-                <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Юзернейм" required className={inputClass} />
+                <input type="text" value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="👤 Имя" required className={inputClass} />
+                <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="@ Юзернейм" required className={inputClass} />
               </>
             )}
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" required className={inputClass} />
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Пароль" required minLength={6} className={inputClass} />
-            {error && <p className="text-destructive text-xs bg-destructive/10 rounded-xl px-3 py-2">{error}</p>}
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="📧 Email" required className={inputClass} />
+            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="🔒 Пароль" required minLength={6} className={inputClass} />
+            {error && <p className="text-destructive text-xs bg-destructive/10 rounded-lg px-3 py-2">{error}</p>}
             <button type="submit" disabled={loading} className={btnClass}>
-              {loading ? "Загрузка..." : isLogin ? "Войти" : "Зарегистрироваться"}
+              {loading ? "..." : isLogin ? "Войти →" : "Создать аккаунт →"}
             </button>
             <div className="flex justify-between text-xs pt-1">
               <button type="button" onClick={() => { setIsLogin(!isLogin); setError(""); }} className="text-muted-foreground hover:text-primary transition-colors cursor-pointer">
-                {isLogin ? "Создать аккаунт" : "Уже есть аккаунт?"}
+                {isLogin ? "Нет аккаунта?" : "Уже есть аккаунт?"}
               </button>
               {isLogin && (
                 <button type="button" onClick={() => setShowReset(true)} className="text-muted-foreground hover:text-primary transition-colors cursor-pointer">
@@ -227,47 +229,47 @@ export default function AuthPage() {
             </div>
           </form>
         ) : (
-          <div className={`${cardClass} space-y-4`}>
+          <div className="space-y-3">
             {phoneStep === "phone" ? (
-              <form onSubmit={handleRequestCode} className="space-y-4">
+              <form onSubmit={handleRequestCode} className="space-y-3">
                 {!isLogin && (
                   <>
-                    <input type="text" value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="Имя" required className={inputClass} />
-                    <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Юзернейм" required className={inputClass} />
+                    <input type="text" value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="👤 Имя" required className={inputClass} />
+                    <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="@ Юзернейм" required className={inputClass} />
                   </>
                 )}
                 <input
                   type="tel"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  placeholder="+7 999 123 45 67"
+                  placeholder="📱 +7 999 123 45 67"
                   required
                   className={inputClass}
                 />
-                {error && <p className="text-destructive text-xs bg-destructive/10 rounded-xl px-3 py-2">{error}</p>}
+                {error && <p className="text-destructive text-xs bg-destructive/10 rounded-lg px-3 py-2">{error}</p>}
                 <button type="submit" disabled={loading} className={btnClass}>
-                  {loading ? "Отправка..." : "Получить код в Telegram"}
+                  {loading ? "..." : "Получить код →"}
                 </button>
+                <p className="text-xs text-center text-muted-foreground/60">Код придёт в Telegram-бота 🤖</p>
                 <div className="text-xs text-center">
                   <button type="button" onClick={() => { setIsLogin(!isLogin); setError(""); }} className="text-muted-foreground hover:text-primary transition-colors cursor-pointer">
-                    {isLogin ? "Создать аккаунт" : "Уже есть аккаунт?"}
+                    {isLogin ? "Нет аккаунта?" : "Уже есть аккаунт?"}
                   </button>
                 </div>
               </form>
             ) : (
-              <form onSubmit={handleVerifyCode} className="space-y-5">
+              <form onSubmit={handleVerifyCode} className="space-y-4">
                 <div className="text-center space-y-3">
-                  <div className="text-3xl">📱</div>
                   <p className="text-sm text-foreground/80">
-                    Код отправлен в Telegram-бота
+                    Код отправлен в бота 🤖
                   </p>
                   <a
                     href={tgDeepLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 bg-[hsl(200,80%,45%)] text-white px-5 py-3 rounded-full text-sm font-medium hover:opacity-90 transition-all active:scale-95 shadow-[0_4px_16px_rgba(34,211,238,0.3)]"
+                    className="inline-flex items-center gap-2 bg-[#0088cc] text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:opacity-90 transition-all active:scale-95"
                   >
-                    Открыть Telegram
+                    Открыть Telegram →
                   </a>
                 </div>
                 <input
@@ -277,18 +279,18 @@ export default function AuthPage() {
                   placeholder="• • • • • •"
                   required
                   maxLength={6}
-                  className={`${inputClass} text-center text-xl tracking-[0.6em] font-mono py-4`}
+                  className={`${inputClass} text-center text-lg tracking-[0.5em] font-mono`}
                 />
-                {error && <p className="text-destructive text-xs bg-destructive/10 rounded-xl px-3 py-2">{error}</p>}
+                {error && <p className="text-destructive text-xs bg-destructive/10 rounded-lg px-3 py-2">{error}</p>}
                 <button type="submit" disabled={loading || phoneCode.length !== 6} className={btnClass}>
-                  {loading ? "Проверка..." : "Подтвердить"}
+                  {loading ? "..." : "Подтвердить ✓"}
                 </button>
                 <button
                   type="button"
                   onClick={() => { setPhoneStep("phone"); setPhoneCode(""); setError(""); }}
-                  className="w-full text-sm text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+                  className="w-full flex items-center justify-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors cursor-pointer"
                 >
-                  Назад
+                  <ArrowLeft size={14} /> Назад
                 </button>
               </form>
             )}
