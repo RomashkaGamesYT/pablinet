@@ -60,7 +60,7 @@ export default function PostCard({ post, badges = [], context = "feed" }: PostCa
   const isOwner = user?.id === post.user_id;
   const isPinnedFeed = post.pinned_in_feed;
   const isPinnedProfile = post.pinned_in_profile;
-  
+
   const isAuthorAdmin = postProfile?.logo_url || postProfile?.banner_url;
 
   const handleShare = async () => {
@@ -90,11 +90,7 @@ export default function PostCard({ post, badges = [], context = "feed" }: PostCa
   };
 
   return (
-    <div className={`rounded-2xl p-4 transition-colors ${
-      isAuthorAdmin 
-        ? "bg-gradient-to-br from-net-cyan/[0.06] to-net-emerald/[0.04] ring-1 ring-net-cyan/20 hover:ring-net-cyan/30" 
-        : `bg-card/60 hover:bg-card/80 ${(isPinnedFeed || isPinnedProfile) ? "ring-1 ring-primary/20" : ""}`
-    }`}>
+    <div className="rounded-4xl">
       {(isPinnedFeed || isPinnedProfile) && (
         <div className="flex items-center gap-1.5 text-xs text-primary/60 mb-2 pl-12">
           <Pin size={12} /> Закреплено
@@ -103,8 +99,8 @@ export default function PostCard({ post, badges = [], context = "feed" }: PostCa
       <div className="flex items-start gap-3 mb-3">
         <div
           className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 cursor-pointer overflow-hidden ${
-            isAuthorAdmin 
-              ? "bg-gradient-to-tr from-net-cyan/30 to-net-emerald/30 ring-2 ring-net-cyan/30 shadow-[0_0_12px_rgba(34,211,238,0.2)]" 
+            isAuthorAdmin
+              ? "bg-gradient-to-tr from-net-cyan/30 to-net-emerald/30 ring-2 ring-net-cyan/30 shadow-[0_0_12px_rgba(34,211,238,0.2)]"
               : "bg-muted ring-1 ring-border"
           }`}
           onClick={() => navigate(`/user/${post.user_id}`)}
@@ -150,7 +146,10 @@ export default function PostCard({ post, badges = [], context = "feed" }: PostCa
                 </DropdownMenuItem>
               )}
               {(isOwner || isAdmin) && (
-                <DropdownMenuItem onClick={handleDelete} className="cursor-pointer text-sm gap-2 text-destructive focus:text-destructive">
+                <DropdownMenuItem
+                  onClick={handleDelete}
+                  className="cursor-pointer text-sm gap-2 text-destructive focus:text-destructive"
+                >
                   <Trash2 size={14} /> Удалить
                 </DropdownMenuItem>
               )}
