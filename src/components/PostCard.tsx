@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Heart, MessageCircle, Share2, Pin, Trash2, MoreHorizontal } from "lucide-react";
+import { Heart, MessageCircle, Share2, Pin, Trash2, MoreHorizontal, Eye } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ru } from "date-fns/locale";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToggleLike, useDeletePost, useTogglePin } from "@/hooks/usePosts";
 import { useIsAdmin } from "@/hooks/useAdmin";
 import BadgeDisplay from "@/components/BadgeDisplay";
+import VerifiedBadge from "@/components/VerifiedBadge";
 import CommentsSection from "@/components/CommentsSection";
 import { toast } from "sonner";
 import {
@@ -60,7 +61,6 @@ export default function PostCard({ post, badges = [], context = "feed" }: PostCa
   const isPinnedFeed = post.pinned_in_feed;
   const isPinnedProfile = post.pinned_in_profile;
   
-  // Check if post author is an admin (has logo_url or banner_url as indicator)
   const isAuthorAdmin = postProfile?.logo_url || postProfile?.banner_url;
 
   const handleShare = async () => {
@@ -90,10 +90,10 @@ export default function PostCard({ post, badges = [], context = "feed" }: PostCa
   };
 
   return (
-    <div className={`rounded-3xl p-4 sm:p-5 ring-1 transition-colors ${
+    <div className={`rounded-2xl p-4 transition-colors ${
       isAuthorAdmin 
-        ? "bg-gradient-to-br from-net-cyan/[0.06] to-net-emerald/[0.04] ring-net-cyan/20 hover:ring-net-cyan/30" 
-        : `bg-card/50 ring-border hover:bg-card/80 ${(isPinnedFeed || isPinnedProfile) ? "ring-primary/20" : ""}`
+        ? "bg-gradient-to-br from-net-cyan/[0.06] to-net-emerald/[0.04] ring-1 ring-net-cyan/20 hover:ring-net-cyan/30" 
+        : `bg-card/60 hover:bg-card/80 ${(isPinnedFeed || isPinnedProfile) ? "ring-1 ring-primary/20" : ""}`
     }`}>
       {(isPinnedFeed || isPinnedProfile) && (
         <div className="flex items-center gap-1.5 text-xs text-primary/60 mb-2 pl-12">
@@ -102,40 +102,35 @@ export default function PostCard({ post, badges = [], context = "feed" }: PostCa
       )}
       <div className="flex items-start gap-3 mb-3">
         <div
-          className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center ring-1 shrink-0 cursor-pointer overflow-hidden ${
+          className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 cursor-pointer overflow-hidden ${
             isAuthorAdmin 
-              ? "bg-gradient-to-tr from-net-cyan/30 to-net-emerald/30 ring-net-cyan/30 shadow-[0_0_12px_rgba(34,211,238,0.2)]" 
-              : "bg-gradient-to-tr from-net-cyan/20 to-net-emerald/20 ring-input"
+              ? "bg-gradient-to-tr from-net-cyan/30 to-net-emerald/30 ring-2 ring-net-cyan/30 shadow-[0_0_12px_rgba(34,211,238,0.2)]" 
+              : "bg-muted ring-1 ring-border"
           }`}
           onClick={() => navigate(`/user/${post.user_id}`)}
         >
           {postProfile?.logo_url ? (
             <img src={postProfile.logo_url} alt="" className="w-full h-full object-cover rounded-full" />
           ) : (
-            <span className="text-sm">{postProfile?.avatar_emoji || "🐊"}</span>
+            <span className="text-base">{postProfile?.avatar_emoji || "🐊"}</span>
           )}
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5 flex-wrap">
             <span
-              className="text-sm font-medium text-primary tracking-tight cursor-pointer hover:underline"
+              className="text-[15px] font-semibold text-primary cursor-pointer hover:underline"
               onClick={() => navigate(`/user/${post.user_id}`)}
             >
               {postProfile?.display_name || "Пользователь"}
             </span>
-            {postProfile?.verified && (
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" className="shrink-0 text-[hsl(217,91%,60%)] drop-shadow-[0_2px_6px_rgba(59,130,246,0.5)]">
-                <path fill="currentColor" fillRule="evenodd" d="M9.592 3.2a6 6 0 0 1-.495.399c-.298.2-.633.338-.985.408c-.153.03-.313.043-.632.068c-.801.064-1.202.096-1.536.214a2.71 2.71 0 0 0-1.655 1.655c-.118.334-.15.735-.214 1.536a6 6 0 0 1-.068.632c-.07.352-.208.687-.408.985c-.087.13-.191.252-.399.495c-.521.612-.782.918-.935 1.238c-.353.74-.353 1.6 0 2.34c.153.32.414.626.935 1.238c.208.243.312.365.399.495c.2.298.338.633.408.985c.03.153.043.313.068.632c.064.801.096 1.202.214 1.536a2.71 2.71 0 0 0 1.655 1.655c.334.118.735.15 1.536.214c.319.025.479.038.632.068c.352.07.687.209.985.408c.13.087.252.191.495.399c.612.521.918.782 1.238.935c.74.353 1.6.353 2.34 0c.32-.153.626-.414 1.238-.935c.243-.208.365-.312.495-.399c.298-.2.633-.338.985-.408c.153-.03.313-.043.632-.068c.801-.064 1.202-.096 1.536-.214a2.71 2.71 0 0 0 1.655-1.655c.118-.334.15-.735.214-1.536c.025-.319.038-.479.068-.632c.07-.352.209-.687.408-.985c.087-.13.191-.252.399-.495c.521-.612.782-.918.935-1.238c.353-.74.353-1.6 0-2.34c-.153-.32-.414-.626-.935-1.238a6 6 0 0 1-.399-.495a2.7 2.7 0 0 1-.408-.985a6 6 0 0 1-.068-.632c-.064-.801-.096-1.202-.214-1.536a2.71 2.71 0 0 0-1.655-1.655c-.334-.118-.735-.15-1.536-.214a6 6 0 0 1-.632-.068a2.7 2.7 0 0 1-.985-.408a6 6 0 0 1-.495-.399c-.612-.521-.918-.782-1.238-.935a2.71 2.71 0 0 0-2.34 0c-.32.153-.626.414-1.238.935m6.781 6.663a.814.814 0 0 0-1.15-1.15l-4.85 4.85l-1.596-1.595a.814.814 0 0 0-1.15 1.15l2.17 2.17a.814.814 0 0 0 1.15 0z" clipRule="evenodd" />
-              </svg>
-            )}
+            {postProfile?.verified && <VerifiedBadge size={16} />}
             {badges.length > 0 && <BadgeDisplay badges={badges} size="sm" />}
           </div>
-          <div className="text-xs text-muted-foreground">
+          <div className="text-xs text-muted-foreground mt-0.5">
             {formatDistanceToNow(new Date(post.created_at), { addSuffix: true, locale: ru })}
           </div>
         </div>
 
-        {/* Post menu */}
         {(isOwner || isAdmin) && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -164,7 +159,7 @@ export default function PostCard({ post, badges = [], context = "feed" }: PostCa
         )}
       </div>
 
-      <div className="text-sm text-foreground/80 leading-relaxed mb-3 whitespace-pre-wrap">
+      <div className="text-[15px] text-foreground/90 leading-relaxed mb-3 whitespace-pre-wrap">
         {renderContentWithHashtags(post.content)}
       </div>
 
@@ -173,32 +168,32 @@ export default function PostCard({ post, badges = [], context = "feed" }: PostCa
           <img
             src={post.image_url}
             alt="Изображение поста"
-            className="w-full rounded-2xl object-cover max-h-96 ring-1 ring-border"
+            className="w-full rounded-xl object-cover max-h-96"
             loading="lazy"
           />
         </div>
       )}
 
-      <div className="flex items-center gap-5 pt-3 border-t border-border">
+      <div className="flex items-center gap-1 pt-3 border-t border-border/50">
         <button
           onClick={() => toggleLike.mutate(post.id)}
-          className={`flex items-center gap-2 transition-colors cursor-pointer ${isLiked ? "text-destructive" : "text-muted-foreground hover:text-destructive"}`}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-colors cursor-pointer text-sm ${isLiked ? "text-destructive bg-destructive/10" : "text-muted-foreground hover:text-destructive hover:bg-destructive/5"}`}
         >
-          <Heart size={18} fill={isLiked ? "currentColor" : "none"} />
+          <Heart size={16} fill={isLiked ? "currentColor" : "none"} />
           <span className="text-xs font-medium">{likesCount}</span>
         </button>
         <button
           onClick={() => setShowComments(!showComments)}
-          className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-muted-foreground hover:text-primary hover:bg-primary/5 transition-colors cursor-pointer"
         >
-          <MessageCircle size={18} />
+          <MessageCircle size={16} />
           <span className="text-xs font-medium">{post.comment_count || 0}</span>
         </button>
         <button
           onClick={handleShare}
-          className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors ml-auto cursor-pointer"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-muted-foreground hover:text-primary hover:bg-primary/5 transition-colors ml-auto cursor-pointer"
         >
-          <Share2 size={18} />
+          <Share2 size={16} />
         </button>
       </div>
 
