@@ -91,7 +91,7 @@ export default function PostCard({ post, badges = [], context = "feed" }: PostCa
   };
 
   return (
-    <div className={`rounded-[20px] p-4 transition-colors ${
+    <div className={`rounded-[35px] p-4 transition-colors ${
       isAuthorAdmin 
         ? "bg-gradient-to-br from-net-cyan/[0.06] to-net-emerald/[0.04] ring-1 ring-net-cyan/20 hover:ring-net-cyan/30" 
         : `bg-card/60 hover:bg-card/80 ${(isPinnedFeed || isPinnedProfile) ? "ring-1 ring-primary/20" : ""}`

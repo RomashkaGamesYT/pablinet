@@ -1,17 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile, useFollowStats, useUpdateProfile } from "@/hooks/useProfile";
 import { usePosts } from "@/hooks/usePosts";
-import { useUserBadges, useIsAdmin } from "@/hooks/useAdmin";
-import { useSettings, useUpdateSettings } from "@/hooks/useSettings";
-import { Calendar, Palette, Bell, Star, LogOut, Sun, Moon, Monitor, MessageCircle, Users, UserX } from "lucide-react";
-import PhoneVerification from "@/components/PhoneVerification";
-import AdminProfileCustomization from "@/components/AdminProfileCustomization";
-import { toast } from "sonner";
+import { useUserBadges } from "@/hooks/useAdmin";
+import { Calendar, Settings } from "lucide-react";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 import { useNavigate } from "react-router-dom";
-import { useTheme } from "next-themes";
 import EmojiPicker from "@/components/EmojiPicker";
 import FollowListModal from "@/components/FollowListModal";
 import BadgeDisplay from "@/components/BadgeDisplay";
@@ -19,14 +14,11 @@ import VerifiedBadge from "@/components/VerifiedBadge";
 import PostCard from "@/components/PostCard";
 
 export default function ProfilePage() {
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const { data: profile, isLoading } = useProfile();
   const { data: stats } = useFollowStats();
   const { data: allPosts } = usePosts();
   const { data: userBadges } = useUserBadges(user?.id);
-  const { data: settings } = useSettings();
-  const { data: isAdmin } = useIsAdmin();
-  const updateSettings = useUpdateSettings();
   const updateProfile = useUpdateProfile();
   const navigate = useNavigate();
   const [editing, setEditing] = useState(false);
@@ -34,23 +26,8 @@ export default function ProfilePage() {
   const [editBio, setEditBio] = useState("");
   const [editEmoji, setEditEmoji] = useState("");
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<"posts" | "likes" | "settings">("posts");
+  const [activeTab, setActiveTab] = useState<"posts" | "likes">("posts");
   const [followListType, setFollowListType] = useState<"followers" | "following" | null>(null);
-
-
-  const showEvents = settings?.show_events_tab ?? true;
-  const showNotifications = settings?.show_notifications_tab ?? true;
-  const dmPrivacy = (settings as any)?.dm_privacy ?? "everyone";
-  const { theme, setTheme } = useTheme();
-
-  const toggleSetting = (key: "show_events_tab" | "show_notifications_tab", current: boolean) => {
-    updateSettings.mutate({ [key]: !current });
-  };
-
-  const handleSignOut = async () => {
-    await signOut();
-    navigate("/auth");
-  };
 
   if (isLoading) {
     return <div className="text-muted-foreground text-sm text-center py-8">Загрузка...</div>;
@@ -75,7 +52,6 @@ export default function ProfilePage() {
     setEditing(false);
   };
 
-  // Sort: pinned_in_profile first for "posts" tab
   const sortedMyPosts = [...myPosts].sort((a: any, b: any) => {
     if (a.pinned_in_profile && !b.pinned_in_profile) return -1;
     if (!a.pinned_in_profile && b.pinned_in_profile) return 1;
@@ -88,7 +64,7 @@ export default function ProfilePage() {
     <div className="animate-fade-in">
       {/* Banner & Avatar */}
       <div className="relative w-full mb-14">
-        <div className="relative bg-gradient-to-br from-muted to-card h-40 sm:h-56 rounded-3xl w-full ring-1 ring-border overflow-hidden group">
+        <div className="relative bg-gradient-to-br from-muted to-card rounded-[35px] w-full ring-1 ring-border overflow-hidden" style={{ aspectRatio: "736/335" }}>
           {(profile as any)?.banner_url ? (
             <img src={(profile as any).banner_url} alt="Banner" className="absolute inset-0 w-full h-full object-cover" />
           ) : (
@@ -97,9 +73,6 @@ export default function ProfilePage() {
             }} />
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-background/40 to-transparent" />
-          <button className="absolute bottom-4 right-4 bg-background/40 hover:bg-background/60 backdrop-blur-md p-2.5 rounded-full text-foreground/70 hover:text-primary transition-all duration-300 ring-1 ring-input opacity-0 group-hover:opacity-100 hover:scale-105 shadow-md cursor-pointer">
-            <Palette size={18} />
-          </button>
         </div>
 
         <div className="absolute -bottom-10 left-6 z-20">
@@ -120,7 +93,7 @@ export default function ProfilePage() {
       {/* Profile Info */}
       <div className="px-2 mb-6">
         {editing ? (
-          <div className="space-y-3 bg-card rounded-3xl p-4 sm:p-5 ring-1 ring-border">
+          <div className="space-y-3 bg-card rounded-[35px] p-4 sm:p-5 ring-1 ring-border">
             <div className="flex items-start gap-3">
               <EmojiPicker
                 value={editEmoji}
@@ -165,12 +138,20 @@ export default function ProfilePage() {
                 </div>
                 <span className="text-sm text-muted-foreground font-medium">@{profile?.username}</span>
               </div>
-              <button
-                onClick={startEdit}
-                className="bg-primary hover:opacity-90 text-primary-foreground px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 active:scale-95 shadow-[0_2px_8px_rgba(255,255,255,0.15)] ring-1 ring-inset ring-black/5 shrink-0 cursor-pointer"
-              >
-                Редактировать
-              </button>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  onClick={() => navigate("/settings")}
+                  className="w-9 h-9 rounded-full bg-muted ring-1 ring-input flex items-center justify-center text-muted-foreground hover:text-primary hover:ring-primary/20 transition-all cursor-pointer"
+                >
+                  <Settings size={16} />
+                </button>
+                <button
+                  onClick={startEdit}
+                  className="bg-primary hover:opacity-90 text-primary-foreground px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 active:scale-95 shadow-[0_2px_8px_rgba(255,255,255,0.15)] ring-1 ring-inset ring-black/5 cursor-pointer"
+                >
+                  Редактировать
+                </button>
+              </div>
             </div>
 
             {profile?.bio && (
@@ -221,166 +202,27 @@ export default function ProfilePage() {
               Нравится
               {activeTab === "likes" && <div className="absolute bottom-0 left-1/4 right-1/4 h-0.5 bg-primary rounded-full" />}
             </button>
-            <button
-              onClick={() => setActiveTab("settings")}
-              className={`flex-1 py-3 text-sm font-medium text-center transition-colors relative cursor-pointer ${
-                activeTab === "settings" ? "text-primary" : "text-muted-foreground hover:text-foreground/70"
-              }`}
-            >
-              Настройки
-              {activeTab === "settings" && <div className="absolute bottom-0 left-1/4 right-1/4 h-0.5 bg-primary rounded-full" />}
-            </button>
           </div>
 
-          {activeTab === "settings" ? (
-            <div className="space-y-2">
-               <PhoneVerification currentPhone={profile?.phone} />
-
-              {isAdmin && (
-                <AdminProfileCustomization
-                  bannerUrl={(profile as any)?.banner_url}
-                  logoUrl={(profile as any)?.logo_url}
-                />
-              )}
-
-              {/* Theme selector */}
-              <div className="w-full flex items-center gap-4 p-4 rounded-2xl bg-card ring-1 ring-border text-left">
-                <div className="text-muted-foreground"><Palette size={18} /></div>
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium text-primary">Тема</div>
-                  <div className="text-xs text-muted-foreground">Оформление приложения</div>
-                </div>
-                <div className="flex gap-1 bg-muted rounded-xl p-1 ring-1 ring-input">
-                  {([
-                    { value: "dark", icon: <Moon size={14} />, label: "Тёмная" },
-                    { value: "light", icon: <Sun size={14} />, label: "Светлая" },
-                    { value: "system", icon: <Monitor size={14} />, label: "Авто" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.value}
-                      onClick={() => setTheme(opt.value)}
-                      className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
-                        theme === opt.value
-                          ? "bg-card text-primary ring-1 ring-border shadow-sm"
-                          : "text-muted-foreground hover:text-foreground/70"
-                      }`}
-                    >
-                      {opt.icon}
-                      <span className="hidden sm:inline">{opt.label}</span>
-                    </button>
-                  ))}
-                </div>
+          <div className="flex flex-col gap-4">
+            {displayPosts.length === 0 ? (
+              <div className="text-center py-12">
+                <div className="text-3xl mb-3">{activeTab === "posts" ? "📝" : "❤️"}</div>
+                <p className="text-muted-foreground text-sm">
+                  {activeTab === "posts" ? "Пока нет записей" : "Нет понравившихся записей"}
+                </p>
               </div>
-
-              {/* DM Privacy */}
-              <div className="w-full flex items-center gap-4 p-4 rounded-2xl bg-card ring-1 ring-border text-left">
-                <div className="text-muted-foreground"><MessageCircle size={18} /></div>
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium text-primary">Кто может писать</div>
-                  <div className="text-xs text-muted-foreground">Ограничить входящие ЛС</div>
-                </div>
-                <div className="flex gap-1 bg-muted rounded-xl p-1 ring-1 ring-input">
-                  {([
-                    { value: "everyone", icon: <Users size={14} />, label: "Все" },
-                    { value: "followers", icon: <UserX size={14} />, label: "Подписчики" },
-                    { value: "nobody", icon: <UserX size={14} />, label: "Никто" },
-                  ] as const).map((opt) => (
-                    <button
-                      key={opt.value}
-                      onClick={() => updateSettings.mutate({ dm_privacy: opt.value } as any)}
-                      className={`flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
-                        dmPrivacy === opt.value
-                          ? "bg-card text-primary ring-1 ring-border shadow-sm"
-                          : "text-muted-foreground hover:text-foreground/70"
-                      }`}
-                    >
-                      {opt.icon}
-                      <span className="hidden sm:inline">{opt.label}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <SettingToggle
-                icon={<Star size={18} />}
-                label="Вкладка Ивенты"
-                description="Показывать вкладку ивентов в навигации"
-                checked={showEvents}
-                onChange={() => toggleSetting("show_events_tab", showEvents)}
-                disabled={updateSettings.isPending}
-              />
-              <SettingToggle
-                icon={<Bell size={18} />}
-                label="Вкладка Уведомления"
-                description="Показывать вкладку уведомлений в навигации"
-                checked={showNotifications}
-                onChange={() => toggleSetting("show_notifications_tab", showNotifications)}
-                disabled={updateSettings.isPending}
-              />
-              <button
-                onClick={handleSignOut}
-                className="w-full flex items-center gap-4 p-4 rounded-2xl bg-card ring-1 ring-border hover:bg-destructive/10 transition-all cursor-pointer text-left group mt-4"
-              >
-                <div className="text-muted-foreground group-hover:text-destructive transition-colors"><LogOut size={18} /></div>
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium text-primary group-hover:text-destructive transition-colors">Выйти</div>
-                  <div className="text-xs text-muted-foreground">Выйти из аккаунта</div>
-                </div>
-              </button>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-4">
-              {displayPosts.length === 0 ? (
-                <div className="text-center py-12">
-                  <div className="text-3xl mb-3">{activeTab === "posts" ? "📝" : "❤️"}</div>
-                  <p className="text-muted-foreground text-sm">
-                    {activeTab === "posts" ? "Пока нет записей" : "Нет понравившихся записей"}
-                  </p>
-                </div>
-              ) : (
-                displayPosts.map((post: any) => (
-                  <PostCard key={post.id} post={post} context="profile" />
-                ))
-              )}
-            </div>
-          )}
+            ) : (
+              displayPosts.map((post: any) => (
+                <PostCard key={post.id} post={post} context="profile" />
+              ))
+            )}
+          </div>
         </>
       )}
       {followListType && user && (
         <FollowListModal userId={user.id} type={followListType} onClose={() => setFollowListType(null)} />
       )}
     </div>
-  );
-}
-
-function SettingToggle({
-  icon, label, description, checked, onChange, disabled,
-}: {
-  icon: React.ReactNode; label: string; description: string;
-  checked: boolean; onChange: () => void; disabled?: boolean;
-}) {
-  return (
-    <button
-      onClick={onChange}
-      disabled={disabled}
-      className="w-full flex items-center gap-4 p-4 rounded-2xl bg-card ring-1 ring-border hover:bg-muted/40 transition-all cursor-pointer disabled:opacity-50 text-left"
-    >
-      <div className="text-muted-foreground">{icon}</div>
-      <div className="flex-1 min-w-0">
-        <div className="text-sm font-medium text-primary">{label}</div>
-        <div className="text-xs text-muted-foreground">{description}</div>
-      </div>
-      <div
-        className={`w-11 h-6 rounded-full transition-colors duration-200 relative shrink-0 ${
-          checked ? "bg-net-cyan" : "bg-muted ring-1 ring-input"
-        }`}
-      >
-        <div
-          className={`absolute top-0.5 w-5 h-5 rounded-full bg-primary shadow-sm transition-transform duration-200 ${
-            checked ? "translate-x-5" : "translate-x-0.5"
-          }`}
-        />
-      </div>
-    </button>
   );
 }
