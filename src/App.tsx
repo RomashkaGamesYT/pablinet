@@ -63,6 +63,7 @@ const App = () => (
               <Route path="/broadcasts" element={<BroadcastsPage />} />
               <Route path="/notifications" element={<NotificationsPage />} />
               <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/settings" element={<SettingsPage />} />
               <Route path="/user/:userId" element={<UserProfilePage />} />
               <Route path="/messages" element={<MessagesPage />} />
               <Route path="/flame" element={<FlamePage />} />
