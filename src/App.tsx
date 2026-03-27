@@ -16,6 +16,7 @@ import UserProfilePage from "@/pages/UserProfilePage";
 import AdminPage from "@/pages/AdminPage";
 import MessagesPage from "@/pages/MessagesPage";
 import FlamePage from "@/pages/FlamePage";
+import SettingsPage from "@/pages/SettingsPage";
 
 import AuthPage from "@/pages/Auth";
 import ResetPassword from "@/pages/ResetPassword";
@@ -63,6 +64,7 @@ const App = () => (
               <Route path="/broadcasts" element={<BroadcastsPage />} />
               <Route path="/notifications" element={<NotificationsPage />} />
               <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/settings" element={<SettingsPage />} />
               <Route path="/user/:userId" element={<UserProfilePage />} />
               <Route path="/messages" element={<MessagesPage />} />
               <Route path="/flame" element={<FlamePage />} />

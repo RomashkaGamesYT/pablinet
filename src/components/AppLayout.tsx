@@ -154,16 +154,16 @@ export default function AppLayout() {
                     <Menu size={18} />
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" side="top" className="bg-card ring-1 ring-border rounded-xl min-w-[180px]">
-                  <DropdownMenuItem onClick={(e) => { e.stopPropagation(); navigate("/profile"); }} className="cursor-pointer text-sm gap-2">
+                <DropdownMenuContent align="end" side="top" className="bg-card ring-1 ring-border rounded-xl min-w-[180px] p-1">
+                  <DropdownMenuItem onClick={(e) => { e.stopPropagation(); navigate("/settings"); }} className="cursor-pointer text-sm gap-2 rounded-lg">
                     <Settings size={14} /> Настройки
                   </DropdownMenuItem>
                   {isAdmin && (
-                    <DropdownMenuItem onClick={(e) => { e.stopPropagation(); navigate("/admin"); }} className="cursor-pointer text-sm gap-2">
+                    <DropdownMenuItem onClick={(e) => { e.stopPropagation(); navigate("/admin"); }} className="cursor-pointer text-sm gap-2 rounded-lg">
                       <Shield size={14} /> Админка
                     </DropdownMenuItem>
                   )}
-                  <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleSignOut(); }} className="cursor-pointer text-sm gap-2 text-destructive focus:text-destructive">
+                  <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleSignOut(); }} className="cursor-pointer text-sm gap-2 rounded-lg text-destructive focus:text-destructive">
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
                     Выйти
                   </DropdownMenuItem>

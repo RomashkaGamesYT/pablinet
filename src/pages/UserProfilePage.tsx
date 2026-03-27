@@ -28,6 +28,7 @@ export default function UserProfilePage() {
   const [followListType, setFollowListType] = useState<"followers" | "following" | null>(null);
 
   const isOwnProfile = user?.id === userId;
+  const isOfficialNet = profile?.username === "net";
 
   if (isOwnProfile) {
     navigate("/profile", { replace: true });
@@ -70,20 +71,31 @@ export default function UserProfilePage() {
 
       {/* Banner & Avatar */}
       <div className="relative w-full mb-14">
-        <div className="relative bg-gradient-to-br from-muted to-card h-40 sm:h-56 rounded-3xl w-full ring-1 ring-border overflow-hidden">
+        <div className={`relative bg-gradient-to-br from-muted to-card rounded-[35px] w-full ring-1 overflow-hidden ${
+          isOfficialNet ? "ring-net-cyan/30" : "ring-border"
+        }`} style={{ aspectRatio: "736/335" }}>
           {(profile as any)?.banner_url ? (
             <img src={(profile as any).banner_url} alt="Banner" className="absolute inset-0 w-full h-full object-cover" />
+          ) : isOfficialNet ? (
+            <div className="absolute inset-0 bg-gradient-to-br from-net-cyan/20 via-net-emerald/10 to-primary/5" />
           ) : (
             <div className="absolute inset-0 opacity-[0.04] mix-blend-overlay pointer-events-none" style={{
               backgroundImage: "url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.8%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E')"
             }} />
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-background/40 to-transparent" />
+          {isOfficialNet && (
+            <div className="absolute bottom-4 right-4 bg-net-cyan/20 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-medium text-net-cyan ring-1 ring-net-cyan/30">
+              🏢 Официальный аккаунт
+            </div>
+          )}
         </div>
 
         <div className="absolute -bottom-10 left-6 z-20">
           <div className="relative">
-            <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-b from-muted to-card rounded-full flex items-center justify-center ring-4 ring-background shadow-xl relative z-10 overflow-hidden">
+            <div className={`w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-b from-muted to-card rounded-full flex items-center justify-center ring-4 ring-background shadow-xl relative z-10 overflow-hidden ${
+              isOfficialNet ? "shadow-[0_0_20px_rgba(34,211,238,0.3)]" : ""
+            }`}>
               <div className="ring-inset ring-input ring-1 rounded-full absolute inset-0" />
               {(profile as any)?.logo_url ? (
                 <img src={(profile as any).logo_url} alt="Logo" className="w-full h-full object-cover rounded-full relative z-10" />
@@ -105,9 +117,17 @@ export default function UserProfilePage() {
                 {profile.display_name}
               </h1>
               {profile.verified && <VerifiedBadge size={18} />}
+              {isOfficialNet && (
+                <span className="px-2 py-0.5 rounded-full bg-net-cyan/15 text-net-cyan text-[10px] font-semibold ring-1 ring-net-cyan/20">
+                  OFFICIAL
+                </span>
+              )}
               {userBadges && <BadgeDisplay badges={userBadges as any} size="md" />}
             </div>
             <span className="text-sm text-muted-foreground font-medium">@{profile.username}</span>
+            {isOfficialNet && (
+              <p className="text-xs text-net-cyan/70 mt-0.5">Команда разработчиков нэт 🚀</p>
+            )}
           </div>
           <div className="flex items-center gap-2 shrink-0">
             <button
@@ -123,7 +143,9 @@ export default function UserProfilePage() {
               className={`px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 active:scale-95 cursor-pointer disabled:opacity-50 ${
                 isFollowing
                   ? "bg-muted text-foreground ring-1 ring-input hover:ring-destructive hover:text-destructive"
-                  : "bg-primary text-primary-foreground hover:opacity-90 shadow-[0_2px_8px_rgba(255,255,255,0.15)] ring-1 ring-inset ring-black/5"
+                  : isOfficialNet
+                    ? "bg-gradient-to-r from-net-cyan to-net-emerald text-background font-semibold hover:opacity-90 shadow-[0_2px_12px_rgba(34,211,238,0.3)]"
+                    : "bg-primary text-primary-foreground hover:opacity-90 shadow-[0_2px_8px_rgba(255,255,255,0.15)] ring-1 ring-inset ring-black/5"
               }`}
             >
               {isFollowing ? "Отписаться" : "Подписаться"}
@@ -133,6 +155,11 @@ export default function UserProfilePage() {
 
         {profile.bio && (
           <p className="text-sm text-foreground/70 mt-3 leading-relaxed">{profile.bio}</p>
+        )}
+        {isOfficialNet && !profile.bio && (
+          <p className="text-sm text-foreground/70 mt-3 leading-relaxed">
+            Команда разработчиков нэт 🛠️ Обновления, новости и всё о платформе ✨
+          </p>
         )}
 
         <div className="flex flex-col gap-3 mt-4">
