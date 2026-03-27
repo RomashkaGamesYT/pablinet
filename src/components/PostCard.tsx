@@ -61,7 +61,8 @@ export default function PostCard({ post, badges = [], context = "feed" }: PostCa
   const isPinnedFeed = post.pinned_in_feed;
   const isPinnedProfile = post.pinned_in_profile;
   
-  const isAuthorAdmin = postProfile?.logo_url || postProfile?.banner_url;
+  const isOfficialNet = postProfile?.username === "net";
+  const isAuthorAdmin = isOfficialNet || postProfile?.logo_url || postProfile?.banner_url;
 
   const handleShare = async () => {
     const url = `${window.location.origin}/post/${post.id}`;
