@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Heart, MessageCircle, Share2, Pin, Trash2, MoreHorizontal, Eye } from "lucide-react";
+import { Heart, MessageCircle, Share2, Pin, Trash2, MoreHorizontal, Eye, Plus, Repeat2 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ru } from "date-fns/locale";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToggleLike, useDeletePost, useTogglePin } from "@/hooks/usePosts";
 import { useIsAdmin } from "@/hooks/useAdmin";
+import { useFollow, useIsFollowing } from "@/hooks/useFollow";
 import BadgeDisplay from "@/components/BadgeDisplay";
 import VerifiedBadge from "@/components/VerifiedBadge";
 import CommentsSection from "@/components/CommentsSection";
@@ -52,6 +53,8 @@ export default function PostCard({ post, badges = [], context = "feed" }: PostCa
   const deletePost = useDeletePost();
   const togglePin = useTogglePin();
   const { data: isAdmin } = useIsAdmin();
+  const { data: isFollowing } = useIsFollowing(post.user_id);
+  const follow = useFollow();
   const [showComments, setShowComments] = useState(false);
 
   const isLiked = post.likes?.some((l: any) => l.user_id === user?.id);
@@ -63,6 +66,7 @@ export default function PostCard({ post, badges = [], context = "feed" }: PostCa
   
   const isOfficialNet = postProfile?.username === "net";
   const isAuthorAdmin = isOfficialNet || postProfile?.logo_url || postProfile?.banner_url;
+  const showFollowButton = !isOwner && !isFollowing && user;
 
   const handleShare = async () => {
     const url = `${window.location.origin}/post/${post.id}`;
@@ -90,18 +94,19 @@ export default function PostCard({ post, badges = [], context = "feed" }: PostCa
     toast.success(isPinnedFeed ? "Пост откреплён из ленты" : "Пост закреплён в ленте");
   };
 
+  const handleFollow = () => {
+    if (!post.user_id) return;
+    follow.mutate({ targetUserId: post.user_id, isFollowing: false });
+  };
+
   return (
-    <div className={`rounded-[35px] p-4 transition-colors ${
-      isAuthorAdmin 
-        ? "bg-gradient-to-br from-net-cyan/[0.06] to-net-emerald/[0.04] ring-1 ring-net-cyan/20 hover:ring-net-cyan/30" 
-        : `bg-card/60 hover:bg-card/80 ${(isPinnedFeed || isPinnedProfile) ? "ring-1 ring-primary/20" : ""}`
-    }`}>
+    <div className="px-4 py-3">
       {(isPinnedFeed || isPinnedProfile) && (
-        <div className="flex items-center gap-1.5 text-xs text-primary/60 mb-2 pl-12">
+        <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-2 pl-12">
           <Pin size={12} /> Закреплено
         </div>
       )}
-      <div className="flex items-start gap-3 mb-3">
+      <div className="flex items-start gap-3">
         <div
           className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 cursor-pointer overflow-hidden ${
             isAuthorAdmin 
@@ -119,23 +124,76 @@ export default function PostCard({ post, badges = [], context = "feed" }: PostCa
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5 flex-wrap">
             <span
-              className="text-[15px] font-semibold text-primary cursor-pointer hover:underline"
+              className="text-[15px] font-bold text-primary cursor-pointer hover:underline"
               onClick={() => navigate(`/user/${post.user_id}`)}
             >
               {postProfile?.display_name || "Пользователь"}
             </span>
             {postProfile?.verified && <VerifiedBadge size={16} />}
             {badges.length > 0 && <BadgeDisplay badges={badges} size="sm" />}
+            {showFollowButton && (
+              <button
+                onClick={handleFollow}
+                className="w-5 h-5 rounded-full bg-muted ring-1 ring-border flex items-center justify-center text-muted-foreground hover:text-primary hover:ring-primary/30 transition-all cursor-pointer ml-0.5"
+              >
+                <Plus size={12} strokeWidth={2.5} />
+              </button>
+            )}
+            <span className="text-xs text-muted-foreground ml-1">
+              {formatDistanceToNow(new Date(post.created_at), { addSuffix: false, locale: ru })}
+            </span>
           </div>
-          <div className="text-xs text-muted-foreground mt-0.5">
-            {formatDistanceToNow(new Date(post.created_at), { addSuffix: true, locale: ru })}
+
+          {/* Content */}
+          <div className="text-[15px] text-foreground/90 leading-relaxed mt-1 whitespace-pre-wrap">
+            {renderContentWithHashtags(post.content)}
+          </div>
+
+          {post.image_url && (
+            <div className="mt-3">
+              <img
+                src={post.image_url}
+                alt="Изображение поста"
+                className="w-full rounded-2xl object-cover max-h-96 ring-1 ring-border"
+                loading="lazy"
+              />
+            </div>
+          )}
+
+          {/* Actions row */}
+          <div className="flex items-center gap-5 mt-3 text-muted-foreground">
+            <button
+              onClick={() => toggleLike.mutate(post.id)}
+              className={`flex items-center gap-1.5 transition-colors cursor-pointer text-sm group ${isLiked ? "text-destructive" : "hover:text-destructive"}`}
+            >
+              <Heart size={16} fill={isLiked ? "currentColor" : "none"} className="group-hover:scale-110 transition-transform" />
+              <span className="text-xs">{likesCount || ""}</span>
+            </button>
+            <button
+              onClick={() => setShowComments(!showComments)}
+              className="flex items-center gap-1.5 hover:text-primary transition-colors cursor-pointer"
+            >
+              <MessageCircle size={16} />
+              <span className="text-xs">{post.comment_count || 0}</span>
+            </button>
+            <button
+              onClick={handleShare}
+              className="flex items-center gap-1.5 hover:text-primary transition-colors cursor-pointer"
+            >
+              <Repeat2 size={16} />
+              <span className="text-xs">0</span>
+            </button>
+            <div className="flex items-center gap-1.5 ml-auto text-muted-foreground/60">
+              <Eye size={14} />
+              <span className="text-xs">{post.view_count || 1}</span>
+            </div>
           </div>
         </div>
 
         {(isOwner || isAdmin) && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="text-muted-foreground hover:text-primary transition-colors p-1 cursor-pointer">
+              <button className="text-muted-foreground hover:text-primary transition-colors p-1 cursor-pointer shrink-0">
                 <MoreHorizontal size={18} />
               </button>
             </DropdownMenuTrigger>
@@ -160,45 +218,10 @@ export default function PostCard({ post, badges = [], context = "feed" }: PostCa
         )}
       </div>
 
-      <div className="text-[15px] text-foreground/90 leading-relaxed mb-3 whitespace-pre-wrap">
-        {renderContentWithHashtags(post.content)}
-      </div>
-
-      {post.image_url && (
-        <div className="mb-3 -mx-1">
-          <img
-            src={post.image_url}
-            alt="Изображение поста"
-            className="w-full rounded-xl object-cover max-h-96"
-            loading="lazy"
-          />
-        </div>
-      )}
-
-      <div className="flex items-center gap-1 pt-3 border-t border-border/50">
-        <button
-          onClick={() => toggleLike.mutate(post.id)}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-colors cursor-pointer text-sm ${isLiked ? "text-destructive bg-destructive/10" : "text-muted-foreground hover:text-destructive hover:bg-destructive/5"}`}
-        >
-          <Heart size={16} fill={isLiked ? "currentColor" : "none"} />
-          <span className="text-xs font-medium">{likesCount}</span>
-        </button>
-        <button
-          onClick={() => setShowComments(!showComments)}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-muted-foreground hover:text-primary hover:bg-primary/5 transition-colors cursor-pointer"
-        >
-          <MessageCircle size={16} />
-          <span className="text-xs font-medium">{post.comment_count || 0}</span>
-        </button>
-        <button
-          onClick={handleShare}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-muted-foreground hover:text-primary hover:bg-primary/5 transition-colors ml-auto cursor-pointer"
-        >
-          <Share2 size={16} />
-        </button>
-      </div>
-
       {showComments && <CommentsSection postId={post.id} />}
+      
+      {/* Separator */}
+      <div className="border-b border-border/40 mt-3 -mx-4" />
     </div>
   );
 }
