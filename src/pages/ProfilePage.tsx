@@ -3,7 +3,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useProfile, useFollowStats, useUpdateProfile } from "@/hooks/useProfile";
 import { usePosts } from "@/hooks/usePosts";
 import { useUserBadges } from "@/hooks/useAdmin";
-import { Calendar, Settings } from "lucide-react";
+import { useProfileAssetUpload } from "@/hooks/useProfileAssets";
+import { Calendar, Settings, Smile, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 import { useNavigate } from "react-router-dom";
@@ -12,6 +13,8 @@ import FollowListModal from "@/components/FollowListModal";
 import BadgeDisplay from "@/components/BadgeDisplay";
 import VerifiedBadge from "@/components/VerifiedBadge";
 import PostCard from "@/components/PostCard";
+import { useRef } from "react";
+import { toast } from "sonner";
 
 export default function ProfilePage() {
   const { user } = useAuth();
@@ -20,6 +23,7 @@ export default function ProfilePage() {
   const { data: allPosts } = usePosts();
   const { data: userBadges } = useUserBadges(user?.id);
   const updateProfile = useUpdateProfile();
+  const { uploadAsset, removeAsset } = useProfileAssetUpload();
   const navigate = useNavigate();
   const [editing, setEditing] = useState(false);
   const [editName, setEditName] = useState("");
@@ -28,6 +32,7 @@ export default function ProfilePage() {
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"posts" | "likes">("posts");
   const [followListType, setFollowListType] = useState<"followers" | "following" | null>(null);
+  const bannerInputRef = useRef<HTMLInputElement>(null);
 
   if (isLoading) {
     return <div className="text-muted-foreground text-sm text-center py-8">Загрузка...</div>;
@@ -52,6 +57,24 @@ export default function ProfilePage() {
     setEditing(false);
   };
 
+  const handleBannerUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      await uploadAsset(file, "banner");
+    } catch {
+      toast.error("Ошибка загрузки баннера");
+    }
+  };
+
+  const handleBannerRemove = async () => {
+    try {
+      await removeAsset("banner");
+    } catch {
+      toast.error("Ошибка удаления баннера");
+    }
+  };
+
   const sortedMyPosts = [...myPosts].sort((a: any, b: any) => {
     if (a.pinned_in_profile && !b.pinned_in_profile) return -1;
     if (!a.pinned_in_profile && b.pinned_in_profile) return 1;
@@ -64,7 +87,7 @@ export default function ProfilePage() {
     <div className="animate-fade-in">
       {/* Banner & Avatar */}
       <div className="relative w-full mb-14">
-        <div className="relative bg-gradient-to-br from-muted to-card rounded-[35px] w-full ring-1 ring-border overflow-hidden" style={{ aspectRatio: "736/335" }}>
+        <div className="relative bg-gradient-to-br from-muted to-card rounded-[20px] w-full ring-1 ring-border overflow-hidden" style={{ aspectRatio: "736/335" }}>
           {(profile as any)?.banner_url ? (
             <img src={(profile as any).banner_url} alt="Banner" className="absolute inset-0 w-full h-full object-cover" />
           ) : (
@@ -73,6 +96,24 @@ export default function ProfilePage() {
             }} />
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-background/40 to-transparent" />
+          {/* Banner action buttons */}
+          <div className="absolute top-3 right-3 flex gap-2 z-10">
+            <button
+              onClick={() => bannerInputRef.current?.click()}
+              className="w-8 h-8 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center text-white/80 hover:text-white transition-colors cursor-pointer"
+            >
+              <Smile size={16} />
+            </button>
+            {(profile as any)?.banner_url && (
+              <button
+                onClick={handleBannerRemove}
+                className="w-8 h-8 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center text-white/80 hover:text-white transition-colors cursor-pointer"
+              >
+                <Trash2 size={16} />
+              </button>
+            )}
+          </div>
+          <input ref={bannerInputRef} type="file" accept="image/*" className="hidden" onChange={handleBannerUpload} />
         </div>
 
         <div className="absolute -bottom-10 left-6 z-20">
@@ -93,7 +134,7 @@ export default function ProfilePage() {
       {/* Profile Info */}
       <div className="px-2 mb-6">
         {editing ? (
-          <div className="space-y-3 bg-card rounded-[35px] p-4 sm:p-5 ring-1 ring-border">
+          <div className="space-y-3 bg-card rounded-[20px] p-4 sm:p-5 ring-1 ring-border">
             <div className="flex items-start gap-3">
               <EmojiPicker
                 value={editEmoji}
@@ -130,7 +171,7 @@ export default function ProfilePage() {
             <div className="flex items-start justify-between gap-3">
               <div className="flex flex-col gap-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <h1 className="text-lg sm:text-xl font-semibold tracking-tight text-primary">
+                  <h1 className="text-lg sm:text-xl font-bold tracking-tight text-primary">
                     {profile?.display_name}
                   </h1>
                   {profile?.verified && <VerifiedBadge size={18} />}
@@ -139,15 +180,12 @@ export default function ProfilePage() {
                 <span className="text-sm text-muted-foreground font-medium">@{profile?.username}</span>
               </div>
               <div className="flex items-center gap-2 shrink-0">
-                <button
-                  onClick={() => navigate("/settings")}
-                  className="w-9 h-9 rounded-full bg-muted ring-1 ring-input flex items-center justify-center text-muted-foreground hover:text-primary hover:ring-primary/20 transition-all cursor-pointer"
-                >
-                  <Settings size={16} />
-                </button>
+                {profile?.verified && (
+                  <VerifiedBadge size={20} />
+                )}
                 <button
                   onClick={startEdit}
-                  className="bg-primary hover:opacity-90 text-primary-foreground px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 active:scale-95 shadow-[0_2px_8px_rgba(255,255,255,0.15)] ring-1 ring-inset ring-black/5 cursor-pointer"
+                  className="bg-primary hover:opacity-90 text-primary-foreground px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 active:scale-95 cursor-pointer"
                 >
                   Редактировать
                 </button>
@@ -161,18 +199,18 @@ export default function ProfilePage() {
             <div className="flex flex-col gap-3 mt-4">
               <div className="flex items-center gap-5 text-sm">
                 <button onClick={() => setFollowListType("followers")} className="flex items-center gap-1.5 cursor-pointer group">
-                  <span className="text-primary font-semibold">{stats?.followers || 0}</span>
+                  <span className="text-primary font-bold">{stats?.followers || 0}</span>
                   <span className="text-muted-foreground group-hover:text-foreground/70 transition-colors">подписчиков</span>
                 </button>
                 <button onClick={() => setFollowListType("following")} className="flex items-center gap-1.5 cursor-pointer group">
-                  <span className="text-primary font-semibold">{stats?.following || 0}</span>
+                  <span className="text-primary font-bold">{stats?.following || 0}</span>
                   <span className="text-muted-foreground group-hover:text-foreground/70 transition-colors">подписок</span>
                 </button>
               </div>
               <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
                 <Calendar size={16} className="opacity-80" />
                 <span className="font-medium opacity-80">
-                  Регистрация: {profile?.created_at ? format(new Date(profile.created_at), "LLLL yyyy", { locale: ru }) : ""}
+                  Регистрация: {profile?.created_at ? format(new Date(profile.created_at), "LLLL yyyy 'г.'", { locale: ru }) : ""}
                 </span>
               </div>
             </div>
@@ -190,7 +228,7 @@ export default function ProfilePage() {
                 activeTab === "posts" ? "text-primary" : "text-muted-foreground hover:text-foreground/70"
               }`}
             >
-              Записи
+              Посты
               {activeTab === "posts" && <div className="absolute bottom-0 left-1/4 right-1/4 h-0.5 bg-primary rounded-full" />}
             </button>
             <button
@@ -199,12 +237,12 @@ export default function ProfilePage() {
                 activeTab === "likes" ? "text-primary" : "text-muted-foreground hover:text-foreground/70"
               }`}
             >
-              Нравится
+              Лайки
               {activeTab === "likes" && <div className="absolute bottom-0 left-1/4 right-1/4 h-0.5 bg-primary rounded-full" />}
             </button>
           </div>
 
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col">
             {displayPosts.length === 0 ? (
               <div className="text-center py-12">
                 <div className="text-3xl mb-3">{activeTab === "posts" ? "📝" : "❤️"}</div>

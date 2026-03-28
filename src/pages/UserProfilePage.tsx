@@ -4,7 +4,7 @@ import { useProfile, useFollowStats } from "@/hooks/useProfile";
 import { useFollow, useIsFollowing } from "@/hooks/useFollow";
 import { usePosts } from "@/hooks/usePosts";
 import { useUserBadges } from "@/hooks/useAdmin";
-import { Calendar, ArrowLeft, MessageCircle } from "lucide-react";
+import { Calendar, ArrowLeft, MessageCircle, Plus } from "lucide-react";
 import { useStartConversation } from "@/hooks/useMessages";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
@@ -71,7 +71,7 @@ export default function UserProfilePage() {
 
       {/* Banner & Avatar */}
       <div className="relative w-full mb-14">
-        <div className={`relative bg-gradient-to-br from-muted to-card rounded-[35px] w-full ring-1 overflow-hidden ${
+        <div className={`relative bg-gradient-to-br from-muted to-card rounded-[20px] w-full ring-1 overflow-hidden ${
           isOfficialNet ? "ring-net-cyan/30" : "ring-border"
         }`} style={{ aspectRatio: "736/335" }}>
           {(profile as any)?.banner_url ? (
@@ -113,7 +113,7 @@ export default function UserProfilePage() {
         <div className="flex items-start justify-between gap-3">
           <div className="flex flex-col gap-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <h1 className="text-lg sm:text-xl font-semibold tracking-tight text-primary">
+              <h1 className="text-lg sm:text-xl font-bold tracking-tight text-primary">
                 {profile.display_name}
               </h1>
               {profile.verified && <VerifiedBadge size={18} />}
@@ -140,15 +140,13 @@ export default function UserProfilePage() {
             <button
               onClick={handleFollowToggle}
               disabled={follow.isPending || followLoading}
-              className={`px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 active:scale-95 cursor-pointer disabled:opacity-50 ${
+              className={`flex items-center justify-center transition-all duration-200 active:scale-95 cursor-pointer disabled:opacity-50 ${
                 isFollowing
-                  ? "bg-muted text-foreground ring-1 ring-input hover:ring-destructive hover:text-destructive"
-                  : isOfficialNet
-                    ? "bg-gradient-to-r from-net-cyan to-net-emerald text-background font-semibold hover:opacity-90 shadow-[0_2px_12px_rgba(34,211,238,0.3)]"
-                    : "bg-primary text-primary-foreground hover:opacity-90 shadow-[0_2px_8px_rgba(255,255,255,0.15)] ring-1 ring-inset ring-black/5"
+                  ? "px-4 py-2 rounded-full bg-muted text-foreground ring-1 ring-input hover:ring-destructive hover:text-destructive text-sm font-medium"
+                  : "w-9 h-9 rounded-full bg-primary text-primary-foreground"
               }`}
             >
-              {isFollowing ? "Отписаться" : "Подписаться"}
+              {isFollowing ? "Отписаться" : <Plus size={18} />}
             </button>
           </div>
         </div>
@@ -165,18 +163,18 @@ export default function UserProfilePage() {
         <div className="flex flex-col gap-3 mt-4">
           <div className="flex items-center gap-5 text-sm">
             <button onClick={() => setFollowListType("followers")} className="flex items-center gap-1.5 cursor-pointer group">
-              <span className="text-primary font-semibold">{stats?.followers || 0}</span>
+              <span className="text-primary font-bold">{stats?.followers || 0}</span>
               <span className="text-muted-foreground group-hover:text-foreground/70 transition-colors">подписчиков</span>
             </button>
             <button onClick={() => setFollowListType("following")} className="flex items-center gap-1.5 cursor-pointer group">
-              <span className="text-primary font-semibold">{stats?.following || 0}</span>
+              <span className="text-primary font-bold">{stats?.following || 0}</span>
               <span className="text-muted-foreground group-hover:text-foreground/70 transition-colors">подписок</span>
             </button>
           </div>
           <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
             <Calendar size={16} className="opacity-80" />
             <span className="font-medium opacity-80">
-              Регистрация: {profile.created_at ? format(new Date(profile.created_at), "LLLL yyyy", { locale: ru }) : ""}
+              Регистрация: {profile.created_at ? format(new Date(profile.created_at), "LLLL yyyy 'г.'", { locale: ru }) : ""}
             </span>
           </div>
         </div>
@@ -185,12 +183,15 @@ export default function UserProfilePage() {
       {/* Posts */}
       <div className="flex border-b border-border mb-4">
         <div className="flex-1 py-3 text-sm font-medium text-center text-primary relative">
-          Записи
+          Посты
           <div className="absolute bottom-0 left-1/4 right-1/4 h-0.5 bg-primary rounded-full" />
+        </div>
+        <div className="flex-1 py-3 text-sm font-medium text-center text-muted-foreground relative cursor-pointer hover:text-foreground/70">
+          Лайки
         </div>
       </div>
 
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col">
         {sortedPosts.length === 0 ? (
           <div className="text-center py-12">
             <div className="text-3xl mb-3">📝</div>

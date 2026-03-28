@@ -7,8 +7,7 @@ import { useEvents } from "@/hooks/useEvents";
 import { useUnreadCount } from "@/hooks/useMessages";
 import { useSettings } from "@/hooks/useSettings";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
-import { Search, Bell, User, Star, Shield, MessageCircle, Radio, Settings, Menu } from "lucide-react";
-import { useState } from "react";
+import { Search, Bell, User, Star, Shield, MessageCircle, Radio, Settings, Menu, Plus } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -45,12 +44,12 @@ export default function AppLayout() {
         </svg>
       ),
       mobileIcon: (
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
           <path fill="currentColor" fillRule="evenodd" d="M20.689 10.968a2.806 2.806 0 0 0-2.244-1.108H5.555c-.887 0-1.705.404-2.244 1.107a2.808 2.808 0 0 0-.485 2.455l1.65 6.112a2.83 2.83 0 0 0 2.729 2.09h9.589a2.832 2.832 0 0 0 2.729-2.09l1.65-6.111a2.804 2.804 0 0 0-.484-2.455ZM8.436 3.875h7.125a.75.75 0 0 0 0-1.5H8.436a.75.75 0 0 0 0 1.5ZM5.682 7.253h12.634a.75.75 0 0 0 0-1.5H5.682a.75.75 0 0 0 0 1.5Z" clipRule="evenodd" />
         </svg>
       ),
     },
-    { to: "/search", label: "Поиск", icon: <Search size={20} />, mobileIcon: <Search size={22} /> },
+    { to: "/search", label: "Поиск", icon: <Search size={20} />, mobileIcon: <Search size={24} /> },
   ];
 
   if (showEventsTab) {
@@ -59,42 +58,38 @@ export default function AppLayout() {
       label: "Ивент",
       special: true,
       icon: <Star size={14} className="text-primary" />,
-      mobileIcon: <Star size={16} className="text-primary" />,
+      mobileIcon: <Star size={18} className="text-primary" />,
     } as any);
   }
 
-  baseNavItems.push({
-    to: "/broadcasts",
-    label: "Эфир",
-    icon: <Radio size={20} />,
-    mobileIcon: <Radio size={22} />,
-  } as any);
-
   const navItems: any[] = [...baseNavItems];
-
-  navItems.push({
-    to: "/messages",
-    label: "ЛС",
-    icon: <MessageCircle size={20} />,
-    mobileIcon: <MessageCircle size={22} />,
-    badge: unreadCount,
-  });
 
   if (showNotificationsTab) {
     navItems.push({
       to: "/notifications",
-      label: "Уведомления",
+      label: "Уведм",
       icon: <Bell size={20} />,
-      mobileIcon: <Bell size={22} />,
+      mobileIcon: <Bell size={24} />,
     });
   }
 
-  navItems.push({ to: "/profile", label: "Профиль", icon: <User size={20} />, mobileIcon: <User size={22} /> });
+  navItems.push({ to: "/profile", label: "Профиль", icon: <User size={20} />, mobileIcon: <User size={24} /> });
+
+  // Desktop sidebar includes more items
+  const desktopNavItems = [
+    ...baseNavItems,
+    { to: "/broadcasts", label: "Эфир", icon: <Radio size={20} /> },
+    { to: "/messages", label: "ЛС", icon: <MessageCircle size={20} />, badge: unreadCount },
+  ];
+  if (showNotificationsTab) {
+    desktopNavItems.push({ to: "/notifications", label: "Уведомления", icon: <Bell size={20} /> });
+  }
+  desktopNavItems.push({ to: "/profile", label: "Профиль", icon: <User size={20} /> });
 
   return (
     <div className="min-h-screen bg-background text-foreground flex justify-center selection:bg-muted selection:text-primary">
       <div className="w-full max-w-[1200px] flex gap-6 px-4 sm:px-8 py-4 sm:py-8 relative">
-        {/* Desktop Sidebar — Twitter-like */}
+        {/* Desktop Sidebar */}
         <nav className="hidden md:flex flex-col w-[220px] shrink-0 sticky top-8 h-[calc(100vh-4rem)]">
           <div className="flex items-center gap-3 px-4 mb-10">
             <span className="flex items-center text-2xl font-semibold text-primary tracking-tight font-montserrat">
@@ -103,7 +98,7 @@ export default function AppLayout() {
           </div>
 
           <ul className="flex flex-col gap-1">
-            {navItems.map((item: any) => (
+            {desktopNavItems.map((item: any) => (
               <li key={item.to}>
                 <NavLink
                   to={item.to}
@@ -179,10 +174,10 @@ export default function AppLayout() {
         </main>
       </div>
 
-      {/* Mobile Bottom Dock */}
-      <nav className="fixed bottom-4 left-3 right-3 md:hidden z-50">
-        <div className="bg-background/40 backdrop-blur-[24px] backdrop-saturate-[1.8] rounded-full shadow-[0_8px_40px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.06)] ring-1 ring-white/[0.08]">
-          <div className="flex justify-around items-center h-[56px] px-2">
+      {/* Mobile Bottom Dock — solid dark, text labels */}
+      <nav className="fixed bottom-0 left-0 right-0 md:hidden z-50">
+        <div className="bg-background border-t border-border/50">
+          <div className="flex justify-around items-center h-[60px] px-1">
             {navItems.map((item: any) => {
               const isActive = item.to === "/" ? location.pathname === "/" : location.pathname.startsWith(item.to);
               return (
@@ -190,37 +185,39 @@ export default function AppLayout() {
                   key={item.to}
                   to={item.to}
                   end={item.to === "/"}
-                  className="relative flex flex-col items-center justify-center w-[50px] h-[44px] rounded-2xl text-muted-foreground transition-all duration-300 ease-out cursor-pointer"
-                  activeClassName="text-primary"
+                  className={`relative flex flex-col items-center justify-center gap-0.5 min-w-[56px] py-1 cursor-pointer transition-colors duration-200 ${isActive ? "text-primary" : "text-muted-foreground"}`}
+                  activeClassName=""
                 >
                   {item.special ? (
-                    <>
-                      <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-net-cyan to-net-emerald flex items-center justify-center shadow-[0_0_16px_rgba(34,211,238,0.45)] ring-1 ring-border">
-                        {item.mobileIcon}
-                      </div>
-                    </>
+                    <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-net-cyan to-net-emerald flex items-center justify-center shadow-[0_0_12px_rgba(34,211,238,0.4)]">
+                      {item.mobileIcon}
+                    </div>
                   ) : (
-                    <>
-                      <div className={`relative transition-transform duration-300 ease-out ${isActive ? "scale-110" : ""}`}>
-                        {item.mobileIcon}
-                        {item.badge > 0 && (
-                          <span className="absolute -top-1 -right-2 min-w-[14px] h-[14px] rounded-full bg-net-cyan text-[8px] font-bold text-background flex items-center justify-center px-0.5 shadow-[0_0_6px_rgba(34,211,238,0.5)]">
-                            {item.badge > 9 ? "9+" : item.badge}
-                          </span>
-                        )}
-                      </div>
-                      {isActive && (
-                        <div className="absolute -bottom-0.5 w-1 h-1 rounded-full bg-primary animate-scale-in" />
+                    <div className="relative">
+                      {item.mobileIcon}
+                      {item.badge > 0 && (
+                        <span className="absolute -top-1 -right-2 min-w-[14px] h-[14px] rounded-full bg-net-cyan text-[8px] font-bold text-background flex items-center justify-center px-0.5">
+                          {item.badge > 9 ? "9+" : item.badge}
+                        </span>
                       )}
-                    </>
+                    </div>
                   )}
+                  <span className="text-[10px] font-medium">{item.label}</span>
                 </NavLink>
               );
             })}
           </div>
+          <div className="h-[env(safe-area-inset-bottom)]" />
         </div>
-        <div className="h-[env(safe-area-inset-bottom)]" />
       </nav>
+
+      {/* FAB for creating post on mobile */}
+      <button
+        onClick={() => navigate("/")}
+        className="fixed bottom-[76px] right-4 md:hidden z-50 w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg active:scale-95 transition-transform cursor-pointer"
+      >
+        <Plus size={24} />
+      </button>
 
       <CookieBanner />
     </div>
