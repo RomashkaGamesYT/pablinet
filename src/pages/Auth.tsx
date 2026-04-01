@@ -25,8 +25,10 @@ export default function AuthPage() {
   const [resetSent, setResetSent] = useState(false);
   const navigate = useNavigate();
 
-  const inputClass = "w-full bg-muted/60 rounded-xl px-4 py-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground/60";
-  const btnClass = "w-full bg-primary text-primary-foreground py-3 rounded-xl text-sm font-semibold hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-50 cursor-pointer";
+  const [emailSent, setEmailSent] = useState(false);
+
+  const inputClass = "w-full bg-muted/60 rounded-[35px] px-5 py-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground/60";
+  const btnClass = "w-full bg-primary text-primary-foreground py-3 rounded-[35px] text-sm font-semibold hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-50 cursor-pointer";
 
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
