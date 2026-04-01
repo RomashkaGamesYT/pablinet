@@ -184,7 +184,7 @@ export default function ProfilePage() {
               <div className="flex items-center gap-2 shrink-0">
                 {!profile?.verified && (
                   <button
-                    onClick={() => navigate("/settings")}
+                    onClick={() => setShowVerification(true)}
                     className="bg-muted hover:bg-muted/80 text-muted-foreground px-3 py-2 rounded-full text-xs font-medium transition-all duration-200 active:scale-95 cursor-pointer ring-1 ring-border flex items-center gap-1.5"
                     title="Подать заявку на верификацию"
                   >
