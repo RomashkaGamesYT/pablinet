@@ -124,7 +124,7 @@ export default function FeedPage() {
 
             {imagePreview && (
               <div className="relative mt-2">
-                <img src={imagePreview} alt="preview" className="max-h-48 rounded-2xl object-cover ring-1 ring-border" />
+                <img src={imagePreview} alt="preview" className="max-h-48 rounded-[35px] object-cover ring-1 ring-border" />
                 <button
                   onClick={removeImage}
                   className="absolute top-2 right-2 bg-black/60 backdrop-blur-sm text-foreground rounded-full p-1 hover:bg-black/80 transition-colors cursor-pointer"

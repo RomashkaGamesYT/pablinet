@@ -37,7 +37,7 @@ export default function CommentsSection({ postId }: { postId: string }) {
         <button
           onClick={handleSubmit}
           disabled={!text.trim() || createComment.isPending}
-          className="bg-primary text-primary-foreground p-2 rounded-xl hover:opacity-90 transition-all disabled:opacity-50 cursor-pointer"
+          className="bg-primary text-primary-foreground p-2 rounded-full hover:opacity-90 transition-all disabled:opacity-50 cursor-pointer"
         >
           <Send size={16} />
         </button>
