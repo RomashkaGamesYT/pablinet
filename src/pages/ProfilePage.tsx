@@ -87,7 +87,7 @@ export default function ProfilePage() {
     <div className="animate-fade-in">
       {/* Banner & Avatar */}
       <div className="relative w-full mb-14">
-        <div className="relative bg-gradient-to-br from-muted to-card <div className="relative bg-gradient-to-br from-muted to-card rounded-[35px] w-full ring-1 ring-border overflow-hidden" style={{ aspectRatio: "736/335" }}>" style={{ aspectRatio: "736/335" }}>
+        <div className="relative bg-gradient-to-br from-muted to-card rounded-[35px] w-full ring-1 ring-border overflow-hidden" style={{ aspectRatio: "736/335" }}>
           {(profile as any)?.banner_url ? (
             <img src={(profile as any).banner_url} alt="Banner" className="absolute inset-0 w-full h-full object-cover" />
           ) : (
