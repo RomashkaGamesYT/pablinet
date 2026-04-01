@@ -4,7 +4,7 @@ import { useProfile, useFollowStats, useUpdateProfile } from "@/hooks/useProfile
 import { usePosts } from "@/hooks/usePosts";
 import { useUserBadges } from "@/hooks/useAdmin";
 import { useProfileAssetUpload } from "@/hooks/useProfileAssets";
-import { Calendar, Settings, Smile, Trash2 } from "lucide-react";
+import { Calendar, Settings, Smile, Trash2, ShieldCheck } from "lucide-react";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 import { useNavigate } from "react-router-dom";
