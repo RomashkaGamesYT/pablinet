@@ -25,8 +25,10 @@ export default function AuthPage() {
   const [resetSent, setResetSent] = useState(false);
   const navigate = useNavigate();
 
-  const inputClass = "w-full bg-muted/60 rounded-xl px-4 py-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground/60";
-  const btnClass = "w-full bg-primary text-primary-foreground py-3 rounded-xl text-sm font-semibold hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-50 cursor-pointer";
+  const [emailSent, setEmailSent] = useState(false);
+
+  const inputClass = "w-full bg-muted/60 rounded-[35px] px-5 py-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground/60";
+  const btnClass = "w-full bg-primary text-primary-foreground py-3 rounded-[35px] text-sm font-semibold hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-50 cursor-pointer";
 
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,7 +40,7 @@ export default function AuthPage() {
         if (error) throw error;
         navigate("/");
       } else {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -47,6 +49,11 @@ export default function AuthPage() {
           },
         });
         if (error) throw error;
+        // If email confirmation is required, show verification prompt
+        if (data.user && !data.session) {
+          setEmailSent(true);
+          return;
+        }
         navigate("/");
       }
     } catch (err: any) {
@@ -134,6 +141,29 @@ export default function AuthPage() {
 
   const tgDeepLink = `https://t.me/${TG_BOT_USERNAME}?start=verify_${phoneToken}`;
 
+  if (emailSent) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center px-4">
+        <div className="w-full max-w-sm space-y-6 text-center">
+          <div className="text-5xl mb-2">📧</div>
+          <h1 className="text-xl font-bold text-primary font-montserrat">Подтвердите email</h1>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            Мы отправили письмо на <span className="text-primary font-medium">{email}</span>. Перейдите по ссылке в письме, чтобы активировать аккаунт.
+          </p>
+          <div className="bg-card rounded-[35px] p-4 ring-1 ring-border text-xs text-muted-foreground">
+            Не получили письмо? Проверьте папку «Спам» или попробуйте снова.
+          </div>
+          <button
+            onClick={() => { setEmailSent(false); setIsLogin(true); }}
+            className="text-sm text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+          >
+            ← Войти в аккаунт
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (showReset) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center px-4">
@@ -179,10 +209,10 @@ export default function AuthPage() {
         </div>
 
         {/* Method tabs */}
-        <div className="flex bg-muted/40 rounded-xl p-1 gap-1">
+        <div className="flex bg-muted/40 rounded-[35px] p-1 gap-1">
           <button
             onClick={() => { setAuthMethod("email"); setError(""); }}
-            className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all cursor-pointer ${
+            className={`flex-1 py-2.5 rounded-[30px] text-sm font-medium transition-all cursor-pointer ${
               authMethod === "email"
                 ? "bg-card text-primary shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
@@ -192,7 +222,7 @@ export default function AuthPage() {
           </button>
           <button
             onClick={() => { setAuthMethod("phone"); setError(""); setPhoneStep("phone"); }}
-            className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all cursor-pointer ${
+            className={`flex-1 py-2.5 rounded-[30px] text-sm font-medium transition-all cursor-pointer ${
               authMethod === "phone"
                 ? "bg-card text-primary shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
@@ -213,7 +243,7 @@ export default function AuthPage() {
             )}
             <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="📧 Email" required className={inputClass} />
             <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="🔒 Пароль" required minLength={6} className={inputClass} />
-            {error && <p className="text-destructive text-xs bg-destructive/10 rounded-lg px-3 py-2">{error}</p>}
+            {error && <p className="text-destructive text-xs bg-destructive/10 rounded-[35px] px-4 py-2">{error}</p>}
             <button type="submit" disabled={loading} className={btnClass}>
               {loading ? "..." : isLogin ? "Войти →" : "Создать аккаунт →"}
             </button>
@@ -246,7 +276,7 @@ export default function AuthPage() {
                   required
                   className={inputClass}
                 />
-                {error && <p className="text-destructive text-xs bg-destructive/10 rounded-lg px-3 py-2">{error}</p>}
+                {error && <p className="text-destructive text-xs bg-destructive/10 rounded-[35px] px-4 py-2">{error}</p>}
                 <button type="submit" disabled={loading} className={btnClass}>
                   {loading ? "..." : "Получить код →"}
                 </button>
@@ -267,7 +297,7 @@ export default function AuthPage() {
                     href={tgDeepLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 bg-[#0088cc] text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:opacity-90 transition-all active:scale-95"
+                    className="inline-flex items-center gap-2 bg-[#0088cc] text-white px-5 py-2.5 rounded-[35px] text-sm font-medium hover:opacity-90 transition-all active:scale-95"
                   >
                     Открыть Telegram →
                   </a>
@@ -281,7 +311,7 @@ export default function AuthPage() {
                   maxLength={6}
                   className={`${inputClass} text-center text-lg tracking-[0.5em] font-mono`}
                 />
-                {error && <p className="text-destructive text-xs bg-destructive/10 rounded-lg px-3 py-2">{error}</p>}
+                {error && <p className="text-destructive text-xs bg-destructive/10 rounded-[35px] px-4 py-2">{error}</p>}
                 <button type="submit" disabled={loading || phoneCode.length !== 6} className={btnClass}>
                   {loading ? "..." : "Подтвердить ✓"}
                 </button>

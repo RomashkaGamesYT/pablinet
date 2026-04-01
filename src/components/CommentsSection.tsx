@@ -26,7 +26,7 @@ export default function CommentsSection({ postId }: { postId: string }) {
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Написать комментарий..."
-          className="flex-1 bg-muted ring-1 ring-input rounded-xl px-3 py-2 text-sm text-foreground outline-none focus:ring-primary/30 placeholder-muted-foreground"
+          className="flex-1 bg-muted ring-1 ring-input rounded-[35px] px-4 py-2 text-sm text-foreground outline-none focus:ring-primary/30 placeholder-muted-foreground"
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
@@ -37,7 +37,7 @@ export default function CommentsSection({ postId }: { postId: string }) {
         <button
           onClick={handleSubmit}
           disabled={!text.trim() || createComment.isPending}
-          className="bg-primary text-primary-foreground p-2 rounded-xl hover:opacity-90 transition-all disabled:opacity-50 cursor-pointer"
+          className="bg-primary text-primary-foreground p-2 rounded-full hover:opacity-90 transition-all disabled:opacity-50 cursor-pointer"
         >
           <Send size={16} />
         </button>

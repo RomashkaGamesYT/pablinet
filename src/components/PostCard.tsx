@@ -154,7 +154,7 @@ export default function PostCard({ post, badges = [], context = "feed" }: PostCa
               <img
                 src={post.image_url}
                 alt="Изображение поста"
-                className="w-full rounded-2xl object-cover max-h-96 ring-1 ring-border"
+                className="w-full rounded-[35px] object-cover max-h-96 ring-1 ring-border"
                 loading="lazy"
               />
             </div>
