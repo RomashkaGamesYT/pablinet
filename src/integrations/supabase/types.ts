@@ -576,8 +576,9 @@ export type Database = {
           reviewed_by: string | null
           site_username: string
           status: string
-          telegram_chat_id: number
+          telegram_chat_id: number | null
           telegram_username: string | null
+          user_id: string | null
         }
         Insert: {
           created_at?: string
@@ -587,8 +588,9 @@ export type Database = {
           reviewed_by?: string | null
           site_username: string
           status?: string
-          telegram_chat_id: number
+          telegram_chat_id?: number | null
           telegram_username?: string | null
+          user_id?: string | null
         }
         Update: {
           created_at?: string
@@ -598,8 +600,9 @@ export type Database = {
           reviewed_by?: string | null
           site_username?: string
           status?: string
-          telegram_chat_id?: number
+          telegram_chat_id?: number | null
           telegram_username?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }

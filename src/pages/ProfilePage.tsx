@@ -13,6 +13,7 @@ import FollowListModal from "@/components/FollowListModal";
 import BadgeDisplay from "@/components/BadgeDisplay";
 import VerifiedBadge from "@/components/VerifiedBadge";
 import PostCard from "@/components/PostCard";
+import VerificationRequestDialog from "@/components/VerificationRequestDialog";
 import { useRef } from "react";
 import { toast } from "sonner";
 
@@ -33,6 +34,7 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState<"posts" | "likes">("posts");
   const [followListType, setFollowListType] = useState<"followers" | "following" | null>(null);
   const bannerInputRef = useRef<HTMLInputElement>(null);
+  const [showVerification, setShowVerification] = useState(false);
 
   if (isLoading) {
     return <div className="text-muted-foreground text-sm text-center py-8">Загрузка...</div>;
@@ -182,7 +184,7 @@ export default function ProfilePage() {
               <div className="flex items-center gap-2 shrink-0">
                 {!profile?.verified && (
                   <button
-                    onClick={() => navigate("/settings")}
+                    onClick={() => setShowVerification(true)}
                     className="bg-muted hover:bg-muted/80 text-muted-foreground px-3 py-2 rounded-full text-xs font-medium transition-all duration-200 active:scale-95 cursor-pointer ring-1 ring-border flex items-center gap-1.5"
                     title="Подать заявку на верификацию"
                   >
@@ -268,6 +270,7 @@ export default function ProfilePage() {
       {followListType && user && (
         <FollowListModal userId={user.id} type={followListType} onClose={() => setFollowListType(null)} />
       )}
+      <VerificationRequestDialog open={showVerification} onClose={() => setShowVerification(false)} />
     </div>
   );
 }
