@@ -243,7 +243,7 @@ export default function AuthPage() {
             )}
             <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="📧 Email" required className={inputClass} />
             <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="🔒 Пароль" required minLength={6} className={inputClass} />
-            {error && <p className="text-destructive text-xs bg-destructive/10 rounded-lg px-3 py-2">{error}</p>}
+            {error && <p className="text-destructive text-xs bg-destructive/10 rounded-[35px] px-4 py-2">{error}</p>}
             <button type="submit" disabled={loading} className={btnClass}>
               {loading ? "..." : isLogin ? "Войти →" : "Создать аккаунт →"}
             </button>
