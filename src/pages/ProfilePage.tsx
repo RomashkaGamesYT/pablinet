@@ -180,8 +180,15 @@ export default function ProfilePage() {
                 <span className="text-sm text-muted-foreground font-medium">@{profile?.username}</span>
               </div>
               <div className="flex items-center gap-2 shrink-0">
-                {profile?.verified && (
-                  <VerifiedBadge size={20} />
+                {!profile?.verified && (
+                  <button
+                    onClick={() => navigate("/settings")}
+                    className="bg-muted hover:bg-muted/80 text-muted-foreground px-3 py-2 rounded-full text-xs font-medium transition-all duration-200 active:scale-95 cursor-pointer ring-1 ring-border flex items-center gap-1.5"
+                    title="Подать заявку на верификацию"
+                  >
+                    <ShieldCheck size={14} />
+                    <span className="hidden sm:inline">Верификация</span>
+                  </button>
                 )}
                 <button
                   onClick={startEdit}
