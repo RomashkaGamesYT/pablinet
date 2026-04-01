@@ -141,6 +141,29 @@ export default function AuthPage() {
 
   const tgDeepLink = `https://t.me/${TG_BOT_USERNAME}?start=verify_${phoneToken}`;
 
+  if (emailSent) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center px-4">
+        <div className="w-full max-w-sm space-y-6 text-center">
+          <div className="text-5xl mb-2">📧</div>
+          <h1 className="text-xl font-bold text-primary font-montserrat">Подтвердите email</h1>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            Мы отправили письмо на <span className="text-primary font-medium">{email}</span>. Перейдите по ссылке в письме, чтобы активировать аккаунт.
+          </p>
+          <div className="bg-card rounded-[35px] p-4 ring-1 ring-border text-xs text-muted-foreground">
+            Не получили письмо? Проверьте папку «Спам» или попробуйте снова.
+          </div>
+          <button
+            onClick={() => { setEmailSent(false); setIsLogin(true); }}
+            className="text-sm text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+          >
+            ← Войти в аккаунт
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (showReset) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center px-4">
