@@ -270,6 +270,7 @@ export default function ProfilePage() {
       {followListType && user && (
         <FollowListModal userId={user.id} type={followListType} onClose={() => setFollowListType(null)} />
       )}
+      <VerificationRequestDialog open={showVerification} onClose={() => setShowVerification(false)} />
     </div>
   );
 }
