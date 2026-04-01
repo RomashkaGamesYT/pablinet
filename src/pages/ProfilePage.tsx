@@ -34,6 +34,7 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState<"posts" | "likes">("posts");
   const [followListType, setFollowListType] = useState<"followers" | "following" | null>(null);
   const bannerInputRef = useRef<HTMLInputElement>(null);
+  const [showVerification, setShowVerification] = useState(false);
 
   if (isLoading) {
     return <div className="text-muted-foreground text-sm text-center py-8">Загрузка...</div>;
