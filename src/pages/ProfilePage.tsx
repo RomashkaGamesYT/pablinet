@@ -13,6 +13,7 @@ import FollowListModal from "@/components/FollowListModal";
 import BadgeDisplay from "@/components/BadgeDisplay";
 import VerifiedBadge from "@/components/VerifiedBadge";
 import PostCard from "@/components/PostCard";
+import VerificationRequestDialog from "@/components/VerificationRequestDialog";
 import { useRef } from "react";
 import { toast } from "sonner";
 
