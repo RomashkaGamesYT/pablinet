@@ -311,7 +311,7 @@ export default function AuthPage() {
                   maxLength={6}
                   className={`${inputClass} text-center text-lg tracking-[0.5em] font-mono`}
                 />
-                {error && <p className="text-destructive text-xs bg-destructive/10 rounded-lg px-3 py-2">{error}</p>}
+                {error && <p className="text-destructive text-xs bg-destructive/10 rounded-[35px] px-4 py-2">{error}</p>}
                 <button type="submit" disabled={loading || phoneCode.length !== 6} className={btnClass}>
                   {loading ? "..." : "Подтвердить ✓"}
                 </button>
