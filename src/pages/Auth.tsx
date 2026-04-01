@@ -209,10 +209,10 @@ export default function AuthPage() {
         </div>
 
         {/* Method tabs */}
-        <div className="flex bg-muted/40 rounded-xl p-1 gap-1">
+        <div className="flex bg-muted/40 rounded-[35px] p-1 gap-1">
           <button
             onClick={() => { setAuthMethod("email"); setError(""); }}
-            className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all cursor-pointer ${
+            className={`flex-1 py-2.5 rounded-[30px] text-sm font-medium transition-all cursor-pointer ${
               authMethod === "email"
                 ? "bg-card text-primary shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
@@ -222,7 +222,7 @@ export default function AuthPage() {
           </button>
           <button
             onClick={() => { setAuthMethod("phone"); setError(""); setPhoneStep("phone"); }}
-            className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all cursor-pointer ${
+            className={`flex-1 py-2.5 rounded-[30px] text-sm font-medium transition-all cursor-pointer ${
               authMethod === "phone"
                 ? "bg-card text-primary shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
