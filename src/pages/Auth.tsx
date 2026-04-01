@@ -40,7 +40,7 @@ export default function AuthPage() {
         if (error) throw error;
         navigate("/");
       } else {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -49,6 +49,11 @@ export default function AuthPage() {
           },
         });
         if (error) throw error;
+        // If email confirmation is required, show verification prompt
+        if (data.user && !data.session) {
+          setEmailSent(true);
+          return;
+        }
         navigate("/");
       }
     } catch (err: any) {
