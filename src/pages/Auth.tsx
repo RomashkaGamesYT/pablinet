@@ -297,7 +297,7 @@ export default function AuthPage() {
                     href={tgDeepLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 bg-[#0088cc] text-white px-5 py-2.5 rounded-xl text-sm font-medium hover:opacity-90 transition-all active:scale-95"
+                    className="inline-flex items-center gap-2 bg-[#0088cc] text-white px-5 py-2.5 rounded-[35px] text-sm font-medium hover:opacity-90 transition-all active:scale-95"
                   >
                     Открыть Telegram →
                   </a>
