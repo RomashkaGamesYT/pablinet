@@ -71,7 +71,7 @@ export default function UserProfilePage() {
 
       {/* Banner & Avatar */}
       <div className="relative w-full mb-14">
-        <div className={`relative bg-gradient-to-br from-muted to-card <div className={`relative bg-gradient-to-br from-muted to-card rounded-[35px] w-full ring-1 overflow-hidden ${ w-full ring-1 overflow-hidden ${
+        <div className={`relative bg-gradient-to-br from-muted to-card rounded-[35px] w-full ring-1 overflow-hidden ${
           isOfficialNet ? "ring-net-cyan/30" : "ring-border"
         }`} style={{ aspectRatio: "736/335" }}>
           {(profile as any)?.banner_url ? (
