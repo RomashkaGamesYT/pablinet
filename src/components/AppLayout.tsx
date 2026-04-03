@@ -215,7 +215,7 @@ export default function AppLayout() {
       {/* FAB for creating post on mobile */}
       <button
         onClick={() => navigate("/")}
-        className="fixed bottom-[76px] right-4 md:hidden z-50 w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg active:scale-95 transition-transform cursor-pointer"
+        className="fixed bottom-[84px] right-5 md:hidden z-50 w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg active:scale-95 transition-transform cursor-pointer"
       >
         <Plus size={24} />
       </button>
