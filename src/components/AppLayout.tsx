@@ -85,7 +85,7 @@ export default function AppLayout() {
     { to: "/messages", label: "ЛС", icon: <MessageCircle size={20} />, badge: unreadCount },
   ];
   if (showNotificationsTab) {
-    desktopNavItems.push({ to: "/notifications", label: "Уведомления", icon: <Bell size={20} /> });
+    desktopNavItems.push({ to: "/notifications", label: "Уведомления", icon: <Bell size={20} />, badge: unreadNotifs });
   }
   desktopNavItems.push({ to: "/profile", label: "Профиль", icon: <User size={20} /> });
 
