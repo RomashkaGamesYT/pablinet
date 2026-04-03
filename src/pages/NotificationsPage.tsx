@@ -72,7 +72,7 @@ export default function NotificationsPage() {
       case "comment":
         return (<><span className="font-semibold text-primary">{name}</span> оставил(а) комментарий</>);
       case "mention":
-        return (<><span className="font-semibold text-primary">{name}</span> упомянул(а) вас</>);
+        return (<><span className="font-semibold text-primary">{name}</span> отметил(а) вас!</>);
       default:
         return "Новое уведомление";
     }

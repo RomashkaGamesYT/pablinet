@@ -56,6 +56,28 @@ export function useCreateComment() {
         });
       }
 
+      // Detect @mentions in comment and send notifications
+      const mentionRegex = /@([a-zA-Zа-яА-ЯёЁ0-9_]+)/g;
+      const mentions = [...content.matchAll(mentionRegex)].map(m => m[1]);
+      if (mentions.length > 0) {
+        const { data: mentionedProfiles } = await supabase
+          .from("profiles")
+          .select("user_id, username")
+          .in("username", mentions);
+        if (mentionedProfiles) {
+          for (const mp of mentionedProfiles) {
+            if (mp.user_id !== user.id) {
+              await supabase.from("notifications").insert({
+                user_id: mp.user_id,
+                actor_id: user.id,
+                type: "mention" as any,
+                post_id: postId,
+              });
+            }
+          }
+        }
+      }
+
       return data;
     },
     onSuccess: (_, variables) => {

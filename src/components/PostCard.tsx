@@ -25,7 +25,7 @@ interface PostCardProps {
 }
 
 function renderContentWithHashtags(content: string) {
-  const parts = content.split(/(#[a-zA-Zа-яА-ЯёЁ0-9_]+)/g);
+  const parts = content.split(/(#[a-zA-Zа-яА-ЯёЁ0-9_]+|@[a-zA-Zа-яА-ЯёЁ0-9_]+)/g);
   return parts.map((part, i) => {
     if (/^#[a-zA-Zа-яА-ЯёЁ0-9_]+$/.test(part)) {
       const isPedro = part === "#Педро88";
@@ -38,6 +38,13 @@ function renderContentWithHashtags(content: string) {
               : "text-net-cyan hover:underline cursor-pointer"
           }
         >
+          {part}
+        </span>
+      );
+    }
+    if (/^@[a-zA-Zа-яА-ЯёЁ0-9_]+$/.test(part)) {
+      return (
+        <span key={i} className="text-net-cyan hover:underline cursor-pointer font-medium">
           {part}
         </span>
       );
@@ -100,128 +107,126 @@ export default function PostCard({ post, badges = [], context = "feed" }: PostCa
   };
 
   return (
-    <div className="px-4 py-3">
+    <div className="px-3 py-2">
       {(isPinnedFeed || isPinnedProfile) && (
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-2 pl-12">
           <Pin size={12} /> Закреплено
         </div>
       )}
-      <div className="flex items-start gap-3">
-        <div
-          className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 cursor-pointer overflow-hidden ${
-            isAuthorAdmin 
-              ? "bg-gradient-to-tr from-net-cyan/30 to-net-emerald/30 ring-2 ring-net-cyan/30 shadow-[0_0_12px_rgba(34,211,238,0.2)]" 
-              : "bg-muted ring-1 ring-border"
-          }`}
-          onClick={() => navigate(`/user/${post.user_id}`)}
-        >
-          {postProfile?.logo_url ? (
-            <img src={postProfile.logo_url} alt="" className="w-full h-full object-cover rounded-full" />
-          ) : (
-            <span className="text-base">{postProfile?.avatar_emoji || "🐊"}</span>
-          )}
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <span
-              className="text-[15px] font-bold text-primary cursor-pointer hover:underline"
-              onClick={() => navigate(`/user/${post.user_id}`)}
-            >
-              {postProfile?.display_name || "Пользователь"}
-            </span>
-            {postProfile?.verified && <VerifiedBadge size={16} />}
-            {badges.length > 0 && <BadgeDisplay badges={badges} size="sm" />}
-            {showFollowButton && (
-              <button
-                onClick={handleFollow}
-                className="w-5 h-5 rounded-full bg-muted ring-1 ring-border flex items-center justify-center text-muted-foreground hover:text-primary hover:ring-primary/30 transition-all cursor-pointer ml-0.5"
-              >
-                <Plus size={12} strokeWidth={2.5} />
-              </button>
+      <div className="rounded-[35px] bg-card/60 backdrop-blur-md ring-1 ring-border/50 p-4 transition-all duration-500 hover:bg-card/80 hover:ring-border/70 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)]">
+        <div className="flex items-start gap-3">
+          <div
+            className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 cursor-pointer overflow-hidden ${
+              isAuthorAdmin 
+                ? "bg-gradient-to-tr from-net-cyan/30 to-net-emerald/30 ring-2 ring-net-cyan/30 shadow-[0_0_12px_rgba(34,211,238,0.2)]" 
+                : "bg-muted ring-1 ring-border"
+            }`}
+            onClick={() => navigate(`/user/${post.user_id}`)}
+          >
+            {postProfile?.logo_url ? (
+              <img src={postProfile.logo_url} alt="" className="w-full h-full object-cover rounded-full" />
+            ) : (
+              <span className="text-base">{postProfile?.avatar_emoji || "🐊"}</span>
             )}
-            <span className="text-xs text-muted-foreground ml-1">
-              {formatDistanceToNow(new Date(post.created_at), { addSuffix: false, locale: ru })}
-            </span>
           </div>
-
-          {/* Content */}
-          <div className="text-[15px] text-foreground/90 leading-relaxed mt-1 whitespace-pre-wrap">
-            {renderContentWithHashtags(post.content)}
-          </div>
-
-          {post.image_url && (
-            <div className="mt-3">
-              <img
-                src={post.image_url}
-                alt="Изображение поста"
-                className="w-full rounded-[35px] object-cover max-h-96 ring-1 ring-border"
-                loading="lazy"
-              />
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span
+                className="text-[15px] font-bold text-primary cursor-pointer hover:underline"
+                onClick={() => navigate(`/user/${post.user_id}`)}
+              >
+                {postProfile?.display_name || "Пользователь"}
+              </span>
+              {postProfile?.verified && <VerifiedBadge size={16} />}
+              {badges.length > 0 && <BadgeDisplay badges={badges} size="sm" />}
+              {showFollowButton && (
+                <button
+                  onClick={handleFollow}
+                  className="w-5 h-5 rounded-full bg-muted ring-1 ring-border flex items-center justify-center text-muted-foreground hover:text-primary hover:ring-primary/30 transition-all cursor-pointer ml-0.5"
+                >
+                  <Plus size={12} strokeWidth={2.5} />
+                </button>
+              )}
+              <span className="text-xs text-muted-foreground ml-1">
+                {formatDistanceToNow(new Date(post.created_at), { addSuffix: false, locale: ru })}
+              </span>
             </div>
+
+            {/* Content */}
+            <div className="text-[15px] text-foreground/90 leading-relaxed mt-1.5 whitespace-pre-wrap">
+              {renderContentWithHashtags(post.content)}
+            </div>
+
+            {post.image_url && (
+              <div className="mt-3">
+                <img
+                  src={post.image_url}
+                  alt="Изображение поста"
+                  className="w-full rounded-[24px] object-cover max-h-96 ring-1 ring-border/30"
+                  loading="lazy"
+                />
+              </div>
+            )}
+
+            {/* Actions row */}
+            <div className="flex items-center gap-5 mt-3 text-muted-foreground">
+              <button
+                onClick={() => toggleLike.mutate(post.id)}
+                className={`flex items-center gap-1.5 transition-all cursor-pointer text-sm group ${isLiked ? "text-destructive" : "hover:text-destructive"}`}
+              >
+                <Heart size={16} fill={isLiked ? "currentColor" : "none"} className={`group-hover:scale-110 transition-transform ${isLiked ? "heart-anim" : ""}`} />
+                <span className="text-xs">{likesCount || ""}</span>
+              </button>
+              <button
+                onClick={() => setShowComments(!showComments)}
+                className="flex items-center gap-1.5 hover:text-primary transition-colors cursor-pointer"
+              >
+                <MessageCircle size={16} />
+                <span className="text-xs">{post.comment_count || 0}</span>
+              </button>
+              <button
+                onClick={handleShare}
+                className="flex items-center gap-1.5 hover:text-primary transition-colors cursor-pointer"
+              >
+                <Repeat2 size={16} />
+              </button>
+              <div className="flex items-center gap-1.5 ml-auto text-muted-foreground/60">
+                <Eye size={14} />
+                <span className="text-xs">{post.view_count || 1}</span>
+              </div>
+            </div>
+          </div>
+
+          {(isOwner || isAdmin) && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="text-muted-foreground hover:text-primary transition-colors p-1 cursor-pointer shrink-0">
+                  <MoreHorizontal size={18} />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="bg-card/90 backdrop-blur-lg ring-1 ring-border rounded-[20px] min-w-[160px]">
+                {isOwner && (
+                  <DropdownMenuItem onClick={handlePinProfile} className="cursor-pointer text-sm gap-2">
+                    <Pin size={14} /> {isPinnedProfile ? "Открепить из профиля" : "Закрепить в профиле"}
+                  </DropdownMenuItem>
+                )}
+                {isAdmin && (
+                  <DropdownMenuItem onClick={handlePinFeed} className="cursor-pointer text-sm gap-2">
+                    <Pin size={14} /> {isPinnedFeed ? "Открепить из ленты" : "Закрепить в ленте"}
+                  </DropdownMenuItem>
+                )}
+                {(isOwner || isAdmin) && (
+                  <DropdownMenuItem onClick={handleDelete} className="cursor-pointer text-sm gap-2 text-destructive focus:text-destructive">
+                    <Trash2 size={14} /> Удалить
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
-
-          {/* Actions row */}
-          <div className="flex items-center gap-5 mt-3 text-muted-foreground">
-            <button
-              onClick={() => toggleLike.mutate(post.id)}
-              className={`flex items-center gap-1.5 transition-colors cursor-pointer text-sm group ${isLiked ? "text-destructive" : "hover:text-destructive"}`}
-            >
-              <Heart size={16} fill={isLiked ? "currentColor" : "none"} className="group-hover:scale-110 transition-transform" />
-              <span className="text-xs">{likesCount || ""}</span>
-            </button>
-            <button
-              onClick={() => setShowComments(!showComments)}
-              className="flex items-center gap-1.5 hover:text-primary transition-colors cursor-pointer"
-            >
-              <MessageCircle size={16} />
-              <span className="text-xs">{post.comment_count || 0}</span>
-            </button>
-            <button
-              onClick={handleShare}
-              className="flex items-center gap-1.5 hover:text-primary transition-colors cursor-pointer"
-            >
-              <Repeat2 size={16} />
-              <span className="text-xs">0</span>
-            </button>
-            <div className="flex items-center gap-1.5 ml-auto text-muted-foreground/60">
-              <Eye size={14} />
-              <span className="text-xs">{post.view_count || 1}</span>
-            </div>
-          </div>
         </div>
 
-        {(isOwner || isAdmin) && (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="text-muted-foreground hover:text-primary transition-colors p-1 cursor-pointer shrink-0">
-                <MoreHorizontal size={18} />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-card ring-1 ring-border rounded-xl min-w-[160px]">
-              {isOwner && (
-                <DropdownMenuItem onClick={handlePinProfile} className="cursor-pointer text-sm gap-2">
-                  <Pin size={14} /> {isPinnedProfile ? "Открепить из профиля" : "Закрепить в профиле"}
-                </DropdownMenuItem>
-              )}
-              {isAdmin && (
-                <DropdownMenuItem onClick={handlePinFeed} className="cursor-pointer text-sm gap-2">
-                  <Pin size={14} /> {isPinnedFeed ? "Открепить из ленты" : "Закрепить в ленте"}
-                </DropdownMenuItem>
-              )}
-              {(isOwner || isAdmin) && (
-                <DropdownMenuItem onClick={handleDelete} className="cursor-pointer text-sm gap-2 text-destructive focus:text-destructive">
-                  <Trash2 size={14} /> Удалить
-                </DropdownMenuItem>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )}
+        {showComments && <CommentsSection postId={post.id} />}
       </div>
-
-      {showComments && <CommentsSection postId={post.id} />}
-      
-      {/* Separator */}
-      <div className="border-b border-border/40 mt-3 -mx-4" />
     </div>
   );
 }
