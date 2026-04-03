@@ -175,9 +175,9 @@ export default function AppLayout() {
       </div>
 
       {/* Mobile Bottom Dock — solid dark, text labels */}
-      <nav className="fixed bottom-0 left-0 right-0 md:hidden z-50">
-        <div className="bg-background border-t border-border/50">
-          <div className="flex justify-around items-center h-[60px] px-1">
+      <nav className="fixed bottom-4 left-4 right-4 md:hidden z-50">
+        <div className="bg-card/60 backdrop-blur-2xl ring-1 ring-border/50 rounded-[28px] shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+          <div className="flex justify-around items-center h-[56px] px-2">
             {navItems.map((item: any) => {
               const isActive = item.to === "/" ? location.pathname === "/" : location.pathname.startsWith(item.to);
               return (
@@ -185,7 +185,7 @@ export default function AppLayout() {
                   key={item.to}
                   to={item.to}
                   end={item.to === "/"}
-                  className={`relative flex flex-col items-center justify-center gap-0.5 min-w-[56px] py-1 cursor-pointer transition-colors duration-200 ${isActive ? "text-primary" : "text-muted-foreground"}`}
+                  className={`relative flex flex-col items-center justify-center gap-0.5 min-w-[48px] py-1 cursor-pointer transition-all duration-300 ${isActive ? "text-primary" : "text-muted-foreground"}`}
                   activeClassName=""
                 >
                   {item.special ? (
@@ -194,6 +194,9 @@ export default function AppLayout() {
                     </div>
                   ) : (
                     <div className="relative">
+                      {isActive && (
+                        <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-primary" />
+                      )}
                       {item.mobileIcon}
                       {item.badge > 0 && (
                         <span className="absolute -top-1 -right-2 min-w-[14px] h-[14px] rounded-full bg-net-cyan text-[8px] font-bold text-background flex items-center justify-center px-0.5">
@@ -202,12 +205,10 @@ export default function AppLayout() {
                       )}
                     </div>
                   )}
-                  <span className="text-[10px] font-medium">{item.label}</span>
                 </NavLink>
               );
             })}
           </div>
-          <div className="h-[env(safe-area-inset-bottom)]" />
         </div>
       </nav>
 
