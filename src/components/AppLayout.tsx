@@ -5,6 +5,7 @@ import { useProfile } from "@/hooks/useProfile";
 import { useIsAdmin } from "@/hooks/useAdmin";
 import { useEvents } from "@/hooks/useEvents";
 import { useUnreadCount } from "@/hooks/useMessages";
+import { useUnreadNotificationCount } from "@/hooks/useNotifications";
 import { useSettings } from "@/hooks/useSettings";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { Search, Bell, User, Star, Shield, MessageCircle, Radio, Settings, Menu, Plus } from "lucide-react";
