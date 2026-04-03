@@ -22,6 +22,7 @@ export default function AppLayout() {
   const { data: isAdmin } = useIsAdmin();
   const { data: events } = useEvents();
   const { data: unreadCount } = useUnreadCount();
+  const { data: unreadNotifs } = useUnreadNotificationCount();
   const { data: userSettings } = useSettings();
   const navigate = useNavigate();
   const location = useLocation();
