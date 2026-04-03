@@ -72,6 +72,7 @@ export default function AppLayout() {
       label: "Уведм",
       icon: <Bell size={20} />,
       mobileIcon: <Bell size={24} />,
+      badge: unreadNotifs,
     });
   }
 
