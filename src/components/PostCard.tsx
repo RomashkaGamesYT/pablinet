@@ -25,7 +25,7 @@ interface PostCardProps {
 }
 
 function renderContentWithHashtags(content: string) {
-  const parts = content.split(/(#[a-zA-Zа-яА-ЯёЁ0-9_]+)/g);
+  const parts = content.split(/(#[a-zA-Zа-яА-ЯёЁ0-9_]+|@[a-zA-Zа-яА-ЯёЁ0-9_]+)/g);
   return parts.map((part, i) => {
     if (/^#[a-zA-Zа-яА-ЯёЁ0-9_]+$/.test(part)) {
       const isPedro = part === "#Педро88";
@@ -38,6 +38,13 @@ function renderContentWithHashtags(content: string) {
               : "text-net-cyan hover:underline cursor-pointer"
           }
         >
+          {part}
+        </span>
+      );
+    }
+    if (/^@[a-zA-Zа-яА-ЯёЁ0-9_]+$/.test(part)) {
+      return (
+        <span key={i} className="text-net-cyan hover:underline cursor-pointer font-medium">
           {part}
         </span>
       );
