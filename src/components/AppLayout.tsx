@@ -5,6 +5,7 @@ import { useProfile } from "@/hooks/useProfile";
 import { useIsAdmin } from "@/hooks/useAdmin";
 import { useEvents } from "@/hooks/useEvents";
 import { useUnreadCount } from "@/hooks/useMessages";
+import { useUnreadNotificationCount } from "@/hooks/useNotifications";
 import { useSettings } from "@/hooks/useSettings";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { Search, Bell, User, Star, Shield, MessageCircle, Radio, Settings, Menu, Plus } from "lucide-react";
@@ -21,6 +22,7 @@ export default function AppLayout() {
   const { data: isAdmin } = useIsAdmin();
   const { data: events } = useEvents();
   const { data: unreadCount } = useUnreadCount();
+  const { data: unreadNotifs } = useUnreadNotificationCount();
   const { data: userSettings } = useSettings();
   const navigate = useNavigate();
   const location = useLocation();
@@ -70,6 +72,7 @@ export default function AppLayout() {
       label: "Уведм",
       icon: <Bell size={20} />,
       mobileIcon: <Bell size={24} />,
+      badge: unreadNotifs,
     });
   }
 
@@ -82,7 +85,7 @@ export default function AppLayout() {
     { to: "/messages", label: "ЛС", icon: <MessageCircle size={20} />, badge: unreadCount },
   ];
   if (showNotificationsTab) {
-    desktopNavItems.push({ to: "/notifications", label: "Уведомления", icon: <Bell size={20} /> });
+    desktopNavItems.push({ to: "/notifications", label: "Уведомления", icon: <Bell size={20} />, badge: unreadNotifs });
   }
   desktopNavItems.push({ to: "/profile", label: "Профиль", icon: <User size={20} /> });
 
