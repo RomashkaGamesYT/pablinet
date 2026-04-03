@@ -52,3 +52,23 @@ export function useMarkNotificationsRead() {
     },
   });
 }
+
+export function useUnreadNotificationCount() {
+  const { user } = useAuth();
+
+  return useQuery({
+    queryKey: ["unread-notifications-count", user?.id],
+    queryFn: async () => {
+      if (!user) return 0;
+      const { count, error } = await supabase
+        .from("notifications")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .eq("read", false);
+      if (error) throw error;
+      return count || 0;
+    },
+    enabled: !!user,
+    refetchInterval: 15000,
+  });
+}
