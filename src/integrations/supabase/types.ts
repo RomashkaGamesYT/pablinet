@@ -428,6 +428,7 @@ export type Database = {
           bio: string | null
           created_at: string
           display_name: string
+          has_pepe_plus: boolean
           id: string
           logo_url: string | null
           phone: string | null
@@ -443,6 +444,7 @@ export type Database = {
           bio?: string | null
           created_at?: string
           display_name?: string
+          has_pepe_plus?: boolean
           id?: string
           logo_url?: string | null
           phone?: string | null
@@ -458,6 +460,7 @@ export type Database = {
           bio?: string | null
           created_at?: string
           display_name?: string
+          has_pepe_plus?: boolean
           id?: string
           logo_url?: string | null
           phone?: string | null

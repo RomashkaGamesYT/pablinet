@@ -3,7 +3,7 @@ import { usePosts, useCreatePost } from "@/hooks/usePosts";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
 import { useAllUserBadges } from "@/hooks/useAdmin";
-import { Image, Smile, X } from "lucide-react";
+import { Image, Smile, X, User } from "lucide-react";
 import PostCard from "@/components/PostCard";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
@@ -73,9 +73,77 @@ export default function FeedPage() {
     : sortedPosts;
 
   return (
-    <div className="animate-fade-in">
+    <div className="animate-fade-in flex flex-col gap-4">
+      {/* Compose */}
+      <div className="bg-card rounded-[24px] p-5 border border-border shadow-sm dark:shadow-none transition-colors duration-300">
+        <div className="flex gap-3">
+          <div className="w-10 h-10 rounded-full bg-accent/10 dark:bg-accent/20 flex items-center justify-center shrink-0 overflow-hidden">
+            {(profile as any)?.logo_url ? (
+              <img src={(profile as any).logo_url} alt="" className="w-full h-full object-cover rounded-full" />
+            ) : (
+              <User size={20} className="text-accent" />
+            )}
+          </div>
+          <div className="flex-1 flex flex-col">
+            <textarea
+              value={newPost}
+              onChange={(e) => setNewPost(e.target.value)}
+              placeholder="Что такого?"
+              className="text-foreground placeholder-muted-foreground outline-none resize-none min-h-[60px] text-base bg-transparent w-full pt-2 pb-2"
+              rows={1}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handlePost();
+                }
+              }}
+            />
+
+            {imagePreview && (
+              <div className="relative mt-2">
+                <img src={imagePreview} alt="preview" className="max-h-48 rounded-2xl object-cover border border-border" />
+                <button
+                  onClick={removeImage}
+                  className="absolute top-2 right-2 bg-background/60 backdrop-blur-sm text-foreground rounded-full p-1 hover:bg-background/80 transition-colors cursor-pointer"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            )}
+
+            <div className="flex mt-2 items-center justify-between">
+              <div className="flex items-center gap-4 text-muted-foreground">
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="hover:text-foreground transition-colors cursor-pointer"
+                >
+                  <Image size={20} strokeWidth={1.5} />
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleImageSelect}
+                />
+                <button className="hover:text-foreground transition-colors cursor-pointer">
+                  <Smile size={20} strokeWidth={1.5} />
+                </button>
+              </div>
+              <button
+                onClick={handlePost}
+                disabled={(!newPost.trim() && !imageFile) || createPost.isPending}
+                className="bg-primary dark:bg-primary text-primary-foreground dark:text-primary-foreground hover:opacity-90 transition-colors text-sm font-medium rounded-full px-4 py-2 disabled:opacity-50 cursor-pointer"
+              >
+                {createPost.isPending ? "..." : "Опубликовать"}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Tabs */}
-      <div className="flex items-center gap-2 px-2 mb-4">
+      <div className="flex items-center gap-2">
         <button
           onClick={() => setActiveTab("foryou")}
           className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all cursor-pointer ${
@@ -98,79 +166,12 @@ export default function FeedPage() {
         </button>
       </div>
 
-      {/* Create Post */}
-      <div className="px-3 py-2">
-        <div className="rounded-[35px] bg-card/60 backdrop-blur-md ring-1 ring-border/50 p-4">
-          <div className="flex gap-3">
-            <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center shrink-0 ring-1 ring-border overflow-hidden">
-              {(profile as any)?.logo_url ? (
-                <img src={(profile as any).logo_url} alt="" className="w-full h-full object-cover rounded-full" />
-              ) : (
-                <span className="text-sm">{profile?.avatar_emoji || "🐊"}</span>
-              )}
-            </div>
-            <div className="flex-1">
-              <textarea
-                value={newPost}
-                onChange={(e) => setNewPost(e.target.value)}
-                placeholder="Что нового?"
-                className="w-full bg-transparent text-sm outline-none text-foreground placeholder-muted-foreground pt-2 resize-none h-10"
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    handlePost();
-                  }
-                }}
-              />
-
-              {imagePreview && (
-                <div className="relative mt-2">
-                  <img src={imagePreview} alt="preview" className="max-h-48 rounded-[24px] object-cover ring-1 ring-border/30" />
-                  <button
-                    onClick={removeImage}
-                    className="absolute top-2 right-2 bg-background/60 backdrop-blur-sm text-foreground rounded-full p-1 hover:bg-background/80 transition-colors cursor-pointer"
-                  >
-                    <X size={14} />
-                  </button>
-                </div>
-              )}
-
-              <div className="flex justify-between items-center mt-2 pt-2 border-t border-border/30">
-                <div className="flex gap-2 text-muted-foreground">
-                  <button
-                    onClick={() => fileInputRef.current?.click()}
-                    className="hover:text-primary transition-colors p-1 cursor-pointer"
-                  >
-                    <Image size={18} />
-                  </button>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleImageSelect}
-                  />
-                  <button className="hover:text-primary transition-colors p-1 cursor-pointer"><Smile size={18} /></button>
-                </div>
-                <button
-                  onClick={handlePost}
-                  disabled={(!newPost.trim() && !imageFile) || createPost.isPending}
-                  className="bg-primary text-primary-foreground px-5 py-1.5 rounded-full text-sm font-medium hover:opacity-90 transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
-                >
-                  {createPost.isPending ? "..." : "Опубликовать"}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Posts */}
-      <div className="flex flex-col">
+      <div className="flex flex-col gap-4">
         {isLoading ? (
           <div className="text-center text-muted-foreground text-sm py-8">Загрузка...</div>
         ) : filteredPosts.length === 0 ? (
-          <div className="text-center text-muted-foreground text-sm py-8">Пока нет постов. Будьте первым!</div>
+          <div className="text-center text-muted-foreground text-sm py-8">Пока нет статей. Будьте первым!</div>
         ) : (
           filteredPosts.map((post: any) => (
             <PostCard key={post.id} post={post} badges={getUserBadges(post.user_id)} context="feed" />

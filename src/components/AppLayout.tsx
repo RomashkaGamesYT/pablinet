@@ -8,13 +8,32 @@ import { useUnreadCount } from "@/hooks/useMessages";
 import { useUnreadNotificationCount } from "@/hooks/useNotifications";
 import { useSettings } from "@/hooks/useSettings";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
-import { Search, Bell, User, Star, Shield, MessageCircle, Radio, Settings, Menu, Plus } from "lucide-react";
+import { Search, Bell, User, Star, Shield, MessageCircle, Radio, Settings, LogOut, Plus } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
+// Custom SVG icons matching Mood reference
+const FeedIcon = ({ size = 24 }: { size?: number }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <path fill="currentColor" fillRule="evenodd" d="M20.689 10.968a2.806 2.806 0 0 0-2.244-1.108H5.555c-.887 0-1.705.404-2.244 1.107a2.808 2.808 0 0 0-.485 2.455l1.65 6.112a2.83 2.83 0 0 0 2.729 2.09h9.589a2.832 2.832 0 0 0 2.729-2.09l1.65-6.111a2.804 2.804 0 0 0-.484-2.455ZM8.436 3.875h7.125a.75.75 0 0 0 0-1.5H8.436a.75.75 0 0 0 0 1.5ZM5.682 7.253h12.634a.75.75 0 0 0 0-1.5H5.682a.75.75 0 0 0 0 1.5Z" clipRule="evenodd" />
+  </svg>
+);
+
+const NotifIcon = ({ size = 24 }: { size?: number }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <path fill="currentColor" fillRule="evenodd" d="M19.742 13.807c-.86-1.832-.837-2.52-.798-3.773.01-.296.02-.617.02-.986C18.964 6.122 16.804 2 12 2 7.197 2 5.036 6.122 5.036 9.048c0 .368.01.69.02.986.04 1.252.062 1.941-.807 3.797-.372.928-.327 1.73.135 2.382C5.492 17.783 8.7 18 12 18s6.508-.216 7.616-1.787c.463-.653.508-1.454.125-2.406Zm-4.686 5.198c-1.848.193-3.852.192-6.13-.002a.873.873 0 0 0-.835.437.763.763 0 0 0 .125.893C9.236 21.407 10.578 22 11.994 22h.002c1.42 0 2.765-.592 3.788-1.667a.765.765 0 0 0 .122-.9c-.162-.294-.495-.458-.85-.428Z" clipRule="evenodd" />
+  </svg>
+);
+
+const ProfileIcon = ({ size = 24 }: { size?: number }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <path fill="currentColor" fillRule="evenodd" d="M11.998 11a3.996 3.996 0 0 0 4-4c.084-2.213-1.702-4-4-4A3.995 3.995 0 0 0 8 7c0 2.213 1.787 4 3.998 4Zm6.94 6.878c-.3-1.04-.9-1.986-2.097-2.743C15.843 14.473 14.246 14 12.05 14c-4.292 0-6.39 1.892-6.987 3.878-.2.568.1 1.136.598 1.42C7.458 20.431 9.654 21 12.05 21c2.296 0 4.492-.662 6.288-1.703.5-.284.8-.851.6-1.419Z" clipRule="evenodd" />
+  </svg>
+);
 
 export default function AppLayout() {
   const { signOut } = useAuth();
@@ -36,192 +55,154 @@ export default function AppLayout() {
     navigate("/auth");
   };
 
-  const baseNavItems = [
-    {
-      to: "/",
-      label: "Лента",
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
-          <path fill="currentColor" fillRule="evenodd" d="M20.689 10.968a2.806 2.806 0 0 0-2.244-1.108H5.555c-.887 0-1.705.404-2.244 1.107a2.808 2.808 0 0 0-.485 2.455l1.65 6.112a2.83 2.83 0 0 0 2.729 2.09h9.589a2.832 2.832 0 0 0 2.729-2.09l1.65-6.111a2.804 2.804 0 0 0-.484-2.455ZM8.436 3.875h7.125a.75.75 0 0 0 0-1.5H8.436a.75.75 0 0 0 0 1.5ZM5.682 7.253h12.634a.75.75 0 0 0 0-1.5H5.682a.75.75 0 0 0 0 1.5Z" clipRule="evenodd" />
-        </svg>
-      ),
-      mobileIcon: (
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-          <path fill="currentColor" fillRule="evenodd" d="M20.689 10.968a2.806 2.806 0 0 0-2.244-1.108H5.555c-.887 0-1.705.404-2.244 1.107a2.808 2.808 0 0 0-.485 2.455l1.65 6.112a2.83 2.83 0 0 0 2.729 2.09h9.589a2.832 2.832 0 0 0 2.729-2.09l1.65-6.111a2.804 2.804 0 0 0-.484-2.455ZM8.436 3.875h7.125a.75.75 0 0 0 0-1.5H8.436a.75.75 0 0 0 0 1.5ZM5.682 7.253h12.634a.75.75 0 0 0 0-1.5H5.682a.75.75 0 0 0 0 1.5Z" clipRule="evenodd" />
-        </svg>
-      ),
-    },
-    { to: "/search", label: "Поиск", icon: <Search size={20} />, mobileIcon: <Search size={24} /> },
-  ];
-
-  if (showEventsTab) {
-    baseNavItems.push({
-      to: "/events",
-      label: "Ивент",
-      special: true,
-      icon: <Star size={14} className="text-primary" />,
-      mobileIcon: <Star size={18} className="text-primary" />,
-    } as any);
-  }
-
-  const navItems: any[] = [...baseNavItems];
-
-  if (showNotificationsTab) {
-    navItems.push({
-      to: "/notifications",
-      label: "Уведм",
-      icon: <Bell size={20} />,
-      mobileIcon: <Bell size={24} />,
-      badge: unreadNotifs,
-    });
-  }
-
-  navItems.push({ to: "/profile", label: "Профиль", icon: <User size={20} />, mobileIcon: <User size={24} /> });
-
-  // Desktop sidebar includes more items
-  const desktopNavItems = [
-    ...baseNavItems,
-    { to: "/broadcasts", label: "Эфир", icon: <Radio size={20} /> },
-    { to: "/messages", label: "ЛС", icon: <MessageCircle size={20} />, badge: unreadCount },
+  // Mobile nav items
+  const mobileNavItems: any[] = [
+    { to: "/", label: "Лента", icon: <FeedIcon size={24} /> },
+    { to: "/search", label: "Поиск", icon: <Search size={24} strokeWidth={1.5} /> },
   ];
   if (showNotificationsTab) {
-    desktopNavItems.push({ to: "/notifications", label: "Уведомления", icon: <Bell size={20} />, badge: unreadNotifs });
+    mobileNavItems.push({ to: "/notifications", label: "Уведы", icon: <NotifIcon size={24} />, badge: unreadNotifs });
   }
-  desktopNavItems.push({ to: "/profile", label: "Профиль", icon: <User size={20} /> });
+  mobileNavItems.push({ to: "/profile", label: "Профиль", icon: <ProfileIcon size={24} /> });
+
+  // Desktop nav items
+  const desktopNavItems: any[] = [
+    { to: "/", label: "Лента", icon: <FeedIcon size={24} /> },
+    { to: "/search", label: "Поиск", icon: <Search size={24} strokeWidth={1.5} /> },
+    { to: "/broadcasts", label: "Эфир", icon: <Radio size={20} strokeWidth={1.5} /> },
+    { to: "/messages", label: "Сообщения", icon: <MessageCircle size={20} strokeWidth={1.5} />, badge: unreadCount },
+  ];
+  if (showNotificationsTab) {
+    desktopNavItems.push({ to: "/notifications", label: "Уведомления", icon: <NotifIcon size={20} />, badge: unreadNotifs });
+  }
+  desktopNavItems.push({ to: "/profile", label: "Профиль", icon: <ProfileIcon size={20} /> });
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex justify-center selection:bg-muted selection:text-primary">
-      <div className="w-full max-w-[1200px] flex gap-6 px-4 sm:px-8 py-4 sm:py-8 relative">
+    <div className="min-h-screen bg-background text-foreground flex justify-center transition-colors duration-300">
+      <div className="flex w-full max-w-[1200px] h-screen relative">
         {/* Desktop Sidebar */}
-        <nav className="hidden md:flex flex-col w-[220px] shrink-0 sticky top-8 h-[calc(100vh-4rem)]">
-          <div className="flex items-center gap-3 px-4 mb-10">
-            <span className="flex items-center text-2xl font-semibold text-primary tracking-tight font-montserrat">
-              нэт
-            </span>
-          </div>
+        <aside className="hidden md:flex w-64 flex-col justify-between py-6 h-full shrink-0">
+          <div className="flex flex-col gap-6 px-4">
+            {/* Logo */}
+            <div className="flex items-center gap-3 px-4 mb-2">
+              <span className="text-xl font-semibold tracking-tight text-foreground">нэт</span>
+            </div>
 
-          <ul className="flex flex-col gap-1">
-            {desktopNavItems.map((item: any) => (
-              <li key={item.to}>
-                <NavLink
-                  to={item.to}
-                  end={item.to === "/"}
-                  className="flex items-center gap-4 px-4 py-3 rounded-xl text-muted-foreground hover:bg-muted hover:text-primary transition-all duration-300 ease-out group cursor-pointer"
-                  activeClassName="bg-muted text-primary shadow-sm ring-1 ring-input"
-                >
-                  {item.special ? (
-                    <div className="relative flex items-center justify-center">
-                      <div className="absolute inset-0 bg-net-cyan/30 blur-md rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                      <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-net-cyan to-net-emerald flex items-center justify-center relative z-10 shadow-[0_0_12px_rgba(34,211,238,0.4)] ring-1 ring-input group-hover:scale-105 transition-transform duration-300">
-                        {item.icon}
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="relative flex items-center justify-center transition-colors duration-300">
+            {/* Nav */}
+            <nav className="flex flex-col gap-2 w-full">
+              {desktopNavItems.map((item: any) => {
+                const isActive = item.to === "/" ? location.pathname === "/" : location.pathname.startsWith(item.to);
+                return (
+                  <NavLink
+                    key={item.to}
+                    to={item.to}
+                    end={item.to === "/"}
+                    className={`flex items-center gap-4 p-3 px-4 rounded-2xl transition-colors w-full text-left cursor-pointer ${
+                      isActive
+                        ? "bg-secondary text-foreground"
+                        : "text-muted-foreground hover:bg-secondary/50"
+                    }`}
+                    activeClassName=""
+                  >
+                    <div className="relative shrink-0 w-6 h-6 flex items-center justify-center">
                       {item.icon}
                       {item.badge > 0 && (
-                        <span className="absolute -top-1.5 -right-2 w-4 h-4 rounded-full bg-net-cyan text-[9px] font-bold text-background flex items-center justify-center">
+                        <span className="absolute -top-1.5 -right-2 w-4 h-4 rounded-full bg-accent text-[9px] font-bold text-accent-foreground flex items-center justify-center">
                           {item.badge > 9 ? "9+" : item.badge}
                         </span>
                       )}
                     </div>
-                  )}
-                  <span className="text-sm font-medium">{item.label}</span>
-                </NavLink>
-              </li>
-            ))}
-          </ul>
-
-          {/* Bottom: User info + menu */}
-          <div className="mt-auto mb-4">
-            <div className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-muted transition-all duration-200 cursor-pointer group" onClick={() => navigate("/profile")}>
-              <div className="w-10 h-10 rounded-full bg-muted ring-1 ring-border flex items-center justify-center shrink-0 overflow-hidden">
-                {(profile as any)?.logo_url ? (
-                  <img src={(profile as any).logo_url} alt="" className="w-full h-full object-cover rounded-full" />
-                ) : (
-                  <span className="text-base">{profile?.avatar_emoji || "🐊"}</span>
-                )}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="text-sm font-semibold text-primary truncate">{profile?.display_name || "Пользователь"}</div>
-                <div className="text-xs text-muted-foreground truncate">@{profile?.username || "user"}</div>
-              </div>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                  <button className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-muted/80 transition-colors cursor-pointer">
-                    <Menu size={18} />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" side="top" className="bg-card ring-1 ring-border rounded-xl min-w-[180px] p-1">
-                  <DropdownMenuItem onClick={(e) => { e.stopPropagation(); navigate("/settings"); }} className="cursor-pointer text-sm gap-2 rounded-lg">
-                    <Settings size={14} /> Настройки
-                  </DropdownMenuItem>
-                  {isAdmin && (
-                    <DropdownMenuItem onClick={(e) => { e.stopPropagation(); navigate("/admin"); }} className="cursor-pointer text-sm gap-2 rounded-lg">
-                      <Shield size={14} /> Админка
-                    </DropdownMenuItem>
-                  )}
-                  <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleSignOut(); }} className="cursor-pointer text-sm gap-2 rounded-lg text-destructive focus:text-destructive">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                    Выйти
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+                    <span className="text-base font-medium">{item.label}</span>
+                  </NavLink>
+                );
+              })}
+            </nav>
           </div>
-        </nav>
+
+          {/* Bottom */}
+          <div className="px-4 flex flex-col gap-2">
+            {isAdmin && (
+              <button
+                onClick={() => navigate("/admin")}
+                className="flex items-center gap-4 p-3 px-4 rounded-2xl text-muted-foreground hover:bg-secondary/50 transition-colors w-full text-left cursor-pointer"
+              >
+                <Shield size={20} strokeWidth={1.5} />
+                <span className="text-base font-medium">Админка</span>
+              </button>
+            )}
+            <button
+              onClick={() => navigate("/settings")}
+              className="flex items-center gap-4 p-3 px-4 rounded-2xl text-muted-foreground hover:bg-secondary/50 transition-colors w-full text-left cursor-pointer"
+            >
+              <Settings size={20} strokeWidth={1.5} />
+              <span className="text-base font-medium">Настройки</span>
+            </button>
+            <button
+              onClick={handleSignOut}
+              className="flex items-center gap-4 p-3 px-4 rounded-2xl text-muted-foreground hover:bg-secondary/50 transition-colors w-full text-left cursor-pointer"
+            >
+              <LogOut size={20} strokeWidth={1.5} />
+              <span className="text-base font-medium">Выйти</span>
+            </button>
+          </div>
+        </aside>
 
         {/* Main Content */}
-        <main className="flex-1 min-w-0 max-w-[640px] w-full mx-auto pb-24 md:pb-8">
-          <Outlet />
+        <main className="flex-1 h-full overflow-y-auto scroll-smooth flex justify-center pb-[140px] md:pb-8">
+          <div className="w-full max-w-[600px] flex flex-col gap-4 py-6 px-4 relative">
+            <Outlet />
+          </div>
         </main>
+
+        {/* Right Sidebar */}
+        <aside className="hidden lg:flex w-[300px] flex-col pl-8 pt-6 h-full shrink-0">
+          <div className="flex flex-col gap-3 text-sm">
+            <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">Статус серверов</a>
+            <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">Конфиденциальность</a>
+          </div>
+        </aside>
       </div>
 
-      {/* Mobile Bottom Dock — solid dark, text labels */}
-      <nav className="fixed bottom-4 left-4 right-4 md:hidden z-50">
-        <div className="bg-card/60 backdrop-blur-2xl ring-1 ring-border/50 rounded-[28px] shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
-          <div className="flex justify-around items-center h-[56px] px-2">
-            {navItems.map((item: any) => {
-              const isActive = item.to === "/" ? location.pathname === "/" : location.pathname.startsWith(item.to);
-              return (
-                <NavLink
-                  key={item.to}
-                  to={item.to}
-                  end={item.to === "/"}
-                  className={`relative flex flex-col items-center justify-center gap-0.5 min-w-[48px] py-1 cursor-pointer transition-all duration-300 ${isActive ? "text-primary" : "text-muted-foreground"}`}
-                  activeClassName=""
-                >
-                  {item.special ? (
-                    <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-net-cyan to-net-emerald flex items-center justify-center shadow-[0_0_12px_rgba(34,211,238,0.4)]">
-                      {item.mobileIcon}
-                    </div>
-                  ) : (
-                    <div className="relative">
-                      {isActive && (
-                        <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-primary" />
-                      )}
-                      {item.mobileIcon}
-                      {item.badge > 0 && (
-                        <span className="absolute -top-1 -right-2 min-w-[14px] h-[14px] rounded-full bg-net-cyan text-[8px] font-bold text-background flex items-center justify-center px-0.5">
-                          {item.badge > 9 ? "9+" : item.badge}
-                        </span>
-                      )}
-                    </div>
-                  )}
-                </NavLink>
-              );
-            })}
-          </div>
-        </div>
-      </nav>
+      {/* Mobile Navigation Dock */}
+      <div className="md:hidden fixed bottom-6 left-0 right-0 px-4 z-40 pointer-events-none flex flex-col items-end gap-4 max-w-[440px] mx-auto w-full">
+        {/* FAB */}
+        <button
+          onClick={() => navigate("/")}
+          className="w-[52px] h-[52px] bg-gradient-to-b from-muted-foreground/80 to-muted-foreground/60 dark:from-secondary dark:to-card rounded-full flex items-center justify-center text-primary-foreground dark:text-foreground shadow-xl border border-border/50 hover:opacity-90 transition-transform active:scale-95 pointer-events-auto mr-1 cursor-pointer"
+        >
+          <Plus size={24} strokeWidth={1.5} />
+        </button>
 
-      {/* FAB for creating post on mobile */}
-      <button
-        onClick={() => navigate("/")}
-        className="fixed bottom-[84px] right-5 md:hidden z-50 w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg active:scale-95 transition-transform cursor-pointer"
-      >
-        <Plus size={24} />
-      </button>
+        {/* Dock */}
+        <nav className="w-full bg-card/90 dark:bg-card/85 backdrop-blur-xl border border-border/50 rounded-full flex justify-between items-center p-1.5 shadow-2xl pointer-events-auto transition-colors duration-300">
+          {mobileNavItems.map((item: any) => {
+            const isActive = item.to === "/" ? location.pathname === "/" : location.pathname.startsWith(item.to);
+            return (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.to === "/"}
+                className={`flex-1 flex flex-col items-center justify-center gap-1 py-2 px-1 rounded-full transition-all cursor-pointer ${
+                  isActive
+                    ? "text-foreground bg-secondary/50 dark:bg-secondary/30"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+                activeClassName=""
+              >
+                <div className="relative">
+                  {item.icon}
+                  {item.badge > 0 && (
+                    <span className="absolute -top-1 -right-2 min-w-[14px] h-[14px] rounded-full bg-accent text-[8px] font-bold text-accent-foreground flex items-center justify-center px-0.5">
+                      {item.badge > 9 ? "9+" : item.badge}
+                    </span>
+                  )}
+                </div>
+                <span className="text-xs font-medium tracking-wide">{item.label}</span>
+              </NavLink>
+            );
+          })}
+        </nav>
+      </div>
 
       <CookieBanner />
     </div>

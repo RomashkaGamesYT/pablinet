@@ -4,7 +4,7 @@ import { useProfile, useFollowStats } from "@/hooks/useProfile";
 import { useFollow, useIsFollowing } from "@/hooks/useFollow";
 import { usePosts } from "@/hooks/usePosts";
 import { useUserBadges } from "@/hooks/useAdmin";
-import { Calendar, ArrowLeft, MessageCircle, Plus } from "lucide-react";
+import { ArrowLeft, MessageCircle, User, Plus } from "lucide-react";
 import { useStartConversation } from "@/hooks/useMessages";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
@@ -28,7 +28,6 @@ export default function UserProfilePage() {
   const [followListType, setFollowListType] = useState<"followers" | "following" | null>(null);
 
   const isOwnProfile = user?.id === userId;
-  const isOfficialNet = profile?.username === "net";
 
   if (isOwnProfile) {
     navigate("/profile", { replace: true });
@@ -50,6 +49,8 @@ export default function UserProfilePage() {
     return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
   });
 
+  const hasPepePlus = (profile as any)?.has_pepe_plus;
+
   const handleFollowToggle = () => {
     if (!userId) return;
     follow.mutate({ targetUserId: userId, isFollowing: !!isFollowing });
@@ -62,140 +63,90 @@ export default function UserProfilePage() {
   };
 
   return (
-    <div className="animate-fade-in">
-      {/* Back button */}
-      <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-muted-foreground hover:text-primary text-sm mb-4 transition-colors cursor-pointer">
-        <ArrowLeft size={18} />
-        Назад
+    <div className="animate-fade-in flex flex-col gap-4">
+      {/* Back */}
+      <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-muted-foreground hover:text-foreground text-sm transition-colors cursor-pointer">
+        <ArrowLeft size={18} /> Назад
       </button>
 
-      {/* Banner & Avatar */}
-      <div className="relative w-full mb-14">
-        <div className={`relative bg-gradient-to-br from-muted to-card rounded-[35px] w-full ring-1 overflow-hidden ${
-          isOfficialNet ? "ring-net-cyan/30" : "ring-border"
-        }`} style={{ aspectRatio: "736/335" }}>
+      <div className="bg-card rounded-[24px] overflow-hidden border border-border shadow-sm dark:shadow-none transition-colors duration-300">
+        {/* Banner */}
+        <div className="h-28 bg-gradient-to-r from-accent/20 to-secondary w-full relative">
           {(profile as any)?.banner_url ? (
             <img src={(profile as any).banner_url} alt="Banner" className="absolute inset-0 w-full h-full object-cover" />
-          ) : isOfficialNet ? (
-            <div className="absolute inset-0 bg-gradient-to-br from-net-cyan/20 via-net-emerald/10 to-primary/5" />
-          ) : (
-            <div className="absolute inset-0 opacity-[0.04] mix-blend-overlay pointer-events-none" style={{
-              backgroundImage: "url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.8%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E')"
-            }} />
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-background/40 to-transparent" />
-          {isOfficialNet && (
-            <div className="absolute bottom-4 right-4 bg-net-cyan/20 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-medium text-net-cyan ring-1 ring-net-cyan/30">
-              🏢 Официальный аккаунт
-            </div>
-          )}
+          ) : null}
         </div>
 
-        <div className="absolute -bottom-10 left-6 z-20">
-          <div className="relative">
-            <div className={`w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-b from-muted to-card rounded-full flex items-center justify-center ring-4 ring-background shadow-xl relative z-10 overflow-hidden ${
-              isOfficialNet ? "shadow-[0_0_20px_rgba(34,211,238,0.3)]" : ""
-            }`}>
-              <div className="ring-inset ring-input ring-1 rounded-full absolute inset-0" />
-              {(profile as any)?.logo_url ? (
-                <img src={(profile as any).logo_url} alt="Logo" className="w-full h-full object-cover rounded-full relative z-10" />
-              ) : (
-                <span className="text-2xl sm:text-3xl drop-shadow-md relative z-10">{profile.avatar_emoji || "🐊"}</span>
-              )}
-            </div>
-            <div className="absolute bottom-0.5 right-0.5 sm:bottom-1 sm:right-1 w-3.5 h-3.5 sm:w-4 sm:h-4 bg-net-emerald rounded-full border-[3px] border-background shadow-[0_0_8px_rgba(16,185,129,0.4)] z-20" />
-          </div>
-        </div>
-      </div>
-
-      {/* Profile Info */}
-      <div className="px-2 mb-6">
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex flex-col gap-1 min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <h1 className="text-lg sm:text-xl font-bold tracking-tight text-primary">
-                {profile.display_name}
-              </h1>
-              {profile.verified && <VerifiedBadge size={18} />}
-              {isOfficialNet && (
-                <span className="px-2 py-0.5 rounded-full bg-net-cyan/15 text-net-cyan text-[10px] font-semibold ring-1 ring-net-cyan/20">
-                  OFFICIAL
-                </span>
-              )}
-              {userBadges && <BadgeDisplay badges={userBadges as any} size="md" />}
-            </div>
-            <span className="text-sm text-muted-foreground font-medium">@{profile.username}</span>
-            {isOfficialNet && (
-              <p className="text-xs text-net-cyan/70 mt-0.5">Команда разработчиков нэт 🚀</p>
+        <div className="px-5 pb-5 relative">
+          {/* Avatar */}
+          <div className="absolute -top-10 left-5 w-20 h-20 rounded-full border-4 border-card bg-secondary flex items-center justify-center overflow-hidden">
+            {(profile as any)?.logo_url ? (
+              <img src={(profile as any).logo_url} alt="" className="w-full h-full object-cover rounded-full" />
+            ) : (
+              <User size={32} className="text-muted-foreground" />
             )}
           </div>
-          <div className="flex items-center gap-2 shrink-0">
+
+          {/* Actions */}
+          <div className="flex justify-end pt-3 gap-2">
             <button
               onClick={handleMessage}
               disabled={startConversation.isPending}
-              className="w-9 h-9 rounded-full bg-muted ring-1 ring-input flex items-center justify-center text-muted-foreground hover:text-primary hover:ring-primary/20 transition-all cursor-pointer disabled:opacity-50"
+              className="w-9 h-9 rounded-full border border-border flex items-center justify-center bg-secondary hover:bg-muted transition-colors cursor-pointer disabled:opacity-50"
             >
               <MessageCircle size={16} />
             </button>
             <button
               onClick={handleFollowToggle}
               disabled={follow.isPending || followLoading}
-              className={`flex items-center justify-center transition-all duration-200 active:scale-95 cursor-pointer disabled:opacity-50 ${
+              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all cursor-pointer disabled:opacity-50 ${
                 isFollowing
-                  ? "px-4 py-2 rounded-full bg-muted text-foreground ring-1 ring-input hover:ring-destructive hover:text-destructive text-sm font-medium"
-                  : "w-9 h-9 rounded-full bg-primary text-primary-foreground"
+                  ? "border border-border text-foreground hover:border-destructive hover:text-destructive"
+                  : "bg-primary text-primary-foreground hover:opacity-90"
               }`}
             >
-              {isFollowing ? "Отписаться" : <Plus size={18} />}
+              {isFollowing ? "Отписаться" : "Подписаться"}
             </button>
+          </div>
+
+          {/* Info */}
+          <div className="mt-2">
+            <h1 className="text-xl font-semibold tracking-tight text-foreground flex items-center gap-2">
+              <span className={hasPepePlus ? "gradient-name" : ""}>{profile.display_name}</span>
+              {profile.verified && <VerifiedBadge size={18} />}
+              {userBadges && <BadgeDisplay badges={userBadges as any} size="md" />}
+            </h1>
+            <span className="text-sm text-muted-foreground">@{profile.username}</span>
+
+            {profile.bio && (
+              <p className="mt-3 text-sm text-muted-foreground">{profile.bio}</p>
+            )}
+
+            <div className="flex gap-4 mt-4 text-sm">
+              <button onClick={() => setFollowListType("following")} className="flex gap-1.5 cursor-pointer group">
+                <span className="font-medium text-foreground">{stats?.following || 0}</span>
+                <span className="text-muted-foreground group-hover:text-foreground transition-colors">Подписки</span>
+              </button>
+              <button onClick={() => setFollowListType("followers")} className="flex gap-1.5 cursor-pointer group">
+                <span className="font-medium text-foreground">{stats?.followers || 0}</span>
+                <span className="text-muted-foreground group-hover:text-foreground transition-colors">Подписчики</span>
+              </button>
+            </div>
           </div>
         </div>
 
-        {profile.bio && (
-          <p className="text-sm text-foreground/70 mt-3 leading-relaxed">{profile.bio}</p>
-        )}
-        {isOfficialNet && !profile.bio && (
-          <p className="text-sm text-foreground/70 mt-3 leading-relaxed">
-            Команда разработчиков нэт 🛠️ Обновления, новости и всё о платформе ✨
-          </p>
-        )}
-
-        <div className="flex flex-col gap-3 mt-4">
-          <div className="flex items-center gap-5 text-sm">
-            <button onClick={() => setFollowListType("followers")} className="flex items-center gap-1.5 cursor-pointer group">
-              <span className="text-primary font-bold">{stats?.followers || 0}</span>
-              <span className="text-muted-foreground group-hover:text-foreground/70 transition-colors">подписчиков</span>
-            </button>
-            <button onClick={() => setFollowListType("following")} className="flex items-center gap-1.5 cursor-pointer group">
-              <span className="text-primary font-bold">{stats?.following || 0}</span>
-              <span className="text-muted-foreground group-hover:text-foreground/70 transition-colors">подписок</span>
-            </button>
-          </div>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
-            <Calendar size={16} className="opacity-80" />
-            <span className="font-medium opacity-80">
-              Регистрация: {profile.created_at ? format(new Date(profile.created_at), "LLLL yyyy 'г.'", { locale: ru }) : ""}
-            </span>
-          </div>
+        {/* Tabs */}
+        <div className="flex border-t border-border">
+          <button className="flex-1 py-3 text-sm font-medium text-foreground border-b-2 border-accent">Статьи</button>
+          <button className="flex-1 py-3 text-sm font-normal text-muted-foreground hover:bg-secondary/30 transition-colors cursor-pointer">Ответы</button>
         </div>
       </div>
 
       {/* Posts */}
-      <div className="flex border-b border-border mb-4">
-        <div className="flex-1 py-3 text-sm font-medium text-center text-primary relative">
-          Посты
-          <div className="absolute bottom-0 left-1/4 right-1/4 h-0.5 bg-primary rounded-full" />
-        </div>
-        <div className="flex-1 py-3 text-sm font-medium text-center text-muted-foreground relative cursor-pointer hover:text-foreground/70">
-          Лайки
-        </div>
-      </div>
-
-      <div className="flex flex-col">
+      <div className="flex flex-col gap-4">
         {sortedPosts.length === 0 ? (
           <div className="text-center py-12">
-            <div className="text-3xl mb-3">📝</div>
-            <p className="text-muted-foreground text-sm">Пока нет записей</p>
+            <p className="text-muted-foreground text-sm">Пока нет статей</p>
           </div>
         ) : (
           sortedPosts.map((post: any) => (
@@ -203,6 +154,7 @@ export default function UserProfilePage() {
           ))
         )}
       </div>
+
       {followListType && userId && (
         <FollowListModal userId={userId} type={followListType} onClose={() => setFollowListType(null)} />
       )}
