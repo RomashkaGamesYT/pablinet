@@ -3,7 +3,7 @@ import { useComments, useCreateComment, useDeleteComment } from "@/hooks/useComm
 import { useAuth } from "@/contexts/AuthContext";
 import { formatDistanceToNow } from "date-fns";
 import { ru } from "date-fns/locale";
-import { Trash2, Send } from "lucide-react";
+import { Trash2, Send, User } from "lucide-react";
 
 export default function CommentsSection({ postId }: { postId: string }) {
   const { user } = useAuth();
@@ -20,13 +20,12 @@ export default function CommentsSection({ postId }: { postId: string }) {
 
   return (
     <div className="mt-3 pt-3 border-t border-border space-y-3">
-      {/* Input */}
       <div className="flex gap-2 items-end">
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Написать комментарий..."
-          className="flex-1 bg-muted ring-1 ring-input rounded-[35px] px-4 py-2 text-sm text-foreground outline-none focus:ring-primary/30 placeholder-muted-foreground"
+          className="flex-1 bg-secondary border border-border rounded-2xl px-4 py-2 text-sm text-foreground outline-none focus:border-accent/50 placeholder-muted-foreground transition-colors"
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
@@ -43,7 +42,6 @@ export default function CommentsSection({ postId }: { postId: string }) {
         </button>
       </div>
 
-      {/* Comments list */}
       {isLoading ? (
         <p className="text-xs text-muted-foreground">Загрузка...</p>
       ) : comments?.length === 0 ? (
@@ -52,12 +50,16 @@ export default function CommentsSection({ postId }: { postId: string }) {
         <div className="space-y-2 max-h-64 overflow-y-auto">
           {comments?.map((c: any) => (
             <div key={c.id} className="flex gap-2 group">
-              <div className="w-7 h-7 rounded-full bg-muted flex items-center justify-center ring-1 ring-input shrink-0 text-xs">
-                {c.profile?.avatar_emoji || "🐊"}
+              <div className="w-7 h-7 rounded-full bg-secondary flex items-center justify-center border border-border shrink-0 overflow-hidden">
+                {c.profile?.logo_url ? (
+                  <img src={c.profile.logo_url} alt="" className="w-full h-full object-cover rounded-full" />
+                ) : (
+                  <User size={14} className="text-muted-foreground" />
+                )}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-medium text-primary">{c.profile?.display_name || "?"}</span>
+                  <span className="text-xs font-medium text-foreground">{c.profile?.display_name || "?"}</span>
                   <span className="text-[10px] text-muted-foreground">
                     {formatDistanceToNow(new Date(c.created_at), { addSuffix: true, locale: ru })}
                   </span>
