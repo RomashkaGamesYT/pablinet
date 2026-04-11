@@ -23,12 +23,11 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [showReset, setShowReset] = useState(false);
   const [resetSent, setResetSent] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
   const navigate = useNavigate();
 
-  const [emailSent, setEmailSent] = useState(false);
-
-  const inputClass = "w-full bg-muted/60 rounded-[35px] px-5 py-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground/60";
-  const btnClass = "w-full bg-primary text-primary-foreground py-3 rounded-[35px] text-sm font-semibold hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-50 cursor-pointer";
+  const inputClass = "w-full bg-secondary border border-border rounded-2xl p-4 text-sm outline-none text-foreground placeholder-muted-foreground focus:border-accent/50 transition-colors";
+  const btnClass = "w-full bg-primary text-primary-foreground py-3 rounded-full text-sm font-medium hover:opacity-90 transition-opacity cursor-pointer disabled:opacity-50";
 
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,7 +48,6 @@ export default function AuthPage() {
           },
         });
         if (error) throw error;
-        // If email confirmation is required, show verification prompt
         if (data.user && !data.session) {
           setEmailSent(true);
           return;
@@ -99,7 +97,6 @@ export default function AuthPage() {
       });
       if (res.error) throw new Error(res.error.message);
       const data = res.data;
-      
       if (data.error) {
         if (data.needsRegistration) {
           setIsLogin(false);
@@ -108,7 +105,6 @@ export default function AuthPage() {
         }
         throw new Error(data.error);
       }
-
       const { error: verifyErr } = await supabase.auth.verifyOtp({
         token_hash: data.hashed_token,
         type: "magiclink",
@@ -145,17 +141,19 @@ export default function AuthPage() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center px-4">
         <div className="w-full max-w-sm space-y-6 text-center">
-          <div className="text-5xl mb-2">📧</div>
-          <h1 className="text-xl font-bold text-primary font-montserrat">Подтвердите email</h1>
+          <div className="w-16 h-16 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center mx-auto">
+            <span className="text-2xl">📧</span>
+          </div>
+          <h1 className="text-xl font-semibold text-foreground tracking-tight">Подтвердите email</h1>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Мы отправили письмо на <span className="text-primary font-medium">{email}</span>. Перейдите по ссылке в письме, чтобы активировать аккаунт.
+            Мы отправили письмо на <span className="text-foreground font-medium">{email}</span>. Перейдите по ссылке в письме, чтобы активировать аккаунт.
           </p>
-          <div className="bg-card rounded-[35px] p-4 ring-1 ring-border text-xs text-muted-foreground">
+          <div className="bg-card rounded-2xl p-4 border border-border text-xs text-muted-foreground">
             Не получили письмо? Проверьте папку «Спам» или попробуйте снова.
           </div>
           <button
             onClick={() => { setEmailSent(false); setIsLogin(true); }}
-            className="text-sm text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
           >
             ← Войти в аккаунт
           </button>
@@ -169,13 +167,13 @@ export default function AuthPage() {
       <div className="min-h-screen bg-background flex items-center justify-center px-4">
         <div className="w-full max-w-sm space-y-6">
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-primary font-montserrat">нэт</h1>
+            <h1 className="text-xl font-semibold text-foreground tracking-tight">нэт</h1>
           </div>
           {resetSent ? (
             <div className="text-center space-y-3">
               <div className="text-4xl">📧</div>
               <p className="text-sm text-foreground/80">Письмо отправлено на {email}</p>
-              <button onClick={() => { setShowReset(false); setResetSent(false); }} className="text-sm text-muted-foreground hover:text-primary transition-colors cursor-pointer">
+              <button onClick={() => { setShowReset(false); setResetSent(false); }} className="text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
                 ← Назад ко входу
               </button>
             </div>
@@ -187,7 +185,7 @@ export default function AuthPage() {
               <button type="submit" disabled={loading} className={btnClass}>
                 {loading ? "..." : "Отправить"}
               </button>
-              <button type="button" onClick={() => setShowReset(false)} className="w-full text-sm text-muted-foreground hover:text-primary transition-colors cursor-pointer text-center">
+              <button type="button" onClick={() => setShowReset(false)} className="w-full text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer text-center">
                 ← Назад
               </button>
             </form>
@@ -202,33 +200,33 @@ export default function AuthPage() {
       <div className="w-full max-w-sm space-y-6">
         {/* Logo */}
         <div className="text-center space-y-1">
-          <h1 className="text-3xl font-bold text-primary font-montserrat tracking-tight">нэт</h1>
+          <h1 className="text-2xl font-semibold text-foreground tracking-tight">нэт</h1>
           <p className="text-muted-foreground text-sm">
-            {isLogin ? "С возвращением 👋" : "Присоединяйся ✨"}
+            {isLogin ? "С возвращением" : "Присоединяйтесь"}
           </p>
         </div>
 
         {/* Method tabs */}
-        <div className="flex bg-muted/40 rounded-[35px] p-1 gap-1">
+        <div className="flex bg-secondary rounded-2xl p-1 gap-1 border border-border">
           <button
             onClick={() => { setAuthMethod("email"); setError(""); }}
-            className={`flex-1 py-2.5 rounded-[30px] text-sm font-medium transition-all cursor-pointer ${
+            className={`flex-1 py-2.5 rounded-xl text-sm font-medium transition-all cursor-pointer ${
               authMethod === "email"
-                ? "bg-card text-primary shadow-sm"
+                ? "bg-card text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            📧 Email
+            Email
           </button>
           <button
             onClick={() => { setAuthMethod("phone"); setError(""); setPhoneStep("phone"); }}
-            className={`flex-1 py-2.5 rounded-[30px] text-sm font-medium transition-all cursor-pointer ${
+            className={`flex-1 py-2.5 rounded-xl text-sm font-medium transition-all cursor-pointer ${
               authMethod === "phone"
-                ? "bg-card text-primary shadow-sm"
+                ? "bg-card text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            📱 Телефон
+            Телефон
           </button>
         </div>
 
@@ -237,22 +235,22 @@ export default function AuthPage() {
           <form onSubmit={handleEmailSubmit} className="space-y-3">
             {!isLogin && (
               <>
-                <input type="text" value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="👤 Имя" required className={inputClass} />
-                <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="@ Юзернейм" required className={inputClass} />
+                <input type="text" value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="Имя" required className={inputClass} />
+                <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Юзернейм" required className={inputClass} />
               </>
             )}
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="📧 Email" required className={inputClass} />
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="🔒 Пароль" required minLength={6} className={inputClass} />
-            {error && <p className="text-destructive text-xs bg-destructive/10 rounded-[35px] px-4 py-2">{error}</p>}
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" required className={inputClass} />
+            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Пароль" required minLength={6} className={inputClass} />
+            {error && <p className="text-destructive text-xs bg-destructive/10 rounded-2xl px-4 py-2">{error}</p>}
             <button type="submit" disabled={loading} className={btnClass}>
-              {loading ? "..." : isLogin ? "Войти →" : "Создать аккаунт →"}
+              {loading ? "..." : isLogin ? "Войти" : "Создать аккаунт"}
             </button>
             <div className="flex justify-between text-xs pt-1">
-              <button type="button" onClick={() => { setIsLogin(!isLogin); setError(""); }} className="text-muted-foreground hover:text-primary transition-colors cursor-pointer">
+              <button type="button" onClick={() => { setIsLogin(!isLogin); setError(""); }} className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
                 {isLogin ? "Нет аккаунта?" : "Уже есть аккаунт?"}
               </button>
               {isLogin && (
-                <button type="button" onClick={() => setShowReset(true)} className="text-muted-foreground hover:text-primary transition-colors cursor-pointer">
+                <button type="button" onClick={() => setShowReset(true)} className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
                   Забыли пароль?
                 </button>
               )}
@@ -264,25 +262,18 @@ export default function AuthPage() {
               <form onSubmit={handleRequestCode} className="space-y-3">
                 {!isLogin && (
                   <>
-                    <input type="text" value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="👤 Имя" required className={inputClass} />
-                    <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="@ Юзернейм" required className={inputClass} />
+                    <input type="text" value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="Имя" required className={inputClass} />
+                    <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Юзернейм" required className={inputClass} />
                   </>
                 )}
-                <input
-                  type="tel"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="📱 +7 999 123 45 67"
-                  required
-                  className={inputClass}
-                />
-                {error && <p className="text-destructive text-xs bg-destructive/10 rounded-[35px] px-4 py-2">{error}</p>}
+                <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+7 999 123 45 67" required className={inputClass} />
+                {error && <p className="text-destructive text-xs bg-destructive/10 rounded-2xl px-4 py-2">{error}</p>}
                 <button type="submit" disabled={loading} className={btnClass}>
-                  {loading ? "..." : "Получить код →"}
+                  {loading ? "..." : "Получить код"}
                 </button>
-                <p className="text-xs text-center text-muted-foreground/60">Код придёт в Telegram-бота 🤖</p>
+                <p className="text-xs text-center text-muted-foreground">Код придёт в Telegram-бота</p>
                 <div className="text-xs text-center">
-                  <button type="button" onClick={() => { setIsLogin(!isLogin); setError(""); }} className="text-muted-foreground hover:text-primary transition-colors cursor-pointer">
+                  <button type="button" onClick={() => { setIsLogin(!isLogin); setError(""); }} className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
                     {isLogin ? "Нет аккаунта?" : "Уже есть аккаунт?"}
                   </button>
                 </div>
@@ -290,14 +281,12 @@ export default function AuthPage() {
             ) : (
               <form onSubmit={handleVerifyCode} className="space-y-4">
                 <div className="text-center space-y-3">
-                  <p className="text-sm text-foreground/80">
-                    Код отправлен в бота 🤖
-                  </p>
+                  <p className="text-sm text-foreground/80">Код отправлен в бота</p>
                   <a
                     href={tgDeepLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 bg-[#0088cc] text-white px-5 py-2.5 rounded-[35px] text-sm font-medium hover:opacity-90 transition-all active:scale-95"
+                    className="inline-flex items-center gap-2 bg-[#0088cc] text-white px-5 py-2.5 rounded-full text-sm font-medium hover:opacity-90 transition-all active:scale-95"
                   >
                     Открыть Telegram →
                   </a>
@@ -311,14 +300,14 @@ export default function AuthPage() {
                   maxLength={6}
                   className={`${inputClass} text-center text-lg tracking-[0.5em] font-mono`}
                 />
-                {error && <p className="text-destructive text-xs bg-destructive/10 rounded-[35px] px-4 py-2">{error}</p>}
+                {error && <p className="text-destructive text-xs bg-destructive/10 rounded-2xl px-4 py-2">{error}</p>}
                 <button type="submit" disabled={loading || phoneCode.length !== 6} className={btnClass}>
-                  {loading ? "..." : "Подтвердить ✓"}
+                  {loading ? "..." : "Подтвердить"}
                 </button>
                 <button
                   type="button"
                   onClick={() => { setPhoneStep("phone"); setPhoneCode(""); setError(""); }}
-                  className="w-full flex items-center justify-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+                  className="w-full flex items-center justify-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                 >
                   <ArrowLeft size={14} /> Назад
                 </button>
