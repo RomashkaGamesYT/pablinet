@@ -17,6 +17,7 @@ import AdminPage from "@/pages/AdminPage";
 import MessagesPage from "@/pages/MessagesPage";
 import FlamePage from "@/pages/FlamePage";
 import SettingsPage from "@/pages/SettingsPage";
+import GiveawaysPage from "@/pages/GiveawaysPage";
 
 import AuthPage from "@/pages/Auth";
 import ResetPassword from "@/pages/ResetPassword";
@@ -68,6 +69,7 @@ const App = () => (
               <Route path="/user/:userId" element={<UserProfilePage />} />
               <Route path="/messages" element={<MessagesPage />} />
               <Route path="/flame" element={<FlamePage />} />
+              <Route path="/giveaways" element={<GiveawaysPage />} />
 
               <Route path="/admin" element={<AdminRoute><AdminPage /></AdminRoute>} />
             </Route>
