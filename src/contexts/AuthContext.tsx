@@ -41,6 +41,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Presence ping: update last_seen_at every 60s while signed in
+  useEffect(() => {
+    if (!user) return;
+    const ping = () => {
+      supabase.from("profiles").update({ last_seen_at: new Date().toISOString() } as any).eq("user_id", user.id).then(() => {});
+    };
+    ping();
+    const id = setInterval(ping, 60000);
+    return () => clearInterval(id);
+  }, [user]);
+
   const signOut = async () => {
     await supabase.auth.signOut();
   };

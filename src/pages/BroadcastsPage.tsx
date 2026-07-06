@@ -146,7 +146,7 @@ export default function BroadcastsPage() {
           <div className="text-center py-16">
             <Radio size={40} className="mx-auto text-muted-foreground/30 mb-4" />
             <p className="text-muted-foreground text-sm">Сейчас нет активных трансляций</p>
-            <p className="text-muted-foreground/60 text-xs mt-1">Заходи позже — трансляции запускают @net и @Cooling</p>
+            <p className="text-muted-foreground/60 text-xs mt-1">Заходи позже — трансляции запускает @Cooling</p>
           </div>
         )
       )}

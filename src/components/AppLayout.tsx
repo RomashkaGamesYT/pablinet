@@ -8,7 +8,7 @@ import { useUnreadCount } from "@/hooks/useMessages";
 import { useUnreadNotificationCount } from "@/hooks/useNotifications";
 import { useSettings } from "@/hooks/useSettings";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
-import { Search, Bell, User, Star, Shield, MessageCircle, Radio, Settings, LogOut, Plus } from "lucide-react";
+import { Search, Bell, User, Star, Shield, MessageCircle, Radio, Settings, LogOut, Plus, Gift } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -70,6 +70,7 @@ export default function AppLayout() {
     { to: "/", label: "Лента", icon: <FeedIcon size={24} /> },
     { to: "/search", label: "Поиск", icon: <Search size={24} strokeWidth={1.5} /> },
     { to: "/broadcasts", label: "Эфир", icon: <Radio size={20} strokeWidth={1.5} /> },
+    { to: "/giveaways", label: "Розыгрыши", icon: <Gift size={20} strokeWidth={1.5} /> },
     { to: "/messages", label: "Сообщения", icon: <MessageCircle size={20} strokeWidth={1.5} />, badge: unreadCount },
   ];
   if (showNotificationsTab) {
@@ -159,6 +160,12 @@ export default function AppLayout() {
           <div className="flex flex-col gap-3 text-sm">
             <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">Статус серверов</a>
             <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">Конфиденциальность</a>
+            <div className="mt-4 p-4 rounded-2xl bg-secondary/40 ring-1 ring-border/50">
+              <p className="text-xs uppercase tracking-wider text-muted-foreground mb-1.5">Поддержка</p>
+              <a href="mailto:owner@pablinet.ru" className="text-sm font-medium text-foreground hover:text-accent transition-colors break-all">
+                owner@pablinet.ru
+              </a>
+            </div>
           </div>
         </aside>
       </div>
