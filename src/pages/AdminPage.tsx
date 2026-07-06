@@ -17,7 +17,7 @@ export default function AdminPage() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
-  const [activeTab, setActiveTab] = useState<"badges" | "assign" | "verify" | "events" | "tg-verify" | "pepe-plus">("badges");
+  const [activeTab, setActiveTab] = useState<"badges" | "assign" | "verify" | "events" | "tg-verify" | "pepe-plus" | "users">("badges");
   const [creating, setCreating] = useState(false);
   const [badgeName, setBadgeName] = useState("");
   const [badgeDesc, setBadgeDesc] = useState("");
@@ -187,6 +187,7 @@ export default function AdminPage() {
     { key: "verify" as const, label: "Верификация", icon: <Shield size={16} /> },
     { key: "tg-verify" as const, label: "TG Заявки", icon: <MessageCircle size={16} /> },
     { key: "events" as const, label: "Ивенты", icon: <Calendar size={16} /> },
+    { key: "users" as const, label: "Пользователи", icon: <Users size={16} /> },
   ];
 
   return (
@@ -498,6 +499,64 @@ export default function AdminPage() {
           )}
         </div>
       )}
+      {activeTab === "users" && <UsersTab profiles={profiles} queryClient={queryClient} />}
     </div>
   );
 }
+
+function UsersTab({ profiles, queryClient }: { profiles: any; queryClient: any }) {
+  const [q, setQ] = useState("");
+  const total = profiles?.length || 0;
+  const fiveMinAgo = Date.now() - 5 * 60 * 1000;
+  const online = profiles?.filter((p: any) => p.last_seen_at && new Date(p.last_seen_at).getTime() > fiveMinAgo).length || 0;
+  const filtered = (profiles || []).filter((p: any) =>
+    !q || (p.username || "").toLowerCase().includes(q.toLowerCase()) || (p.display_name || "").toLowerCase().includes(q.toLowerCase())
+  );
+
+  const toggleBan = async (userId: string, current: boolean) => {
+    const { error } = await supabase.from("profiles").update({ is_banned: !current } as any).eq("user_id", userId);
+    if (error) return toast.error("Ошибка: " + error.message);
+    queryClient.invalidateQueries({ queryKey: ["all-profiles"] });
+    toast.success(!current ? "Пользователь забанен" : "Пользователь разбанен");
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 gap-3">
+        <div className="bg-card rounded-2xl p-4 ring-1 ring-border">
+          <p className="text-xs text-muted-foreground uppercase tracking-wide">Всего</p>
+          <p className="text-2xl font-semibold mt-1">{total}</p>
+        </div>
+        <div className="bg-card rounded-2xl p-4 ring-1 ring-border">
+          <p className="text-xs text-muted-foreground uppercase tracking-wide">Онлайн сейчас</p>
+          <p className="text-2xl font-semibold mt-1 text-net-emerald">{online}</p>
+        </div>
+      </div>
+      <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Поиск по нику..." className="w-full bg-card rounded-2xl px-4 py-3 text-sm ring-1 ring-border focus:outline-none focus:ring-accent/50" />
+      <div className="space-y-2">
+        {filtered.map((p: any) => {
+          const isOnline = p.last_seen_at && new Date(p.last_seen_at).getTime() > fiveMinAgo;
+          return (
+            <div key={p.user_id} className="bg-card rounded-2xl p-3 ring-1 ring-border flex items-center gap-3">
+              <div className="relative w-10 h-10 rounded-full bg-secondary flex items-center justify-center overflow-hidden shrink-0">
+                {p.logo_url ? <img src={p.logo_url} alt="" className="w-full h-full object-cover" /> : <Users size={16} className="text-muted-foreground" />}
+                {isOnline && <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-net-emerald ring-2 ring-card" />}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium truncate">{p.display_name || p.username}</p>
+                <p className="text-xs text-muted-foreground truncate">@{p.username}{p.is_banned && <span className="ml-2 text-destructive">• забанен</span>}</p>
+              </div>
+              <button
+                onClick={() => toggleBan(p.user_id, !!p.is_banned)}
+                className={`text-xs px-3 py-1.5 rounded-full font-medium cursor-pointer ${p.is_banned ? "bg-secondary text-foreground" : "bg-destructive/10 text-destructive hover:bg-destructive/20"}`}
+              >
+                {p.is_banned ? "Разбанить" : "Забанить"}
+              </button>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
