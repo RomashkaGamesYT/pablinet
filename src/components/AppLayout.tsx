@@ -8,7 +8,7 @@ import { useUnreadCount } from "@/hooks/useMessages";
 import { useUnreadNotificationCount } from "@/hooks/useNotifications";
 import { useSettings } from "@/hooks/useSettings";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
-import { Search, Bell, User, Star, Shield, MessageCircle, Radio, Settings, LogOut, Plus } from "lucide-react";
+import { Search, Bell, User, Star, Shield, MessageCircle, Radio, Settings, LogOut, Plus, Gift } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -70,6 +70,7 @@ export default function AppLayout() {
     { to: "/", label: "Лента", icon: <FeedIcon size={24} /> },
     { to: "/search", label: "Поиск", icon: <Search size={24} strokeWidth={1.5} /> },
     { to: "/broadcasts", label: "Эфир", icon: <Radio size={20} strokeWidth={1.5} /> },
+    { to: "/giveaways", label: "Розыгрыши", icon: <Gift size={20} strokeWidth={1.5} /> },
     { to: "/messages", label: "Сообщения", icon: <MessageCircle size={20} strokeWidth={1.5} />, badge: unreadCount },
   ];
   if (showNotificationsTab) {
