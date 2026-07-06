@@ -30,7 +30,7 @@ export default function CookieBanner() {
           <div>
             <p className="text-sm font-semibold text-primary mb-1">Cookies & данные</p>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Мы используем cookies для персонализации ленты и улучшения работы нэт.
+              Мы используем cookies для персонализации ленты и улучшения работы pablinet.
             </p>
           </div>
           <div className="flex gap-2 pt-1">

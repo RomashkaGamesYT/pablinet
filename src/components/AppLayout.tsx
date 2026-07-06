@@ -85,7 +85,7 @@ export default function AppLayout() {
           <div className="flex flex-col gap-6 px-4">
             {/* Logo */}
             <div className="flex items-center gap-3 px-4 mb-2">
-              <span className="text-xl font-semibold tracking-tight text-foreground">нэт</span>
+              <span className="text-xl font-semibold tracking-tight text-foreground">pablinet</span>
             </div>
 
             {/* Nav */}

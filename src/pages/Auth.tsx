@@ -167,7 +167,7 @@ export default function AuthPage() {
       <div className="min-h-screen bg-background flex items-center justify-center px-4">
         <div className="w-full max-w-sm space-y-6">
           <div className="text-center">
-            <h1 className="text-xl font-semibold text-foreground tracking-tight">нэт</h1>
+            <h1 className="text-xl font-semibold text-foreground tracking-tight">pablinet</h1>
           </div>
           {resetSent ? (
             <div className="text-center space-y-3">
@@ -200,7 +200,7 @@ export default function AuthPage() {
       <div className="w-full max-w-sm space-y-6">
         {/* Logo */}
         <div className="text-center space-y-1">
-          <h1 className="text-2xl font-semibold text-foreground tracking-tight">нэт</h1>
+          <h1 className="text-2xl font-semibold text-foreground tracking-tight">pablinet</h1>
           <p className="text-muted-foreground text-sm">
             {isLogin ? "С возвращением" : "Присоединяйтесь"}
           </p>

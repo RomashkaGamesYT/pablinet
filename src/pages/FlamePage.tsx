@@ -43,7 +43,7 @@ export default function FlamePage() {
           <section>
             <h2 className="text-base font-semibold text-primary mb-2">Что такое Flame?</h2>
             <p>
-              Flame — это эксклюзивный бейдж для самых активных участников нэт.
+              Flame — это эксклюзивный бейдж для самых активных участников pablinet.
               Он отображается рядом с вашим именем и показывает ваш статус в сообществе.
             </p>
           </section>
