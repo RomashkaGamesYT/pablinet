@@ -159,6 +159,12 @@ export default function AppLayout() {
           <div className="flex flex-col gap-3 text-sm">
             <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">Статус серверов</a>
             <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">Конфиденциальность</a>
+            <div className="mt-4 p-4 rounded-2xl bg-secondary/40 ring-1 ring-border/50">
+              <p className="text-xs uppercase tracking-wider text-muted-foreground mb-1.5">Поддержка</p>
+              <a href="mailto:owner@pablinet.ru" className="text-sm font-medium text-foreground hover:text-accent transition-colors break-all">
+                owner@pablinet.ru
+              </a>
+            </div>
           </div>
         </aside>
       </div>
