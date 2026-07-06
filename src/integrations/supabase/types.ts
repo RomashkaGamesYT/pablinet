@@ -256,6 +256,42 @@ export type Database = {
         }
         Relationships: []
       }
+      giveaways: {
+        Row: {
+          created_at: string
+          creator_id: string
+          description: string
+          ends_at: string
+          id: string
+          image_url: string | null
+          title: string
+          updated_at: string
+          winner_user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          creator_id: string
+          description: string
+          ends_at: string
+          id?: string
+          image_url?: string | null
+          title: string
+          updated_at?: string
+          winner_user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          creator_id?: string
+          description?: string
+          ends_at?: string
+          id?: string
+          image_url?: string | null
+          title?: string
+          updated_at?: string
+          winner_user_id?: string | null
+        }
+        Relationships: []
+      }
       likes: {
         Row: {
           created_at: string
@@ -430,6 +466,8 @@ export type Database = {
           display_name: string
           has_pepe_plus: boolean
           id: string
+          is_banned: boolean
+          last_seen_at: string
           logo_url: string | null
           phone: string | null
           profile_theme: Json | null
@@ -446,6 +484,8 @@ export type Database = {
           display_name?: string
           has_pepe_plus?: boolean
           id?: string
+          is_banned?: boolean
+          last_seen_at?: string
           logo_url?: string | null
           phone?: string | null
           profile_theme?: Json | null
@@ -462,6 +502,8 @@ export type Database = {
           display_name?: string
           has_pepe_plus?: boolean
           id?: string
+          is_banned?: boolean
+          last_seen_at?: string
           logo_url?: string | null
           phone?: string | null
           profile_theme?: Json | null
