@@ -8,7 +8,7 @@ import { useUnreadCount } from "@/hooks/useMessages";
 import { useUnreadNotificationCount } from "@/hooks/useNotifications";
 import { useSettings } from "@/hooks/useSettings";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
-import { Search, Bell, User, Star, Shield, MessageCircle, Radio, Settings, LogOut, Plus, Gift } from "lucide-react";
+import { Search, Bell, User, Star, Shield, MessageCircle, Radio, Settings, LogOut, Plus, Gift, LifeBuoy } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -75,6 +75,9 @@ export default function AppLayout() {
   ];
   if (showNotificationsTab) {
     desktopNavItems.push({ to: "/notifications", label: "Уведомления", icon: <NotifIcon size={20} />, badge: unreadNotifs });
+  }
+  if (!isAdmin) {
+    desktopNavItems.push({ to: "/support", label: "Поддержка", icon: <LifeBuoy size={20} strokeWidth={1.5} /> });
   }
   desktopNavItems.push({ to: "/profile", label: "Профиль", icon: <ProfileIcon size={20} /> });
 

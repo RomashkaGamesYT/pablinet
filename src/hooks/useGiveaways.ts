@@ -23,8 +23,11 @@ export function useCanCreateGiveaway() {
     queryKey: ["can-create-giveaway", user?.id],
     queryFn: async () => {
       if (!user) return false;
-      const { data } = await supabase.from("profiles").select("username").eq("user_id", user.id).single();
-      return (data?.username || "").toLowerCase() === "cooling";
+      const [{ data: profile }, { data: adminFlag }] = await Promise.all([
+        supabase.from("profiles").select("username").eq("user_id", user.id).single(),
+        supabase.rpc("has_role", { _user_id: user.id, _role: "admin" }),
+      ]);
+      return (profile?.username || "").toLowerCase() === "cooling" || !!adminFlag;
     },
     enabled: !!user,
   });
