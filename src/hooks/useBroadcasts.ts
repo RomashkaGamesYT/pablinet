@@ -11,12 +11,11 @@ export function useCanBroadcast() {
     queryKey: ["can-broadcast", user?.id],
     queryFn: async () => {
       if (!user) return false;
-      const { data } = await supabase
-        .from("profiles")
-        .select("username")
-        .eq("user_id", user.id)
-        .single();
-      return ALLOWED_USERNAMES.includes((data?.username || "").toLowerCase());
+      const [{ data: profile }, { data: adminFlag }] = await Promise.all([
+        supabase.from("profiles").select("username").eq("user_id", user.id).single(),
+        supabase.rpc("has_role", { _user_id: user.id, _role: "admin" }),
+      ]);
+      return ALLOWED_USERNAMES.includes((profile?.username || "").toLowerCase()) || !!adminFlag;
     },
     enabled: !!user,
   });

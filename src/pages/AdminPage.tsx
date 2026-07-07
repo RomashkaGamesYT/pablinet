@@ -3,7 +3,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useBadges, useAllProfiles, useAllUserBadges } from "@/hooks/useAdmin";
 import { useEvents } from "@/hooks/useEvents";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Plus, Trash2, Upload, Award, Users, ArrowLeft, X, Shield, CheckCircle, Calendar, Play, Pause, MessageCircle, Check, XCircle, Crown, Edit2 } from "lucide-react";
+import { Plus, Trash2, Upload, Award, Users, ArrowLeft, X, Shield, CheckCircle, Calendar, Play, Pause, MessageCircle, Check, XCircle, Crown, Edit2, LifeBuoy } from "lucide-react";
+import AdminChatsTab from "@/components/AdminChatsTab";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
@@ -17,7 +18,7 @@ export default function AdminPage() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
-  const [activeTab, setActiveTab] = useState<"badges" | "assign" | "verify" | "events" | "tg-verify" | "pepe-plus" | "users">("badges");
+  const [activeTab, setActiveTab] = useState<"badges" | "assign" | "verify" | "events" | "tg-verify" | "pepe-plus" | "users" | "chats">("badges");
   const [creating, setCreating] = useState(false);
   const [badgeName, setBadgeName] = useState("");
   const [badgeDesc, setBadgeDesc] = useState("");
@@ -181,6 +182,7 @@ export default function AdminPage() {
   const inputClass = "w-full bg-secondary border border-border rounded-2xl px-4 py-2.5 text-sm text-foreground outline-none focus:border-accent/50 placeholder-muted-foreground transition-colors";
 
   const tabs = [
+    { key: "chats" as const, label: "Чаты", icon: <LifeBuoy size={16} /> },
     { key: "badges" as const, label: "Бейджи", icon: <Award size={16} /> },
     { key: "assign" as const, label: "Назначить", icon: <Users size={16} /> },
     { key: "pepe-plus" as const, label: "Pepe+", icon: <Crown size={16} /> },
@@ -500,6 +502,7 @@ export default function AdminPage() {
         </div>
       )}
       {activeTab === "users" && <UsersTab profiles={profiles} queryClient={queryClient} />}
+      {activeTab === "chats" && <AdminChatsTab />}
     </div>
   );
 }
