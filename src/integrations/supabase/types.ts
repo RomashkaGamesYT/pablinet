@@ -514,6 +514,71 @@ export type Database = {
         }
         Relationships: []
       }
+      support_conversations: {
+        Row: {
+          ai_active: boolean
+          created_at: string
+          id: string
+          last_message_at: string
+          needs_specialist: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ai_active?: boolean
+          created_at?: string
+          id?: string
+          last_message_at?: string
+          needs_specialist?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ai_active?: boolean
+          created_at?: string
+          id?: string
+          last_message_at?: string
+          needs_specialist?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      support_messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string
+          id: string
+          role: string
+          sender_id: string | null
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          role: string
+          sender_id?: string | null
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          role?: string
+          sender_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "support_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "support_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       telegram_bot_state: {
         Row: {
           id: number
@@ -675,6 +740,7 @@ export type Database = {
         Args: { _conversation_id: string; _user_id: string }
         Returns: boolean
       }
+      is_user_banned: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
