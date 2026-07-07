@@ -18,6 +18,8 @@ import MessagesPage from "@/pages/MessagesPage";
 import FlamePage from "@/pages/FlamePage";
 import SettingsPage from "@/pages/SettingsPage";
 import GiveawaysPage from "@/pages/GiveawaysPage";
+import ArticlePage from "@/pages/ArticlePage";
+import SupportPage from "@/pages/SupportPage";
 
 import AuthPage from "@/pages/Auth";
 import ResetPassword from "@/pages/ResetPassword";
@@ -70,6 +72,9 @@ const App = () => (
               <Route path="/messages" element={<MessagesPage />} />
               <Route path="/flame" element={<FlamePage />} />
               <Route path="/giveaways" element={<GiveawaysPage />} />
+              <Route path="/article/:id" element={<ArticlePage />} />
+              <Route path="/post/:id" element={<ArticlePage />} />
+              <Route path="/support" element={<SupportPage />} />
 
               <Route path="/admin" element={<AdminRoute><AdminPage /></AdminRoute>} />
             </Route>
