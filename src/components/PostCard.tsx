@@ -126,6 +126,7 @@ export default function PostCard({ post, badges = [], context = "feed" }: PostCa
                 {postProfile?.display_name || "Пользователь"}
               </span>
               {postProfile?.verified && <VerifiedBadge size={16} />}
+              <AdminCrown userId={post.user_id} size={14} />
               {badges.length > 0 && <BadgeDisplay badges={badges} size="sm" />}
               {showFollowButton && (
                 <button
