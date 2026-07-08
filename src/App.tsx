@@ -4,7 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
-import { useIsAdmin } from "@/hooks/useAdmin";
+import { useIsAdmin, useHasAnyAdminRole } from "@/hooks/useAdmin";
 import AppLayout from "@/components/AppLayout";
 import FeedPage from "@/pages/Feed";
 import SearchPage from "@/pages/SearchPage";
@@ -44,9 +44,10 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
 function AdminRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
   const { data: isAdmin, isLoading } = useIsAdmin();
+  const hasAnyAdmin = useHasAnyAdminRole();
   if (loading || isLoading) return <div className="min-h-screen bg-background flex items-center justify-center text-muted-foreground">Загрузка...</div>;
   if (!user) return <Navigate to="/auth" replace />;
-  if (!isAdmin) return <Navigate to="/" replace />;
+  if (!isAdmin && !hasAnyAdmin) return <Navigate to="/" replace />;
   return <>{children}</>;
 }
 
