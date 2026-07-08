@@ -129,12 +129,19 @@ export default function AppLayout() {
 
           {/* Bottom */}
           <div className="px-4 flex flex-col gap-2">
-            {isAdmin && (
+            {(isAdmin || hasAnyAdmin) && (
               <button
                 onClick={() => navigate("/admin")}
                 className="flex items-center gap-4 p-3 px-4 rounded-2xl text-muted-foreground hover:bg-secondary/50 transition-colors w-full text-left cursor-pointer"
               >
-                <Shield size={20} strokeWidth={1.5} />
+                <div className="relative shrink-0 w-6 h-6 flex items-center justify-center">
+                  <Shield size={20} strokeWidth={1.5} />
+                  {(supportUnreadAdmin || 0) > 0 && (
+                    <span className="absolute -top-1.5 -right-2 min-w-4 h-4 px-1 rounded-full bg-destructive text-[9px] font-bold text-destructive-foreground flex items-center justify-center">
+                      {supportUnreadAdmin! > 9 ? "9+" : supportUnreadAdmin}
+                    </span>
+                  )}
+                </div>
                 <span className="text-base font-medium">Админка</span>
               </button>
             )}
