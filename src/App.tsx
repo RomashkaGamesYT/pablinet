@@ -24,6 +24,7 @@ import SupportPage from "@/pages/SupportPage";
 import AuthPage from "@/pages/Auth";
 import ResetPassword from "@/pages/ResetPassword";
 import NotFound from "@/pages/NotFound";
+import BannedScreen from "@/components/BannedScreen";
 
 const queryClient = new QueryClient();
 
