@@ -4,7 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
-import { useIsAdmin } from "@/hooks/useAdmin";
+import { useIsAdmin, useHasAnyAdminRole } from "@/hooks/useAdmin";
 import AppLayout from "@/components/AppLayout";
 import FeedPage from "@/pages/Feed";
 import SearchPage from "@/pages/SearchPage";
@@ -24,6 +24,7 @@ import SupportPage from "@/pages/SupportPage";
 import AuthPage from "@/pages/Auth";
 import ResetPassword from "@/pages/ResetPassword";
 import NotFound from "@/pages/NotFound";
+import BannedScreen from "@/components/BannedScreen";
 
 const queryClient = new QueryClient();
 
@@ -44,10 +45,21 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
 function AdminRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
   const { data: isAdmin, isLoading } = useIsAdmin();
+  const hasAnyAdmin = useHasAnyAdminRole();
   if (loading || isLoading) return <div className="min-h-screen bg-background flex items-center justify-center text-muted-foreground">Загрузка...</div>;
   if (!user) return <Navigate to="/auth" replace />;
-  if (!isAdmin) return <Navigate to="/" replace />;
+  if (!isAdmin && !hasAnyAdmin) return <Navigate to="/" replace />;
   return <>{children}</>;
+}
+
+function BanGate({ children }: { children: React.ReactNode }) {
+  const { banned } = useAuth();
+  return (
+    <>
+      {children}
+      {banned && <BannedScreen />}
+    </>
+  );
 }
 
 const App = () => (
@@ -57,29 +69,31 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <Routes>
-            <Route path="/auth" element={<PublicRoute><AuthPage /></PublicRoute>} />
-            <Route path="/reset-password" element={<ResetPassword />} />
-            <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
-              <Route path="/" element={<FeedPage />} />
-              <Route path="/search" element={<SearchPage />} />
-              <Route path="/events" element={<EventsPage />} />
-              <Route path="/broadcasts" element={<BroadcastsPage />} />
-              <Route path="/notifications" element={<NotificationsPage />} />
-              <Route path="/profile" element={<ProfilePage />} />
-              <Route path="/settings" element={<SettingsPage />} />
-              <Route path="/user/:userId" element={<UserProfilePage />} />
-              <Route path="/messages" element={<MessagesPage />} />
-              <Route path="/flame" element={<FlamePage />} />
-              <Route path="/giveaways" element={<GiveawaysPage />} />
-              <Route path="/article/:id" element={<ArticlePage />} />
-              <Route path="/post/:id" element={<ArticlePage />} />
-              <Route path="/support" element={<SupportPage />} />
+          <BanGate>
+            <Routes>
+              <Route path="/auth" element={<PublicRoute><AuthPage /></PublicRoute>} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
+                <Route path="/" element={<FeedPage />} />
+                <Route path="/search" element={<SearchPage />} />
+                <Route path="/events" element={<EventsPage />} />
+                <Route path="/broadcasts" element={<BroadcastsPage />} />
+                <Route path="/notifications" element={<NotificationsPage />} />
+                <Route path="/profile" element={<ProfilePage />} />
+                <Route path="/settings" element={<SettingsPage />} />
+                <Route path="/user/:userId" element={<UserProfilePage />} />
+                <Route path="/messages" element={<MessagesPage />} />
+                <Route path="/flame" element={<FlamePage />} />
+                <Route path="/giveaways" element={<GiveawaysPage />} />
+                <Route path="/article/:id" element={<ArticlePage />} />
+                <Route path="/post/:id" element={<ArticlePage />} />
+                <Route path="/support" element={<SupportPage />} />
 
-              <Route path="/admin" element={<AdminRoute><AdminPage /></AdminRoute>} />
-            </Route>
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+                <Route path="/admin" element={<AdminRoute><AdminPage /></AdminRoute>} />
+              </Route>
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BanGate>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
