@@ -6,6 +6,8 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
+  banned: boolean;
+  clearBanned: () => void;
   signOut: () => Promise<void>;
 }
 
@@ -13,6 +15,8 @@ const AuthContext = createContext<AuthContextType>({
   user: null,
   session: null,
   loading: true,
+  banned: false,
+  clearBanned: () => {},
   signOut: async () => {},
 });
 
@@ -22,6 +26,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [banned, setBanned] = useState(false);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -41,14 +46,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Presence ping: update last_seen_at every 60s while signed in
+  // Ban check + presence ping
   useEffect(() => {
     if (!user) return;
+
+    const checkBan = async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("is_banned")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if ((data as any)?.is_banned) {
+        setBanned(true);
+        await supabase.auth.signOut();
+      }
+    };
+    checkBan();
+
     const ping = () => {
       supabase.from("profiles").update({ last_seen_at: new Date().toISOString() } as any).eq("user_id", user.id).then(() => {});
     };
     ping();
-    const id = setInterval(ping, 60000);
+    const id = setInterval(() => {
+      ping();
+      checkBan();
+    }, 60000);
     return () => clearInterval(id);
   }, [user]);
 
@@ -56,8 +78,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await supabase.auth.signOut();
   };
 
+  const clearBanned = () => setBanned(false);
+
   return (
-    <AuthContext.Provider value={{ user, session, loading, signOut }}>
+    <AuthContext.Provider value={{ user, session, loading, banned, clearBanned, signOut }}>
       {children}
     </AuthContext.Provider>
   );
