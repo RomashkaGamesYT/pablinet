@@ -52,6 +52,16 @@ function AdminRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+function BanGate({ children }: { children: React.ReactNode }) {
+  const { banned } = useAuth();
+  return (
+    <>
+      {children}
+      {banned && <BannedScreen />}
+    </>
+  );
+}
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -59,29 +69,31 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <Routes>
-            <Route path="/auth" element={<PublicRoute><AuthPage /></PublicRoute>} />
-            <Route path="/reset-password" element={<ResetPassword />} />
-            <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
-              <Route path="/" element={<FeedPage />} />
-              <Route path="/search" element={<SearchPage />} />
-              <Route path="/events" element={<EventsPage />} />
-              <Route path="/broadcasts" element={<BroadcastsPage />} />
-              <Route path="/notifications" element={<NotificationsPage />} />
-              <Route path="/profile" element={<ProfilePage />} />
-              <Route path="/settings" element={<SettingsPage />} />
-              <Route path="/user/:userId" element={<UserProfilePage />} />
-              <Route path="/messages" element={<MessagesPage />} />
-              <Route path="/flame" element={<FlamePage />} />
-              <Route path="/giveaways" element={<GiveawaysPage />} />
-              <Route path="/article/:id" element={<ArticlePage />} />
-              <Route path="/post/:id" element={<ArticlePage />} />
-              <Route path="/support" element={<SupportPage />} />
+          <BanGate>
+            <Routes>
+              <Route path="/auth" element={<PublicRoute><AuthPage /></PublicRoute>} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
+                <Route path="/" element={<FeedPage />} />
+                <Route path="/search" element={<SearchPage />} />
+                <Route path="/events" element={<EventsPage />} />
+                <Route path="/broadcasts" element={<BroadcastsPage />} />
+                <Route path="/notifications" element={<NotificationsPage />} />
+                <Route path="/profile" element={<ProfilePage />} />
+                <Route path="/settings" element={<SettingsPage />} />
+                <Route path="/user/:userId" element={<UserProfilePage />} />
+                <Route path="/messages" element={<MessagesPage />} />
+                <Route path="/flame" element={<FlamePage />} />
+                <Route path="/giveaways" element={<GiveawaysPage />} />
+                <Route path="/article/:id" element={<ArticlePage />} />
+                <Route path="/post/:id" element={<ArticlePage />} />
+                <Route path="/support" element={<SupportPage />} />
 
-              <Route path="/admin" element={<AdminRoute><AdminPage /></AdminRoute>} />
-            </Route>
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+                <Route path="/admin" element={<AdminRoute><AdminPage /></AdminRoute>} />
+              </Route>
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BanGate>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
