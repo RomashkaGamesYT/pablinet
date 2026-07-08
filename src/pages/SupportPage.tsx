@@ -58,7 +58,17 @@ export default function SupportPage() {
 
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-  }, [messages]);
+    // Mark all messages as read by user on view
+    if (conversation?.id) {
+      supabase
+        .from("support_conversations" as any)
+        .update({ read_by_user_at: new Date().toISOString() })
+        .eq("id", conversation.id)
+        .then(() => {
+          qc.invalidateQueries({ queryKey: ["support-unread-client"] });
+        });
+    }
+  }, [messages, conversation?.id, qc]);
 
   const handleSend = async () => {
     if (!text.trim() || !user || !conversation) return;

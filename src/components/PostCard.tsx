@@ -9,6 +9,7 @@ import { useIsAdmin } from "@/hooks/useAdmin";
 import { useFollow, useIsFollowing } from "@/hooks/useFollow";
 import BadgeDisplay from "@/components/BadgeDisplay";
 import VerifiedBadge from "@/components/VerifiedBadge";
+import AdminCrown from "@/components/AdminCrown";
 import CommentsSection from "@/components/CommentsSection";
 import { toast } from "sonner";
 import {
@@ -126,6 +127,7 @@ export default function PostCard({ post, badges = [], context = "feed" }: PostCa
                 {postProfile?.display_name || "Пользователь"}
               </span>
               {postProfile?.verified && <VerifiedBadge size={16} />}
+              <AdminCrown userId={post.user_id} size={14} />
               {badges.length > 0 && <BadgeDisplay badges={badges} size="sm" />}
               {showFollowButton && (
                 <button

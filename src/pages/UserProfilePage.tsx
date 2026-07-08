@@ -11,6 +11,7 @@ import { ru } from "date-fns/locale";
 import { useState } from "react";
 import BadgeDisplay from "@/components/BadgeDisplay";
 import VerifiedBadge from "@/components/VerifiedBadge";
+import AdminCrown from "@/components/AdminCrown";
 import PostCard from "@/components/PostCard";
 import FollowListModal from "@/components/FollowListModal";
 
@@ -114,6 +115,7 @@ export default function UserProfilePage() {
             <h1 className="text-xl font-semibold tracking-tight text-foreground flex items-center gap-2">
               <span className={hasPepePlus ? "gradient-name" : ""}>{profile.display_name}</span>
               {profile.verified && <VerifiedBadge size={18} />}
+              <AdminCrown userId={profile.user_id} size={16} />
               {userBadges && <BadgeDisplay badges={userBadges as any} size="md" />}
             </h1>
             <span className="text-sm text-muted-foreground">@{profile.username}</span>

@@ -521,6 +521,8 @@ export type Database = {
           id: string
           last_message_at: string
           needs_specialist: boolean
+          read_by_admin_at: string | null
+          read_by_user_at: string | null
           updated_at: string
           user_id: string
         }
@@ -530,6 +532,8 @@ export type Database = {
           id?: string
           last_message_at?: string
           needs_specialist?: boolean
+          read_by_admin_at?: string | null
+          read_by_user_at?: string | null
           updated_at?: string
           user_id: string
         }
@@ -539,6 +543,8 @@ export type Database = {
           id?: string
           last_message_at?: string
           needs_specialist?: boolean
+          read_by_admin_at?: string | null
+          read_by_user_at?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -743,7 +749,16 @@ export type Database = {
       is_user_banned: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
-      app_role: "admin" | "moderator" | "user"
+      app_role:
+        | "admin"
+        | "moderator"
+        | "user"
+        | "support"
+        | "verifier"
+        | "events_manager"
+        | "pepe_manager"
+        | "badge_manager"
+        | "user_manager"
       notification_type: "like" | "follow" | "mention" | "comment"
     }
     CompositeTypes: {
@@ -872,7 +887,17 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "moderator", "user"],
+      app_role: [
+        "admin",
+        "moderator",
+        "user",
+        "support",
+        "verifier",
+        "events_manager",
+        "pepe_manager",
+        "badge_manager",
+        "user_manager",
+      ],
       notification_type: ["like", "follow", "mention", "comment"],
     },
   },
