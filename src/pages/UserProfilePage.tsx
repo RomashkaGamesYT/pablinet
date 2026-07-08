@@ -11,6 +11,7 @@ import { ru } from "date-fns/locale";
 import { useState } from "react";
 import BadgeDisplay from "@/components/BadgeDisplay";
 import VerifiedBadge from "@/components/VerifiedBadge";
+import AdminCrown from "@/components/AdminCrown";
 import PostCard from "@/components/PostCard";
 import FollowListModal from "@/components/FollowListModal";
 

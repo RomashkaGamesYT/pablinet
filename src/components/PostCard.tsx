@@ -9,6 +9,7 @@ import { useIsAdmin } from "@/hooks/useAdmin";
 import { useFollow, useIsFollowing } from "@/hooks/useFollow";
 import BadgeDisplay from "@/components/BadgeDisplay";
 import VerifiedBadge from "@/components/VerifiedBadge";
+import AdminCrown from "@/components/AdminCrown";
 import CommentsSection from "@/components/CommentsSection";
 import { toast } from "sonner";
 import {

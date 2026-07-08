@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import FollowListModal from "@/components/FollowListModal";
 import BadgeDisplay from "@/components/BadgeDisplay";
 import VerifiedBadge from "@/components/VerifiedBadge";
+import AdminCrown from "@/components/AdminCrown";
 import PostCard from "@/components/PostCard";
 import VerificationRequestDialog from "@/components/VerificationRequestDialog";
 import { toast } from "sonner";
