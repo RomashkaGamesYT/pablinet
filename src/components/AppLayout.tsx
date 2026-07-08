@@ -40,9 +40,12 @@ export default function AppLayout() {
   const { signOut } = useAuth();
   const { data: profile } = useProfile();
   const { data: isAdmin } = useIsAdmin();
+  const hasAnyAdmin = useHasAnyAdminRole();
   const { data: events } = useEvents();
   const { data: unreadCount } = useUnreadCount();
   const { data: unreadNotifs } = useUnreadNotificationCount();
+  const { data: supportUnreadClient } = useClientSupportUnread();
+  const { data: supportUnreadAdmin } = useAdminSupportUnread();
   const { data: userSettings } = useSettings();
   const navigate = useNavigate();
   const location = useLocation();
@@ -78,7 +81,7 @@ export default function AppLayout() {
     desktopNavItems.push({ to: "/notifications", label: "Уведомления", icon: <NotifIcon size={20} />, badge: unreadNotifs });
   }
   if (!isAdmin) {
-    desktopNavItems.push({ to: "/support", label: "Поддержка", icon: <LifeBuoy size={20} strokeWidth={1.5} /> });
+    desktopNavItems.push({ to: "/support", label: "Поддержка", icon: <LifeBuoy size={20} strokeWidth={1.5} />, badge: supportUnreadClient });
   }
   desktopNavItems.push({ to: "/profile", label: "Профиль", icon: <ProfileIcon size={20} /> });
 
